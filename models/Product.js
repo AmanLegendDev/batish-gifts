@@ -10,7 +10,8 @@ required: true
 slug: {
 type: String,
 required: true,
-unique: true
+unique: true,
+index: true
 },
 
 shortDescription: {

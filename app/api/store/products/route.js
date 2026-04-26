@@ -10,7 +10,8 @@ export async function GET() {
     isVisible: true
   })
     .populate("category")
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+    .lean();
 
   return Response.json(products);
 

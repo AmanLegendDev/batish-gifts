@@ -6,6 +6,7 @@ import {
 Menu,
 X,
 ShoppingCart,
+Package,
 ClipboardList
 } from "lucide-react";
 
@@ -69,8 +70,9 @@ HILAIREOFFICIAL
 
 <Link
 href="/products"
-className="hover:text-primary transition"
+className="flex items-center gap-1 hover:text-primary transition"
 >
+    <Package size={18} />
 
 Products
 
@@ -159,8 +161,9 @@ className="md:hidden bg-white border-t"
 <Link
 href="/products"
 onClick={() => setOpen(false)}
-className="text-sm font-medium"
+className="flex items-center gap-2 text-sm font-medium"
 >
+    <Package size={18} />
 
 Products
 
