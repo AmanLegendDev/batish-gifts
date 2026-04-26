@@ -38,13 +38,14 @@ export async function createCategory(name) {
 }
 
 export async function getCategories() {
+
   await connectDB();
 
-  const categories = await Category.find().sort({
-    createdAt: -1,
-  });
+  return Category.find()
+    .select("name")
+    .sort({ createdAt: -1 })
+    .lean();
 
-  return JSON.parse(JSON.stringify(categories));
 }
 
 export async function deleteCategory(id) {

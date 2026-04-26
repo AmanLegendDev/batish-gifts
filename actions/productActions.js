@@ -67,24 +67,29 @@ return { error: "Server error" };
 // GET FEATURED PRODUCTS (homepage ke liye)
 
 export async function getFeaturedProducts() {
+
   await connectDB();
 
-  const products = await Product.find({
+  return Product.find({
     isFeatured: true,
     isVisible: true,
-  }).limit(4);
+  })
+  .select("title price slug images")
+  .limit(4)
+  .lean();
 
-  return JSON.parse(JSON.stringify(products));
 }
 
 export async function getProducts() {
+
   await connectDB();
 
-  const products = await Product.find()
-    .populate("category")
-    .sort({ createdAt: -1 });
+  return Product.find()
+    .select("title price slug shortDescription images category isVisible isFeatured stock")
+    .populate("category", "name")
+    .sort({ createdAt: -1 })
+    .lean();
 
-  return JSON.parse(JSON.stringify(products));
 }
 
 export async function deleteProduct(id) {
@@ -112,22 +117,19 @@ export async function toggleProductField(
 
 
 export async function getSingleProduct(id) {
+
   await connectDB();
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return null;
   }
 
-  const product = await Product.findById(
-    new mongoose.Types.ObjectId(id)
-  );
+  return Product.findById(id)
+    .populate("category", "name")
+    .lean();
 
-  if (!product) {
-    return null;
-  }
-
-  return JSON.parse(JSON.stringify(product));
 }
+
 export async function updateProduct(id, data) {
   await connectDB();
 

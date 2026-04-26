@@ -1,6 +1,5 @@
 import { connectDB } from "@/lib/db";
 import Product from "@/models/Product";
-import Category from "@/models/Category";
 
 export async function GET() {
 
@@ -9,9 +8,10 @@ export async function GET() {
   const products = await Product.find({
     isVisible: true
   })
-    .populate("category")
-    .sort({ createdAt: -1 })
-    .lean();
+  .select("title price slug shortDescription images category")
+  .populate("category", "name")
+  .sort({ createdAt: -1 })
+  .lean();
 
   return Response.json(products);
 

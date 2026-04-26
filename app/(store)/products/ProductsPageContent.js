@@ -25,29 +25,15 @@ const fetchData = async () => {
 
 try {
 
-const productsRes = await fetch(
-"/api/store/products",
-{
-next: { revalidate: 60 }
-}
-);
+const [productsRes, categoriesRes] = await Promise.all([
+  fetch("/api/store/products"),
+  fetch("/api/categories/dropdown"),
+]);
 
-const productsData =
-await productsRes.json();
+const productsData = await productsRes.json();
+const categoriesData = await categoriesRes.json();
 
 setProducts(productsData);
-
-
-const categoriesRes = await fetch(
-"/api/categories/dropdown",
-{
-next: { revalidate: 60 }
-}
-);
-
-const categoriesData =
-await categoriesRes.json();
-
 setCategories(categoriesData);
 
 } catch (err) {
