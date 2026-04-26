@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import ProductsPageContent from "./ProductsPageContent";
 
 export default function ProductsPage() {
