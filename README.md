@@ -1,84 +1,82 @@
-# Hilaireofficial Store
+# Midnight Mart – HPU Night Ordering Website
 
-A modern full-stack cosmetics eCommerce website built with Next.js App Router, MongoDB and Zustand.
-
-Includes customer storefront + admin dashboard + order tracking system.
+Midnight Mart is a student-focused late-night ordering platform designed specially for **HPU (Himachal Pradesh University)** students. It allows hostel and campus students to place quick orders during late hours when regular shops are closed.
 
 ---
 
-## Features
+## 🚀 Project Goal
 
-### Storefront
+To provide a simple and fast digital ordering experience for HPU students so they can:
 
-- Premium responsive UI
-- Category-based product browsing
-- Product detail page with gallery
-- Add to cart system
-- WhatsApp instant order button
-- Checkout flow
-- Success confirmation page
-- Order history timeline tracking
+* Order items at midnight
+* Select quantity easily
+* Add extra notes
+* Confirm orders quickly
+* Get a clean order summary
+
+At the same time, shop owners get an **admin dashboard** to manage orders efficiently.
 
 ---
+
+## 👨‍🎓 Target Users
+
+* HPU Hostel Students
+* Late-night campus users
+* Nearby student PG residents
+
+---
+
+## ✨ Features
+
+### Student Side
+
+* Clean product browsing interface
+* Quantity selector
+* Extra notes support
+* Table / hostel reference input
+* Order summary confirmation page
+* Success page with total bill
 
 ### Admin Dashboard
 
-- Product CRUD management
-- Category management
-- Image upload system
-- Featured products control
-- Order status timeline control
-- Payment status updates
-- Delete / update orders
-- Day-wise order history view
+* View all incoming orders
+* Date & time tracking
+* Order management panel
+* CRUD product management
+* Image upload support (Cloudinary)
 
 ---
 
-## Order Tracking Timeline
+## 🛠 Tech Stack
 
-Customer can track order status:
-
-Placed
-Confirmed
-Packed
-Shipped
-Delivered
-
-Live status updates controlled from admin panel.
+* Next.js
+* MongoDB
+* NextAuth
+* Cloudinary
+* Tailwind CSS
 
 ---
 
-## Tech Stack
+## 📦 Use Case Example
 
-Next.js 14 (App Router)
+A hostel student opens Midnight Mart at 12:30 AM:
 
-MongoDB
+1. Selects snacks
+2. Adjusts quantity
+3. Adds hostel room number
+4. Confirms order
+5. Shop owner receives order instantly in dashboard
 
-Zustand
-
-TailwindCSS
-
-Framer Motion
-
-Cloudinary Image Upload
-
-JWT Authentication
+Fast. Simple. Practical.
 
 ---
 
-## Demo Admin Login
+## 🌙 Vision
 
-Email:
-
-admin@hilaire.com
-
-Password:
-
-Hilaire@2026Admin
+Midnight Mart aims to become the **default night-ordering solution for HPU campus** and later expand to other universities.
 
 ---
 
-## Author
+## 👨‍💻 Developer
 
-Built by Aman
-Frontend Developer (Next.js + MongoDB stack)
+Built by **AmanLegendDev** for real-world campus deployment and student convenience.
