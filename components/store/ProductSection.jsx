@@ -97,12 +97,12 @@ const totalItems=cart.reduce(
 
 return(
 
-<section className="bg-[#020617] text-white px-4 pt-2 pb-32">
+<section className="bg-[#020617] text-white px-4 pt-2 pb-32 mt-6">
 
 
 {/* GRID */}
 
-<div className="grid grid-cols-2 gap-4">
+<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
 
 {filtered.map(product=>(

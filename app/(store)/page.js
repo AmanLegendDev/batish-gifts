@@ -10,15 +10,15 @@ return (
 <div className="snap-y snap-mandatory h-screen overflow-y-scroll scroll-smooth">
   <Navbar/>
 
-<section className="snap-start">
+<section className="">
 <Hero />
 </section>
 
-<section id="categories" className="snap-start">
+<section id="categories" className="">
 <CategorySlider />
 </section>
 
-<section className="snap-start">
+<section className="">
 <ProductSection />
 </section>
 
