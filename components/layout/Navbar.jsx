@@ -55,7 +55,7 @@ className="h-7"
 
 <span className="text-primary text-lg font-semibold tracking-wide">
 
-HILAIREOFFICIAL
+MidNight Mart
 
 </span>
 
