@@ -1,9 +1,13 @@
 import { updateProduct } from "@/actions/productActions";
 
-export async function POST(req) {
-  const { id, data } = await req.json();
+export async function POST(req){
 
-  await updateProduct(id, data);
+const body = await req.json();
 
-  return Response.json({ success: true });
+const { id, ...data } = body;
+
+await updateProduct(id, data);
+
+return Response.json({ success:true });
+
 }

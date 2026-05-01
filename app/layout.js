@@ -1,31 +1,39 @@
 import "./globals.css";
-import { Inter, Playfair_Display } from "next/font/google";
-import Footer from "@/components/layout/Footer";
+
+import { Inter, Poppins } from "next/font/google";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
 });
 
-const playfair = Playfair_Display({
+const poppins = Poppins({
   subsets: ["latin"],
-  variable: "--font-playfair",
+  weight: ["400","600"],
+  variable: "--font-poppins",
 });
 
 export const metadata = {
-  title: "Hilaireofficial | Premium Beauty Store",
-  description: "Luxury skincare & beauty essentials",
+  title: "Midnight Mart HPU",
+  description: "Campus midnight delivery in minutes",
 };
 
 export default function RootLayout({ children }) {
+
   return (
+
     <html lang="en">
+
       <body
-        className={`${inter.variable} ${playfair.variable} bg-secondary text-text`}
+        className={`${inter.variable} ${poppins.variable} min-h-screen bg-[var(--background)] text-[var(--foreground)]`}
       >
+
         {children}
-        <Footer />
+
       </body>
+
     </html>
+
   );
+
 }

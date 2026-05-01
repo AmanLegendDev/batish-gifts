@@ -1,11 +1,11 @@
 import { deleteCategory } from "@/actions/categoryActions";
 
-export async function POST(req) {
-  const { id } = await req.json();
+export async function POST(req){
 
-  await deleteCategory(id);
+const { id } = await req.json();
 
-  return Response.json({
-    success: true,
-  });
+await deleteCategory(id);
+
+return Response.json({ success:true });
+
 }

@@ -3,150 +3,120 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-Package,
-Layers,
-ShoppingCart,
-Plus,
-Clock
+Clock,
+Truck,
+CheckCircle
 } from "lucide-react";
 
 export default function Dashboard() {
 
-const [stats, setStats] = useState({
-products: 0,
-categories: 0,
-orders: 0
+const [stats,setStats]=useState({
+
+newOrders:0,
+processingOrders:0,
+completedOrders:0
+
 });
 
 
-useEffect(() => {
+const fetchStats=async()=>{
 
-fetch("/api/admin/stats")
-.then(res => res.json())
-.then(setStats);
+const res=await fetch("/api/admin/stats");
 
-}, []);
+const data=await res.json();
+
+setStats(data);
+
+};
 
 
-return (
+/*
+REALTIME POLLING
+*/
 
-<div className="space-y-10">
+useEffect(()=>{
+
+fetchStats();
+
+const interval=setInterval(fetchStats,4000);
+
+return()=>clearInterval(interval);
+
+},[]);
+
+
+return(
+
+<div className="space-y-8">
 
 
 {/* HEADER */}
 
-<div className="flex flex-col md:flex-row md:justify-between gap-4">
-
 <div>
 
-<h1 className="text-4xl font-semibold text-primary">
+<h1 className="text-2xl font-semibold text-yellow-400">
 
-Dashboard Overview
+Order Control Panel
 
 </h1>
 
-<p className="text-neutral-500 mt-1">
+<p className="text-neutral-400">
 
-Control your store from one place
+Live campus delivery workflow
 
 </p>
 
 </div>
 
 
-<div className="flex gap-3">
+{/* MAIN ORDER CONTROL CARDS */}
 
-<ActionBtn
-link="/admin/products/create"
-text="Add Product"
-/>
-
-<ActionBtn
-link="/admin/orders"
-text="View Orders"
-/>
-
-</div>
-
-</div>
+<div className="grid md:grid-cols-3 gap-4">
 
 
-
-{/* STATS CARDS */}
-
-<div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
-
-<StatCard
-title="Products"
-value={stats.products}
-icon={<Package size={22}/>}
-link="/admin/products"
-/>
-
-
-<StatCard
-title="Categories"
-value={stats.categories}
-icon={<Layers size={22}/>}
-link="/admin/categories"
-/>
-
-
-<StatCard
-title="Orders"
-value={stats.orders}
-icon={<ShoppingCart size={22}/>}
-link="/admin/orders"
-/>
-
-
-<StatCard
-title="Order History"
-value="View"
+<OrderCard
+title="New Orders"
+value={stats.newOrders}
 icon={<Clock size={22}/>}
-link="/admin/order-history"
+link="/admin/orders?tab=new"
+/>
+
+
+<OrderCard
+title="Processing Orders"
+value={stats.processingOrders}
+icon={<Truck size={22}/>}
+link="/admin/orders?tab=processing"
+/>
+
+
+<OrderCard
+title="Completed Orders"
+value={stats.completedOrders}
+icon={<CheckCircle size={22}/>}
+link="/admin/orders?tab=completed"
 />
 
 
 </div>
 
 
+{/* SECONDARY ANALYTICS (AUTO OPTIONAL) */}
 
-{/* QUICK ACTION PANEL */}
-
-<div className="bg-white rounded-xl shadow-soft border border-borderSoft p-6">
-
-<h2 className="text-lg font-semibold text-primary mb-5">
-
-Quick Actions
-
-</h2>
+<div className="grid md:grid-cols-2 gap-4">
 
 
-<div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-
-<ActionTile
+<MiniCard
+title="Quick Add Product"
 link="/admin/products/create"
-text="Create Product"
 />
 
-<ActionTile
+
+<MiniCard
+title="Manage Categories"
 link="/admin/categories"
-text="Manage Categories"
 />
 
-<ActionTile
-link="/admin/orders"
-text="Track Orders"
-/>
-
-<ActionTile
-link="/admin/order-history"
-text="Order History"
-/>
-
-</div>
 
 </div>
 
@@ -158,36 +128,35 @@ text="Order History"
 }
 
 
-
 /*
-========================
-CLICKABLE CARD COMPONENT
-========================
+MAIN ORDER CARD
 */
 
-function StatCard({
+function OrderCard({
+
 title,
 value,
 icon,
 link
-}) {
 
-return (
+}){
+
+return(
 
 <Link
 href={link}
-className="bg-white border border-borderSoft rounded-xl shadow-soft p-6 flex justify-between items-center hover:shadow-lg hover:scale-[1.02] transition"
+className="card p-6 flex justify-between items-center hover:border-yellow-400 transition"
 >
 
 <div>
 
-<p className="text-neutral-500 text-sm">
+<p className="text-sm text-neutral-400">
 
 {title}
 
 </p>
 
-<h2 className="text-4xl font-semibold text-primary mt-2">
+<h2 className="text-4xl font-semibold mt-1">
 
 {value}
 
@@ -196,7 +165,7 @@ className="bg-white border border-borderSoft rounded-xl shadow-soft p-6 flex jus
 </div>
 
 
-<div className="w-10 h-10 flex items-center justify-center rounded-lg bg-secondary text-primary">
+<div className="text-yellow-400">
 
 {icon}
 
@@ -209,56 +178,25 @@ className="bg-white border border-borderSoft rounded-xl shadow-soft p-6 flex jus
 }
 
 
-
 /*
-========================
-BUTTON
-========================
+SECONDARY CARD
 */
 
-function ActionBtn({
-link,
-text
-}) {
+function MiniCard({
 
-return (
+title,
+link
+
+}){
+
+return(
 
 <Link
 href={link}
-className="flex items-center gap-2 bg-primary text-white px-5 py-2 rounded-lg hover:opacity-90 transition"
+className="card p-4 hover:border-yellow-400 transition text-center"
 >
 
-<Plus size={16}/>
-
-{text}
-
-</Link>
-
-);
-
-}
-
-
-
-/*
-========================
-TILES
-========================
-*/
-
-function ActionTile({
-link,
-text
-}) {
-
-return (
-
-<Link
-href={link}
-className="bg-secondary border border-borderSoft rounded-xl p-4 hover:bg-primary hover:text-white transition font-medium text-center"
->
-
-{text}
+{title}
 
 </Link>
 

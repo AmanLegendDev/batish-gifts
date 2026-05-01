@@ -1,72 +1,71 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import {
+Menu,
+X,
+Package,
+ClipboardList
+} from "lucide-react";
 
 export default function AdminLayout({ children }) {
 
-const pathname = usePathname();
-
-const [open, setOpen] = useState(false);
-
-const NavItem = ({ href, label }) => (
-
-<Link
-href={href}
-onClick={() => setOpen(false)}
-className={`px-4 py-2 rounded-lg transition
-${
-pathname === href
-? "bg-primary text-white"
-: "text-text hover:bg-secondary"
-}`}
->
-
-{label}
-
-</Link>
-
-);
+const [open,setOpen]=useState(false);
 
 return (
 
-<div className="flex min-h-screen bg-secondary">
+<div className="flex min-h-screen bg-[#020617] text-white">
+
+
+{/* OVERLAY */}
+
+{open && (
+
+<div
+className="fixed inset-0 bg-black/50 z-40 md:hidden"
+onClick={()=>setOpen(false)}
+/>
+
+)}
+
 
 
 {/* SIDEBAR */}
 
 <aside
 className={`
-
-fixed lg:static inset-y-0 left-0 w-64
-
-bg-white border-r border-borderSoft
-
-transform transition-transform duration-300
-
+fixed md:static top-0 left-0 h-full w-64
+bg-[#020617]
+border-r border-gray-800
+p-6
 z-50
+transition-transform duration-300
 
-${open ? "translate-x-0" : "-translate-x-full"}
-
-lg:translate-x-0
-
+${open ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
 `}
 >
 
 
-{/* BRAND */}
+{/* SIDEBAR LOGO */}
 
-<div className="flex items-center gap-3 px-6 py-5 border-b border-borderSoft">
+<div className="flex items-center gap-3 mb-10">
 
-<img
+<div className="w-12 h-12 rounded-full border-2 border-yellow-400 overflow-hidden">
+
+<Image
 src="/logo.png"
-className="h-8 object-contain"
+alt="logo"
+width={48}
+height={48}
 />
 
-<span className="font-semibold text-primary text-lg tracking-wide">
+</div>
 
-Hilaireofficial
+<span className="text-yellow-400 font-semibold">
+
+Midnight Admin
 
 </span>
 
@@ -74,28 +73,48 @@ Hilaireofficial
 
 
 
-{/* NAVIGATION */}
+{/* NAV LINKS */}
 
-<nav className="flex flex-col gap-2 p-4">
-
-<NavItem href="/admin/dashboard" label="Dashboard" />
-
-<NavItem href="/admin/categories" label="Categories" />
-
-<NavItem href="/admin/products" label="Products" />
-
-<NavItem href="/admin/orders" label="Orders" />
+<nav className="flex flex-col gap-4 text-sm">
 
 
-<button
+<Link href="/admin/products">
 
-className="mt-6 px-4 py-2 rounded-lg text-left text-red-500 hover:bg-secondary transition"
+<div className="flex items-center gap-3 hover:text-yellow-400">
 
->
+<Package size={18}/>
 
-Logout
+Products
 
-</button>
+</div>
+
+</Link>
+
+
+<Link href="/admin/orders">
+
+<div className="flex items-center gap-3 hover:text-yellow-400">
+
+<ClipboardList size={18}/>
+
+Orders
+
+</div>
+
+</Link>
+
+<Link href="/admin/categories">
+
+<div className="flex items-center gap-3 hover:text-yellow-400">
+
+<Package size={18}/>
+
+Categories
+
+</div>
+
+</Link>
+
 
 </nav>
 
@@ -103,51 +122,52 @@ Logout
 
 
 
-{/* MAIN AREA */}
+{/* MAIN SECTION */}
 
 <div className="flex-1 flex flex-col">
 
 
-{/* HEADER */}
+{/* NAVBAR */}
 
-<header className="bg-white border-b border-borderSoft px-6 py-4 flex items-center justify-between">
-
-
-{/* HAMBURGER */}
-
-<button
-
-onClick={() => setOpen(!open)}
-
-className="lg:hidden text-primary text-2xl"
-
->
-
-☰
-
-</button>
+<header className="h-16 flex items-center justify-between px-4 md:px-6 border-b border-gray-800">
 
 
-
-{/* HEADER BRAND */}
+{/* LEFT SIDE LOGO */}
 
 <div className="flex items-center gap-3">
 
-<img
+<div className="w-9 h-9 rounded-full border border-yellow-400 overflow-hidden">
 
+<Image
 src="/logo.png"
-
-className="h-7"
-
+alt="logo"
+width={36}
+height={36}
 />
 
-<span className="font-semibold text-primary tracking-wide">
+</div>
 
-Admin Dashboard
+<span className="text-yellow-400 font-semibold text-sm md:text-base">
+
+Midnight Mart
 
 </span>
 
 </div>
+
+
+
+{/* RIGHT SIDE BUTTON */}
+
+<button
+onClick={()=>setOpen(!open)}
+className="md:hidden"
+>
+
+{open ? <X size={22}/> : <Menu size={22}/>}
+
+</button>
+
 
 </header>
 
@@ -155,7 +175,7 @@ Admin Dashboard
 
 {/* PAGE CONTENT */}
 
-<main className="p-6 flex-1">
+<main className="p-4 md:p-6">
 
 {children}
 
@@ -163,7 +183,6 @@ Admin Dashboard
 
 
 </div>
-
 
 </div>
 

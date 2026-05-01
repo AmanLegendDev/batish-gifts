@@ -1,81 +1,123 @@
 import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
-{
-title: {
-type: String,
-required: true
-},
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
-slug: {
-type: String,
-required: true,
-unique: true,
-index: true
-},
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      index: true,
+      trim: true,
+    },
 
-shortDescription: {
-type: String
-},
+    description: {
+      type: String,
+      default: "",
+    },
 
-description: {
-type: String
-},
+    actualPrice: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
 
-benefits: [
-{
-type: String
-}
-],
+    sellingPrice: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
 
-ingredients: {
-type: String
-},
+    profitPerItem: {
+      type: Number,
+      default: 0,
+    },
 
-howToUse: {
-type: String
-},
+    image: {
+      type: String,
+      required: true,
+    },
 
-size: {
-type: String
-},
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+      index: true,
+    },
 
-price: {
-type: Number,
-required: true
-},
+    isVisible: {
+      type: Boolean,
+      default: true,
+      index: true,
+    },
 
-images: [
-{
-type: String
-}
-],
+    isFeatured: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
 
-category: {
-type: mongoose.Schema.Types.ObjectId,
-ref: "Category"
-},
-
-stock: {
-type: Number,
-default: 0
-},
-
-isFeatured: {
-type: Boolean,
-default: false
-},
-
-isVisible: {
-type: Boolean,
-default: true
-}
-
-},
-{
-timestamps: true
-}
+    campus: {
+      type: String,
+      default: "HPU",
+      index: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
 );
 
+
+/*
+AUTO PROFIT CALCULATION
+sellingPrice - actualPrice
+*/
+
+productSchema.pre("save", function () {
+  this.profitPerItem =
+    this.sellingPrice - this.actualPrice;
+});
+
+
+/*
+AUTO PROFIT UPDATE ON EDIT
+*/
+
+productSchema.pre("findOneAndUpdate", function () {
+
+const update = this.getUpdate();
+
+if (
+update.actualPrice !== undefined ||
+update.sellingPrice !== undefined
+) {
+
+const actual =
+update.actualPrice ??
+this._update.actualPrice;
+
+const selling =
+update.sellingPrice ??
+this._update.sellingPrice;
+
+if (actual !== undefined && selling !== undefined) {
+
+update.profitPerItem =
+selling - actual;
+
+}
+
+}
+
+});
+
+
 export default mongoose.models.Product ||
-mongoose.model("Product", productSchema);
+  mongoose.model("Product", productSchema);

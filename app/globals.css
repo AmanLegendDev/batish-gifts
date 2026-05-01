@@ -1,17 +1,151 @@
 @import "tailwindcss";
 
-@theme {
-  --color-primary: #1F4D3A;
-  --color-secondary: #F7F5F2;
-  --color-accent: #C7A17A;
-  --color-text: #222222;
+/*
+========================
+MIDNIGHT MART THEME
+========================
+*/
+
+:root {
+
+  --background: #05070d;
+  --foreground: #e5e7eb;
+
+  --card: #0b0f19;
+  --border: #1f2937;
+
+  --primary: #facc15; /* neon yellow */
+  --primary-soft: rgba(250,204,21,0.15);
+
 }
 
-body {
-font-family: var(--font-inter);
-background: var(--background);
-color: var(--foreground);
+
+/*
+========================
+BASE RESET
+========================
+*/
+
+html, body {
+
+  background: var(--background);
+  color: var(--foreground);
+
+  font-family: var(--font-inter);
+
 }
+
+
+/*
+HEADINGS
+*/
+
 h1,h2,h3,h4 {
-font-family: var(--font-playfair);
+
+  font-family: var(--font-poppins);
+
+}
+
+
+/*
+CARD STYLE (GLOBAL)
+*/
+
+.card {
+
+  background: var(--card);
+
+  border: 1px solid var(--border);
+
+  border-radius: 18px;
+
+}
+
+
+/*
+INPUT STYLE
+*/
+
+.input-style {
+
+  width: 100%;
+
+  padding: 12px;
+
+  border-radius: 14px;
+
+  background: #020617;
+
+  border: 1px solid #1f2937;
+
+  color: white;
+
+  transition: 0.2s ease;
+
+}
+
+
+.input-style:focus {
+
+  outline: none;
+
+  border-color: var(--primary);
+
+  box-shadow: 0 0 12px rgba(250,204,21,0.6);
+
+}
+
+
+/*
+UPLOAD BOX
+*/
+
+.upload-box {
+
+  border: 1px dashed #374151;
+
+  padding: 12px;
+
+  border-radius: 14px;
+
+  cursor: pointer;
+
+  display: flex;
+
+  gap: 8px;
+
+  align-items: center;
+
+  color: #9ca3af;
+
+}
+
+
+/*
+BUTTON PRIMARY
+*/
+
+.btn-primary {
+
+  width: 100%;
+
+  background: var(--primary);
+
+  color: black;
+
+  font-weight: 600;
+
+  padding: 12px;
+
+  border-radius: 14px;
+
+  transition: 0.2s ease;
+
+}
+
+
+.btn-primary:hover {
+
+  transform: scale(1.02);
+
 }

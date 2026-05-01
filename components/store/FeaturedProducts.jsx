@@ -1,5 +1,6 @@
 import ProductCard from "./ProductCard";
 import { getFeaturedProducts } from "@/actions/productActions";
+
 import Link from "next/link";
 
 export default async function FeaturedProducts() {

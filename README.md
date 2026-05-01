@@ -79,4 +79,4 @@ Midnight Mart aims to become the **default night-ordering solution for HPU campu
 
 ## 👨‍💻 Developer
 
-Built by **AmanLegendDev** for real-world campus deployment and student convenience.
+Built by **Aman Digital Solutions** for real-world campus deployment and student convenience.

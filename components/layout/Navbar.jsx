@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import {
 Menu,
@@ -19,45 +20,58 @@ import {
 useCartStore
 } from "@/store/cartStore";
 
-
 export default function Navbar() {
 
-const [open, setOpen] = useState(false);
+const [open,setOpen]=useState(false);
 
 const cart = useCartStore(
-state => state.cart
+state=>state.cart
 );
 
 const totalItems = cart.reduce(
-(acc, item) => acc + item.qty,
+(acc,item)=>acc+item.qty,
 0
 );
 
 
 return (
 
-<nav className="sticky top-0 z-50 bg-secondary/80 backdrop-blur border-b border-neutral-200">
-
-<div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+<nav className="sticky top-0 z-50 backdrop-blur-xl bg-[#020617]/90 border-b border-white/10 shadow-lg">
 
 
-{/* LOGO */}
+<div className="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
+
+
+{/* LEFT SIDE LOGO */}
 
 <Link
 href="/"
-className="flex items-center gap-2"
+className="flex items-center gap-3 group"
 >
 
-<img
+<motion.div
+whileHover={{scale:1.05}}
+className="relative w-12 h-12 rounded-full   overflow-hidden shadow-md"
+>
+
+<Image
 src="/logo.png"
-className="h-7"
+fill
+alt="logo"
+className="object-cover"
 />
 
-<span className="text-primary text-lg font-semibold tracking-wide">
+</motion.div>
 
-MidNight Mart
 
-</span>
+<motion.span
+whileHover={{x:2}}
+className="text-yellow-400 text-lg font-semibold tracking-wide"
+>
+
+Midnight Mart
+
+</motion.span>
 
 </Link>
 
@@ -65,32 +79,21 @@ MidNight Mart
 
 {/* DESKTOP MENU */}
 
-<div className="hidden md:flex gap-8 items-center text-sm font-medium">
+<div className="hidden md:flex items-center gap-7 text-sm font-medium text-neutral-300">
 
 
-<Link
+<NavItem
 href="/products"
-className="flex items-center gap-1 hover:text-primary transition"
->
-    <Package size={18} />
-
-Products
-
-</Link>
+icon={<Package size={18}/>}
+label="Products"
+/>
 
 
-{/* ORDER HISTORY BUTTON */}
-
-<Link
+<NavItem
 href="/orders"
-className="flex items-center gap-1 hover:text-primary transition"
->
-
-<ClipboardList size={18} />
-
-Orders
-
-</Link>
+icon={<ClipboardList size={18}/>}
+label="Orders"
+/>
 
 
 
@@ -98,22 +101,35 @@ Orders
 
 <Link
 href="/cart"
-className="relative hover:text-primary transition"
+className="relative group"
 >
 
-<ShoppingCart size={20} />
+<motion.div
+whileHover={{scale:1.1}}
+className="text-neutral-300 group-hover:text-yellow-400 transition"
+>
 
-{totalItems > 0 && (
+<ShoppingCart size={20}/>
 
-<span className="absolute -top-2 -right-2 bg-primary text-white text-xs px-1.5 rounded-full">
+</motion.div>
+
+
+{totalItems>0 &&(
+
+<motion.span
+initial={{scale:0}}
+animate={{scale:1}}
+className="absolute -top-2 -right-2 bg-yellow-400 text-black text-[10px] px-1.5 rounded-full font-semibold"
+>
 
 {totalItems}
 
-</span>
+</motion.span>
 
 )}
 
 </Link>
+
 
 </div>
 
@@ -122,11 +138,11 @@ className="relative hover:text-primary transition"
 {/* MOBILE BUTTON */}
 
 <button
-onClick={() => setOpen(!open)}
-className="md:hidden"
+onClick={()=>setOpen(!open)}
+className="md:hidden text-yellow-400"
 >
 
-{open ? <X size={22}/> : <Menu size={22}/>}
+{open ? <X size={24}/> : <Menu size={24}/>}
 
 </button>
 
@@ -139,74 +155,44 @@ className="md:hidden"
 
 <AnimatePresence>
 
-{open && (
+{open &&(
 
 <motion.div
 
-initial={{ opacity: 0, y: -20 }}
+initial={{opacity:0,y:-20}}
+animate={{opacity:1,y:0}}
+exit={{opacity:0,y:-20}}
 
-animate={{ opacity: 1, y: 0 }}
+transition={{duration:0.25}}
 
-exit={{ opacity: 0, y: -20 }}
-
-transition={{ duration: 0.2 }}
-
-className="md:hidden bg-white border-t"
-
+className="md:hidden bg-[#020617] border-t border-white/10 backdrop-blur-xl"
 >
 
-<div className="flex flex-col px-6 py-4 gap-4">
+<div className="flex flex-col px-6 py-5 gap-5 text-neutral-300">
 
 
-<Link
-href="/products" prefetch
-onClick={() => setOpen(false)}
-className="flex items-center gap-2 text-sm font-medium"
->
-    <Package size={18} />
-
-Products
-
-</Link>
+<MobileNavItem
+href="/products"
+icon={<Package size={18}/>}
+label="Products"
+close={()=>setOpen(false)}
+/>
 
 
-{/* MOBILE ORDER HISTORY */}
-
-<Link
+<MobileNavItem
 href="/orders"
-onClick={() => setOpen(false)}
-className="flex items-center gap-2 text-sm font-medium"
->
-
-<ClipboardList size={18}/>
-
-Orders
-
-</Link>
+icon={<ClipboardList size={18}/>}
+label="Orders"
+close={()=>setOpen(false)}
+/>
 
 
-
-<Link
+<MobileNavItem
 href="/cart"
-onClick={() => setOpen(false)}
-className="flex items-center gap-2 text-sm font-medium"
->
-
-<ShoppingCart size={18}/>
-
-Cart
-
-{totalItems > 0 && (
-
-<span className="bg-primary text-white text-xs px-2 rounded-full">
-
-{totalItems}
-
-</span>
-
-)}
-
-</Link>
+icon={<ShoppingCart size={18}/>}
+label={`Cart (${totalItems})`}
+close={()=>setOpen(false)}
+/>
 
 
 </div>
@@ -218,6 +204,69 @@ Cart
 </AnimatePresence>
 
 </nav>
+
+);
+
+}
+
+
+
+/*
+DESKTOP NAV ITEM
+*/
+
+function NavItem({href,icon,label}){
+
+return(
+
+<Link
+href={href}
+className="flex items-center gap-2 hover:text-yellow-400 transition relative group"
+>
+
+{icon}
+
+<span>{label}</span>
+
+
+<motion.div
+
+layoutId="navUnderline"
+
+className="absolute left-0 -bottom-1 h-[2px] w-0 bg-yellow-400 group-hover:w-full transition-all"
+
+/>
+
+</Link>
+
+);
+
+}
+
+
+
+/*
+MOBILE NAV ITEM
+*/
+
+function MobileNavItem({href,icon,label,close}){
+
+return(
+
+<Link
+href={href}
+
+onClick={close}
+
+className="flex items-center gap-3 text-sm hover:text-yellow-400 transition"
+
+>
+
+{icon}
+
+{label}
+
+</Link>
 
 );
 

@@ -1,302 +1,295 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { Upload, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function EditProductPage() {
 
 const { id } = useParams();
-const router = useRouter();
 
-const [form, setForm] = useState(null);
-const [categories, setCategories] = useState([]);
-const [images, setImages] = useState([]);
-const [uploading, setUploading] = useState(false);
+const [form,setForm]=useState({
 
-
-/*
-====================
-FETCH PRODUCT DATA
-====================
-*/
-
-useEffect(() => {
-
-fetch(`/api/products/${id}`)
-.then(res => res.json())
-.then(data => {
-
-setForm(data);
-
-setImages(data.images || []);
+name:"",
+description:"",
+actualPrice:"",
+sellingPrice:"",
+category:"",
+isFeatured:false,
+isVisible:true
 
 });
-
-fetch("/api/categories/dropdown")
-.then(res => res.json())
-.then(setCategories);
-
-}, [id]);
+const [categories,setCategories]=useState([]);
+const [image,setImage]=useState("");
+const [loading,setLoading]=useState(true);
+const [showPopup,setShowPopup]=useState(false);
 
 
 /*
-====================
-UPLOAD IMAGE
-====================
+FETCH PRODUCT DATA
 */
 
-const handleImageUpload = async e => {
+useEffect(()=>{
+
+async function loadData(){
+
+const productRes = await fetch(`/api/products/${id}`);
+const product = await productRes.json();
+
+setForm({
+
+name: product.name || "",
+description: product.description || "",
+actualPrice: product.actualPrice || "",
+sellingPrice: product.sellingPrice || "",
+category: product.category?._id || "",
+isFeatured: product.isFeatured || false,
+isVisible: product.isVisible ?? true
+
+});
+setImage(product.image);
+
+const catRes = await fetch("/api/categories/dropdown");
+const catData = await catRes.json();
+
+setCategories(catData);
+
+setLoading(false);
+
+}
+
+loadData();
+
+},[id]);
+
+
+/*
+LIVE PROFIT PREVIEW
+*/
+
+const profitPreview =
+
+form?.actualPrice && form?.sellingPrice
+
+? form.sellingPrice - form.actualPrice
+
+: 0;
+
+
+/*
+UPLOAD IMAGE
+*/
+
+const handleUpload = async(e)=>{
 
 const file = e.target.files[0];
 
-if (!file) return;
+if(!file) return;
 
-setUploading(true);
+const fd = new FormData();
 
-const formData = new FormData();
+fd.append("file",file);
 
-formData.append("file", file);
+const res = await fetch("/api/upload",{
 
-const res = await fetch("/api/upload", {
-
-method: "POST",
-
-body: formData
+method:"POST",
+body:fd
 
 });
 
 const data = await res.json();
 
-if (data.url) {
+if(data?.url){
 
-setImages(prev => [...prev, data.url]);
+setImage(data.url);
 
 }
 
-setUploading(false);
-
 };
 
 
 /*
-====================
 REMOVE IMAGE
-====================
 */
 
-const removeImage = index => {
+const removeImage = ()=>{
 
-setImages(prev =>
-prev.filter((_, i) => i !== index)
-);
+setImage("");
 
 };
 
 
 /*
-====================
-SUBMIT UPDATE
-====================
+UPDATE PRODUCT
 */
 
-const handleSubmit = async e => {
+const handleUpdate = async(e)=>{
 
 e.preventDefault();
 
-await fetch("/api/products/update", {
+await fetch("/api/products/update",{
 
-method: "POST",
+method:"POST",
 
-headers: {
-
-"Content-Type": "application/json"
-
+headers:{
+"Content-Type":"application/json"
 },
 
-body: JSON.stringify({
+body:JSON.stringify({
 
 id,
-
-data: {
-
 ...form,
-
-images
-
-}
+image
 
 })
 
 });
 
-/*
-AUTO REDIRECT
-*/
+setShowPopup(true);
 
-router.push("/admin/products");
+setTimeout(()=>{
+
+setShowPopup(false);
+
+},1500);
 
 };
 
 
+if(loading){
 
-if (!form) return null;
+return <p className="text-center text-neutral-400">Loading...</p>;
 
-
-
-return (
-
-<div className="max-w-3xl space-y-8">
+}
 
 
-{/* HEADER */}
+return(
 
-<div>
+<div className="max-w-md mx-auto space-y-6 pb-20">
 
-<h1 className="text-3xl font-semibold text-primary">
+
+{/* SUCCESS POPUP */}
+
+<AnimatePresence>
+
+{showPopup &&(
+
+<motion.div
+
+initial={{opacity:0,scale:0.9}}
+animate={{opacity:1,scale:1}}
+exit={{opacity:0,scale:0.9}}
+
+className="fixed inset-0 flex items-center justify-center bg-black/60 z-50"
+
+>
+
+<div className="bg-neutral-900 text-white px-6 py-4 rounded-xl">
+
+Product Updated ✅
+
+</div>
+
+</motion.div>
+
+)}
+
+</AnimatePresence>
+
+
+<h1 className="text-2xl font-semibold text-yellow-400">
 
 Edit Product
 
 </h1>
 
-<p className="text-neutral-500">
-
-Update full product information
-
-</p>
-
-</div>
-
-
 
 <form
 
-onSubmit={handleSubmit}
+onSubmit={handleUpdate}
 
-className="bg-white rounded-xl shadow-soft border border-borderSoft p-6 space-y-6"
+className="space-y-4 bg-neutral-900 p-6 rounded-2xl border border-neutral-800 shadow-xl"
 
 >
 
 
-{/* TITLE */}
-
 <InputField
-label="Title"
-value={form.title}
-onChange={v => setForm({...form,title:v})}
+
+placeholder="Product Name"
+
+value={form.name}
+
+onChange={v=>setForm({...form,name:v})}
+
 />
 
-
-{/* SHORT DESCRIPTION */}
-
-<InputField
-label="Short Description"
-value={form.shortDescription || ""}
-onChange={v =>
-setForm({...form,shortDescription:v})
-}
-/>
-
-
-{/* FULL DESCRIPTION */}
 
 <TextAreaField
-label="Full Description"
-value={form.description || ""}
-onChange={v =>
-setForm({...form,description:v})
-}
+
+placeholder="Description"
+
+value={form.description}
+
+onChange={v=>setForm({...form,description:v})}
+
 />
 
-
-{/* BENEFITS */}
-
-<TextAreaField
-label="Benefits (comma separated)"
-value={form.benefits?.join(",") || ""}
-onChange={v =>
-setForm({
-...form,
-benefits: v.split(",")
-})
-}
-/>
-
-
-{/* INGREDIENTS */}
-
-<TextAreaField
-label="Ingredients"
-value={form.ingredients || ""}
-onChange={v =>
-setForm({...form,ingredients:v})
-}
-/>
-
-
-{/* HOW TO USE */}
-
-<TextAreaField
-label="How To Use"
-value={form.howToUse || ""}
-onChange={v =>
-setForm({...form,howToUse:v})
-}
-/>
-
-
-{/* SIZE */}
 
 <InputField
-label="Size"
-value={form.size || ""}
-onChange={v =>
-setForm({...form,size:v})
-}
-/>
 
+placeholder="Actual Price"
 
-{/* PRICE */}
-
-<InputField
-label="Price"
 type="number"
-value={form.price}
-onChange={v =>
-setForm({...form,price:v})
-}
+
+value={form.actualPrice}
+
+onChange={v=>setForm({...form,actualPrice:Number(v)})}
+
 />
 
 
-{/* CATEGORY */}
+<InputField
+
+placeholder="Selling Price"
+
+type="number"
+
+value={form.sellingPrice}
+
+onChange={v=>setForm({...form,sellingPrice:Number(v)})}
+
+/>
+
+
+{/* PROFIT PREVIEW */}
+
+<div className="text-yellow-400 text-sm">
+
+Profit per item: ₹ {profitPreview}
+
+</div>
+
 
 <select
 
 value={form.category}
 
-onChange={e =>
-setForm({
+onChange={e=>setForm({...form,category:e.target.value})}
 
-...form,
-
-category:e.target.value
-
-})
-
-}
-
-className="border border-borderSoft p-3 w-full rounded-lg"
+className="input-style"
 
 >
 
-{categories.map(cat => (
+<option value="">
 
-<option
+Select Category
 
-key={cat._id}
+</option>
 
-value={cat._id}
+{categories.map(cat=>(
 
->
+<option key={cat._id} value={cat._id}>
 
 {cat.name}
 
@@ -307,49 +300,34 @@ value={cat._id}
 </select>
 
 
+<label className="upload-box">
 
-{/* IMAGE UPLOAD */}
+<Upload size={18}/>
 
-<div>
-
-<label className="text-sm font-medium">
-
-Product Images
-
-</label>
+Replace Image
 
 <input
 
 type="file"
 
-onChange={handleImageUpload}
+hidden
 
-className="mt-2"
+onChange={handleUpload}
 
 />
 
-{uploading && (
-
-<p className="text-sm text-neutral-400">
-
-Uploading...
-
-</p>
-
-)}
+</label>
 
 
-<div className="flex gap-3 flex-wrap mt-4">
+{image &&(
 
-{images.map((img,index)=>(
-
-<div key={index} className="relative">
+<div className="relative w-24">
 
 <img
 
-src={img}
+src={image}
 
-className="w-24 h-24 object-cover rounded-lg border"
+className="rounded-lg"
 
 />
 
@@ -357,54 +335,56 @@ className="w-24 h-24 object-cover rounded-lg border"
 
 type="button"
 
-onClick={()=>removeImage(index)}
+onClick={removeImage}
 
-className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded"
+className="absolute -top-2 -right-2 bg-red-500 p-1 rounded-full"
 
 >
 
-×
+<X size={14}/>
 
 </button>
 
 </div>
 
-))}
-
-</div>
-
-</div>
+)}
 
 
+<label className="flex gap-2 text-neutral-300">
 
-{/* FEATURED */}
+<input
 
-<CheckboxField
-label="Featured Product"
-value={form.isFeatured}
-onChange={v =>
-setForm({...form,isFeatured:v})
-}
+type="checkbox"
+
+checked={form.isFeatured}
+
+onChange={e=>setForm({...form,isFeatured:e.target.checked})}
+
 />
 
+Featured
 
-{/* VISIBILITY */}
+</label>
 
-<CheckboxField
-label="Visible on Website"
-value={form.isVisible}
-onChange={v =>
-setForm({...form,isVisible:v})
-}
+
+<label className="flex gap-2 text-neutral-300">
+
+<input
+
+type="checkbox"
+
+checked={form.isVisible}
+
+onChange={e=>setForm({...form,isVisible:e.target.checked})}
+
 />
 
+Visible
+
+</label>
 
 
-<button
-
-className="bg-primary text-white px-6 py-3 rounded-lg hover:opacity-90 transition"
-
->
+<button className="submit-btn">
 
 Update Product
 
@@ -420,92 +400,52 @@ Update Product
 }
 
 
-
 /*
-====================
-REUSABLE COMPONENTS
-====================
+INPUT FIELD
 */
 
-function InputField({label,value,onChange,type="text"}){
+function InputField({placeholder,value,onChange,type="text"}){
 
 return(
-
-<div>
-
-<label className="text-sm font-medium">
-
-{label}
-
-</label>
 
 <input
 
 type={type}
 
+placeholder={placeholder}
+
 value={value}
 
 onChange={e=>onChange(e.target.value)}
 
-className="border border-borderSoft p-3 w-full rounded-lg mt-1"
+className="input-style"
 
 />
-
-</div>
 
 );
 
 }
 
 
-function TextAreaField({label,value,onChange}){
+/*
+TEXTAREA FIELD
+*/
+
+function TextAreaField({placeholder,value,onChange}){
 
 return(
-
-<div>
-
-<label className="text-sm font-medium">
-
-{label}
-
-</label>
 
 <textarea
 
+placeholder={placeholder}
+
 value={value}
 
 onChange={e=>onChange(e.target.value)}
 
-className="border border-borderSoft p-3 w-full rounded-lg mt-1"
+className="input-style"
 
 />
-
-</div>
-
-);
-
-}
-
-
-function CheckboxField({label,value,onChange}){
-
-return(
-
-<label className="flex gap-2 items-center">
-
-<input
-
-type="checkbox"
-
-checked={value}
-
-onChange={e=>onChange(e.target.checked)}
-
-/>
-
-{label}
-
-</label>
 
 );
 

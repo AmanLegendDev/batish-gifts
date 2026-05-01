@@ -6,8 +6,9 @@ import slugify from "slugify";
 import mongoose from "mongoose";
 import Category from "@/models/Category";
 
-
-// CREATE PRODUCT
+/*
+CREATE PRODUCT
+*/
 
 export async function createProduct(data) {
 
@@ -15,127 +16,187 @@ try {
 
 await connectDB();
 
-const slug = slugify(data.title, {
-lower: true
-});
+console.log("PRODUCT DATA RECEIVED:", data);
 
-await Product.create({
+if(!data.image){
+return { error:"Image required" };
+}
 
-title: data.title,
+if(!data.category){
+return { error:"Category required" };
+}
 
+const slug =
+slugify(data.name,{ lower:true }) +
+"-" +
+Date.now();
+
+const product = await Product.create({
+
+name:data.name,
 slug,
-
-shortDescription: data.shortDescription,
-
-description: data.description,
-
-benefits: data.benefits,
-
-ingredients: data.ingredients,
-
-howToUse: data.howToUse,
-
-size: data.size,
-
-price: data.price,
-
-images: data.images,
-
-category: data.category,
-
-stock: data.stock,
-
-isFeatured: data.isFeatured,
-
-isVisible: data.isVisible
+description:data.description || "",
+actualPrice:Number(data.actualPrice),
+sellingPrice:Number(data.sellingPrice),
+image:data.image,
+category:data.category,
+isFeatured:data.isFeatured ?? false,
+isVisible:data.isVisible ?? true
 
 });
 
-return { success: true };
+console.log("PRODUCT CREATED:", product);
 
-} catch (err) {
+return { success:true };
 
-console.log(err);
+} catch(err){
 
-return { error: "Server error" };
+console.log("CREATE ERROR:", err);
+
+return { error:"Server error" };
 
 }
 
 }
 
+/*
+GET ALL PRODUCTS
+*/
 
-// GET FEATURED PRODUCTS (homepage ke liye)
+export async function getProducts(){
+
+await connectDB();
+
+return Product.find()
+.select(
+"name description sellingPrice actualPrice profitPerItem image category isVisible isFeatured"
+)
+
+.populate("category","name")
+
+.sort({ createdAt:-1 })
+
+.lean();
+
+}
+
+
+/*
+DELETE PRODUCT
+*/
+
+export async function deleteProduct(id){
+
+await connectDB();
+
+await Product.findByIdAndDelete(id);
+
+return { success:true };
+
+}
+
+
+/*
+TOGGLE FEATURED / VISIBILITY
+*/
+
+export async function toggleProductField(
+id,
+field,
+value
+){
+
+await connectDB();
+
+await Product.findByIdAndUpdate(id,{
+[field]:value
+});
+
+return { success:true };
+
+}
+
+
+/*
+GET SINGLE PRODUCT
+*/
+
+export async function getSingleProduct(id){
+
+await connectDB();
+
+if(!mongoose.Types.ObjectId.isValid(id)){
+return null;
+}
+
+return Product.findById(id)
+
+.populate("category","name")
+
+.lean();
+
+}
+
+
+/*
+UPDATE PRODUCT
+*/
+
+export async function updateProduct(id,data){
+
+await connectDB();
+
+await Product.findByIdAndUpdate(
+
+id,
+
+{
+
+name:data.name,
+
+description:data.description,
+
+actualPrice:data.actualPrice,
+
+sellingPrice:data.sellingPrice,
+
+image:data.image,
+
+category:data.category,
+
+isFeatured:data.isFeatured,
+
+isVisible:data.isVisible
+
+},
+
+{ new:true }
+
+);
+
+return { success:true };
+
+}
+
+/*
+GET FEATURED PRODUCTS
+*/
 
 export async function getFeaturedProducts() {
 
-  await connectDB();
+await connectDB();
 
-  return Product.find({
-    isFeatured: true,
-    isVisible: true,
-  })
-  .select("title price slug images")
-  .limit(4)
-  .lean();
+return Product.find({
 
-}
+isFeatured: true,
+isVisible: true
 
-export async function getProducts() {
+})
 
-  await connectDB();
+.select("name sellingPrice image slug")
 
-  return Product.find()
-    .select("title price slug shortDescription images category isVisible isFeatured stock")
-    .populate("category", "name")
-    .sort({ createdAt: -1 })
-    .lean();
+.limit(6)
 
-}
+.lean();
 
-export async function deleteProduct(id) {
-  await connectDB();
-
-  await Product.findByIdAndDelete(id);
-
-  return { success: true };
-}
-
-export async function toggleProductField(
-  id,
-  field,
-  value
-) {
-  await connectDB();
-
-  await Product.findByIdAndUpdate(id, {
-    [field]: value,
-  });
-
-  return { success: true };
-}
-
-
-
-export async function getSingleProduct(id) {
-
-  await connectDB();
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return null;
-  }
-
-  return Product.findById(id)
-    .populate("category", "name")
-    .lean();
-
-}
-
-export async function updateProduct(id, data) {
-  await connectDB();
-
-  await Product.findByIdAndUpdate(id, data, {
-    new: true,
-  });
-
-  return { success: true };
 }

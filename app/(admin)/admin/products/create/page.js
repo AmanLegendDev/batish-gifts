@@ -1,76 +1,82 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { X, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function ProductsPage() {
 
-const [categories, setCategories] = useState([]);
-const [images, setImages] = useState([]);
-const [uploading, setUploading] = useState(false);
-
-const [showPopup, setShowPopup] = useState(false);
-
 const emptyForm = {
-title: "",
-shortDescription: "",
+name: "",
 description: "",
-benefits: "",
-ingredients: "",
-howToUse: "",
-size: "",
-price: "",
+actualPrice: "",
+sellingPrice: "",
 category: "",
 isFeatured: false,
 isVisible: true
 };
 
-const [form, setForm] = useState(emptyForm);
+const [form,setForm]=useState(emptyForm);
+const [categories,setCategories]=useState([]);
+const [image,setImage]=useState("");
+const [uploading,setUploading]=useState(false);
+const [showPopup,setShowPopup]=useState(false);
 
 
 /*
-====================
 FETCH CATEGORIES
-====================
 */
 
-useEffect(() => {
+useEffect(()=>{
 
 fetch("/api/categories/dropdown")
-.then(res => res.json())
+.then(res=>res.json())
 .then(setCategories);
 
-}, []);
+},[]);
 
 
 /*
-====================
-IMAGE UPLOAD
-====================
+LIVE PROFIT CALCULATION
 */
 
-const handleImageUpload = async e => {
+const profitPreview =
+
+form.actualPrice && form.sellingPrice
+
+? form.sellingPrice - form.actualPrice
+
+: 0;
+
+
+/*
+UPLOAD IMAGE
+*/
+
+const handleUpload = async(e)=>{
 
 const file = e.target.files[0];
 
-if (!file) return;
+if(!file) return;
 
 setUploading(true);
 
-const formData = new FormData();
+const fd = new FormData();
 
-formData.append("file", file);
+fd.append("file",file);
 
-const res = await fetch("/api/upload", {
-method: "POST",
-body: formData
+const res = await fetch("/api/upload",{
+
+method:"POST",
+body:fd
+
 });
 
 const data = await res.json();
 
-if (data?.url) {
+if(data?.url){
 
-setImages(prev => [...prev, data.url]);
+setImage(data.url);
 
 }
 
@@ -80,94 +86,88 @@ setUploading(false);
 
 
 /*
-====================
-SUBMIT PRODUCT
-====================
+REMOVE IMAGE
 */
 
-const handleSubmit = async e => {
+const removeImage = ()=>{
 
-e.preventDefault();
-
-await fetch("/api/products/create", {
-
-method: "POST",
-
-headers: {
-"Content-Type": "application/json"
-},
-
-body: JSON.stringify({
-...form,
-images
-})
-
-});
-
-
-/*
-SUCCESS POPUP SHOW
-*/
-
-setShowPopup(true);
-
-
-/*
-RESET FORM
-*/
-
-setForm(emptyForm);
-setImages([]);
-
-
-/*
-AUTO CLOSE POPUP
-*/
-
-setTimeout(() => {
-
-setShowPopup(false);
-
-}, 2000);
+setImage("");
 
 };
 
 
+/*
+SUBMIT PRODUCT
+*/
 
-return (
+const handleSubmit = async(e)=>{
 
-<div className="max-w-3xl space-y-6 relative">
+e.preventDefault();
+
+if(!form.name || !form.actualPrice || !form.sellingPrice || !form.category){
+
+alert("Fill all required fields");
+
+return;
+
+}
+
+await fetch("/api/products/create",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+...form,
+image
+
+})
+
+});
+
+setShowPopup(true);
+
+setForm(emptyForm);
+
+setImage("");
+
+setTimeout(()=>{
+
+setShowPopup(false);
+
+},1500);
+
+};
+
+
+return(
+
+<div className="max-w-md mx-auto space-y-6 pb-20">
 
 
 {/* SUCCESS POPUP */}
 
 <AnimatePresence>
 
-{showPopup && (
+{showPopup &&(
 
 <motion.div
 
-initial={{ opacity: 0, scale: 0.9 }}
-animate={{ opacity: 1, scale: 1 }}
-exit={{ opacity: 0, scale: 0.9 }}
+initial={{opacity:0,scale:0.9}}
+animate={{opacity:1,scale:1}}
+exit={{opacity:0,scale:0.9}}
 
-className="fixed inset-0 flex items-center justify-center bg-black/40 z-50"
+className="fixed inset-0 flex items-center justify-center bg-black/60 z-50"
 
 >
 
-<div className="bg-white rounded-xl shadow-soft px-8 py-6 text-center">
+<div className="bg-neutral-900 text-white px-6 py-4 rounded-xl">
 
-<h2 className="text-xl font-semibold text-green-600">
-
-Product Created Successfully ✅
-
-</h2>
-
-<p className="text-neutral-500 mt-2">
-
-New product added to store
-
-</p>
+Product Added ✅
 
 </div>
 
@@ -178,116 +178,98 @@ New product added to store
 </AnimatePresence>
 
 
+<h1 className="text-2xl font-semibold text-yellow-400">
 
-{/* HEADER */}
-
-<h1 className="text-2xl font-semibold text-primary">
-
-Create Product
+Add Product
 
 </h1>
-
 
 
 <form
 
 onSubmit={handleSubmit}
 
-className="bg-white p-6 rounded-xl shadow-soft space-y-4"
+className="space-y-4 bg-neutral-900 p-6 rounded-2xl border border-neutral-800 shadow-xl"
 
 >
 
 
-{/* TITLE */}
-
 <InputField
-placeholder="Product title"
-value={form.title}
-onChange={v => setForm({...form,title:v})}
+
+placeholder="Product Name"
+
+value={form.name}
+
+onChange={v=>setForm({...form,name:v})}
+
 />
 
 
-{/* SHORT DESCRIPTION */}
-
 <TextAreaField
-placeholder="Short Description"
-value={form.shortDescription}
-onChange={v => setForm({...form,shortDescription:v})}
-/>
 
+placeholder="Short Description (optional)"
 
-{/* FULL DESCRIPTION */}
-
-<TextAreaField
-placeholder="Full Description"
 value={form.description}
-onChange={v => setForm({...form,description:v})}
+
+onChange={v=>setForm({...form,description:v})}
+
 />
 
-
-{/* BENEFITS */}
-
-<TextAreaField
-placeholder="Benefits (comma separated)"
-value={form.benefits}
-onChange={v => setForm({...form,benefits:v.split(",")})}
-/>
-
-
-{/* INGREDIENTS */}
-
-<TextAreaField
-placeholder="Ingredients"
-value={form.ingredients}
-onChange={v => setForm({...form,ingredients:v})}
-/>
-
-
-{/* HOW TO USE */}
-
-<TextAreaField
-placeholder="How to use"
-value={form.howToUse}
-onChange={v => setForm({...form,howToUse:v})}
-/>
-
-
-{/* SIZE */}
 
 <InputField
-placeholder="Size (eg: 100ml)"
-value={form.size}
-onChange={v => setForm({...form,size:v})}
-/>
 
+placeholder="Actual Price"
 
-{/* PRICE */}
-
-<InputField
-placeholder="Price"
 type="number"
-value={form.price}
-onChange={v => setForm({...form,price:v})}
+
+value={form.actualPrice}
+
+onChange={v=>setForm({...form,actualPrice:Number(v)})}
+
 />
 
 
-{/* CATEGORY */}
+<InputField
+
+placeholder="Selling Price"
+
+type="number"
+
+value={form.sellingPrice}
+
+onChange={v=>setForm({...form,sellingPrice:Number(v)})}
+
+/>
+
+
+{/* PROFIT PREVIEW */}
+
+<div className="text-sm text-yellow-400">
+
+Profit per item:
+
+₹ {profitPreview}
+
+</div>
+
 
 <select
 
 value={form.category}
 
-onChange={e =>
-setForm({...form,category:e.target.value})
-}
+onChange={e=>setForm({...form,category:e.target.value})}
 
-className="border p-3 w-full rounded-lg"
+className="input-style"
 
 >
 
-<option value="">Select category</option>
+<option value="">
 
-{categories.map(cat => (
+Select Category
+
+</option>
+
+{categories.map(cat=>(
 
 <option key={cat._id} value={cat._id}>
 
@@ -300,46 +282,68 @@ className="border p-3 w-full rounded-lg"
 </select>
 
 
+<label className="upload-box">
 
-{/* IMAGE UPLOAD */}
+<Upload size={18}/>
+
+Upload Image
 
 <input
+
 type="file"
-onChange={handleImageUpload}
+
+hidden
+
+onChange={handleUpload}
+
 />
 
+</label>
 
-{uploading && (
 
-<p className="text-sm text-neutral-500">
+{uploading &&(
 
-Uploading image...
+<p className="text-sm text-neutral-400">
+
+Uploading...
 
 </p>
 
 )}
 
 
+{image &&(
 
-{/* IMAGE PREVIEW */}
+<div className="relative w-24">
 
-<div className="flex gap-3 flex-wrap">
-
-{images.map((img,i)=>(
 <img
-key={i}
-src={img}
-className="w-20 h-20 rounded"
+
+src={image}
+
+className="rounded-lg"
+
 />
-))}
+
+<button
+
+type="button"
+
+onClick={removeImage}
+
+className="absolute -top-2 -right-2 bg-red-500 p-1 rounded-full"
+
+>
+
+<X size={14}/>
+
+</button>
 
 </div>
 
+)}
 
 
-{/* FEATURED */}
-
-<label className="flex gap-2">
+<label className="flex gap-2 text-neutral-300">
 
 <input
 
@@ -347,21 +351,16 @@ type="checkbox"
 
 checked={form.isFeatured}
 
-onChange={e =>
-setForm({...form,isFeatured:e.target.checked})
-}
+onChange={e=>setForm({...form,isFeatured:e.target.checked})}
 
 />
 
-Featured Product
+Featured
 
 </label>
 
 
-
-{/* VISIBILITY */}
-
-<label className="flex gap-2">
+<label className="flex gap-2 text-neutral-300">
 
 <input
 
@@ -369,25 +368,16 @@ type="checkbox"
 
 checked={form.isVisible}
 
-onChange={e =>
-setForm({...form,isVisible:e.target.checked})
-}
+onChange={e=>setForm({...form,isVisible:e.target.checked})}
 
 />
 
-Visible on website
+Visible
 
 </label>
 
 
-
-{/* SUBMIT */}
-
-<button
-
-className="bg-primary text-white px-6 py-3 rounded-lg w-full"
-
->
+<button className="submit-btn">
 
 Save Product
 
@@ -403,11 +393,8 @@ Save Product
 }
 
 
-
 /*
-====================
-REUSABLE COMPONENTS
-====================
+INPUT FIELD
 */
 
 function InputField({placeholder,value,onChange,type="text"}){
@@ -424,7 +411,7 @@ value={value}
 
 onChange={e=>onChange(e.target.value)}
 
-className="border p-3 w-full rounded-lg"
+className="input-style"
 
 />
 
@@ -433,6 +420,9 @@ className="border p-3 w-full rounded-lg"
 }
 
 
+/*
+TEXTAREA FIELD
+*/
 
 function TextAreaField({placeholder,value,onChange}){
 
@@ -446,7 +436,7 @@ value={value}
 
 onChange={e=>onChange(e.target.value)}
 
-className="border p-3 w-full rounded-lg"
+className="input-style"
 
 />
 

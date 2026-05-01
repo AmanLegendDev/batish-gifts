@@ -1,21 +1,47 @@
 import { connectDB } from "@/lib/db";
-import Product from "@/models/Product";
-import Category from "@/models/Category";
 import Order from "@/models/Order";
 
 export async function GET() {
 
 await connectDB();
 
-const products = await Product.countDocuments();
-const categories = await Category.countDocuments();
-const orders = await Order.countDocuments();
+/*
+NEW ORDERS
+*/
+
+const newOrders = await Order.countDocuments({
+orderStatus: "placed"
+});
+
+/*
+PROCESSING ORDERS
+*/
+
+const processingOrders = await Order.countDocuments({
+paymentStatus: "pending",
+orderStatus: {
+$in: [
+"confirmed",
+"out_for_delivery",
+"delivered"
+]
+}
+});
+
+/*
+COMPLETED ORDERS
+*/
+
+const completedOrders = await Order.countDocuments({
+paymentStatus: "paid"
+});
+
 
 return Response.json({
 
-products,
-categories,
-orders
+newOrders,
+processingOrders,
+completedOrders
 
 });
 

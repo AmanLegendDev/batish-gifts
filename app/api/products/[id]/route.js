@@ -4,16 +4,20 @@ export async function GET(
   request,
   context
 ) {
-  const id = context.params.id;
 
-  const product = await getSingleProduct(id);
+const { id } = await context.params;
 
-  if (!product) {
-    return Response.json(
-      { error: "Product not found" },
-      { status: 404 }
-    );
-  }
+const product = await getSingleProduct(id);
 
-  return Response.json(product);
+if (!product) {
+
+return Response.json(
+{ error: "Product not found" },
+{ status: 404 }
+);
+
+}
+
+return Response.json(product);
+
 }

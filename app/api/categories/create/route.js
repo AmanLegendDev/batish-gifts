@@ -1,16 +1,28 @@
 import { createCategory } from "@/actions/categoryActions";
 
 export async function POST(req) {
-  const { name } = await req.json();
 
-  const result = await createCategory(name);
+  try {
 
-  if (result.error) {
-    return Response.json(
-      result,
-      { status: 400 }
+    const body = await req.json();
+
+    console.log("CATEGORY DATA:", body);
+
+    const result = await createCategory(
+      body.name,
+      body.image
     );
+
+    return Response.json(result);
+
+  } catch (err) {
+
+    console.log(err);
+
+    return Response.json({
+      error: "Server error"
+    });
+
   }
 
-  return Response.json(result);
 }

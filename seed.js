@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: ".env.local" });
 
-import { seedAdmin } from "./lib/seedAdmin.js";
+const { seedAdmin } = await import("./lib/seedAdmin.js");
 
 await seedAdmin();
 

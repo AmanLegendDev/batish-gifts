@@ -1,24 +1,29 @@
-import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/store/Hero";
-import FeaturedProducts from "@/components/store/FeaturedProducts";
-import CategoriesPreview from "@/components/store/CategoriesPreview";
-import CategoriesSlider from "@/components/store/CategoriesSlider";
-import WhyChooseUs from "@/components/store/WhyChooseUs";
-import TrustStrip from "@/components/store/TrustStrip";
-import AboutBrand from "@/components/store/AboutBrand";
+import CategorySlider from "@/components/store/CategorySlider";
+import ProductSection from "@/components/store/ProductSection";
+import Navbar from "@/components/layout/Navbar";
 
-export default function Home() {
-  return (
-    <main>
-       <Navbar />
-       <Hero />
-       <CategoriesSlider />
-       <FeaturedProducts />
-       <WhyChooseUs />
-       <TrustStrip />
-       <AboutBrand />
-     
+export default function HomePage() {
 
-    </main>
-  );
+return (
+
+<div className="snap-y snap-mandatory h-screen overflow-y-scroll scroll-smooth">
+  <Navbar/>
+
+<section className="snap-start">
+<Hero />
+</section>
+
+<section id="categories" className="snap-start">
+<CategorySlider />
+</section>
+
+<section className="snap-start">
+<ProductSection />
+</section>
+
+</div>
+
+);
+
 }

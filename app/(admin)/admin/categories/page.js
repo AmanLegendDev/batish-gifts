@@ -1,221 +1,473 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect,useState } from "react";
+import { motion,AnimatePresence } from "framer-motion";
+import { Trash2,Plus,X,Upload } from "lucide-react";
 
-export default function CategoriesPage() {
+export default function CategoriesPage(){
 
-const [name, setName] = useState("");
+const [name,setName]=useState("");
+const [image,setImage]=useState("");
+const [uploading,setUploading]=useState(false);
 
-const [categories, setCategories] = useState([]);
-
-const [loading, setLoading] = useState(false);
-
+const [categories,setCategories]=useState([]);
+const [popup,setPopup]=useState(null);
 
 
-const fetchCategories = async () => {
+/*
+FETCH CATEGORIES
+*/
 
-const res = await fetch("/api/categories/list");
+const fetchCategories=async()=>{
 
-const data = await res.json();
+const res=await fetch("/api/categories/dropdown");
+
+const data=await res.json();
 
 setCategories(data);
 
 };
 
-
-
-useEffect(() => {
+useEffect(()=>{
 
 fetchCategories();
 
-}, []);
+},[]);
 
 
+/*
+UPLOAD IMAGE
+*/
 
-const handleSubmit = async (e) => {
+const uploadImage=async(e)=>{
 
-e.preventDefault();
+const file=e.target.files[0];
 
-if (!name.trim()) return;
+if(!file)return;
 
-setLoading(true);
+setUploading(true);
 
-const res = await fetch("/api/categories/create", {
+const fd=new FormData();
 
-method: "POST",
+fd.append("file",file);
 
-headers: {
-"Content-Type": "application/json"
-},
+const res=await fetch("/api/upload",{
 
-body: JSON.stringify({
-name
-})
+method:"POST",
+body:fd
 
 });
 
-if (res.ok) {
+const data=await res.json();
 
-setName("");
+if(data?.url){
 
-fetchCategories();
+setImage(data.url);
 
 }
 
-setLoading(false);
+setUploading(false);
 
 };
 
 
+/*
+REMOVE IMAGE
+*/
 
-const deleteCategory = async (id) => {
+const removeImage=()=>{
 
-const confirmDelete = confirm(
-"Delete this category?"
-);
+setImage("");
 
-if (!confirmDelete) return;
+};
 
-await fetch("/api/categories/delete", {
 
-method: "POST",
+/*
+CREATE CATEGORY
+*/
 
-headers: {
-"Content-Type": "application/json"
+const createCategory=async()=>{
+
+if(!name.trim())return;
+
+const res=await fetch("/api/categories/create",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
 },
 
-body: JSON.stringify({
-id
+body:JSON.stringify({
+
+name,
+image
+
 })
 
 });
+
+const data=await res.json();
+
+if(data.error){
+
+setPopup({
+type:"error",
+message:data.error
+});
+
+return;
+
+}
+
+setName("");
+setImage("");
 
 fetchCategories();
 
 };
 
 
+/*
+DELETE CATEGORY
+*/
 
-return (
+const deleteCategory=(id)=>{
 
-<div className="space-y-8">
+setPopup({
+type:"delete",
+id
+});
+
+};
+
+
+const confirmDelete=async()=>{
+
+await fetch("/api/categories/delete",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+id:popup.id
+
+})
+
+});
+
+setPopup(null);
+
+fetchCategories();
+
+};
+
+
+return(
+
+<div className="space-y-6">
 
 
 {/* HEADER */}
 
-<div className="flex justify-between items-center">
-
 <div>
 
-<h1 className="text-3xl font-semibold text-primary">
+<h1 className="text-2xl text-yellow-400 font-semibold">
 
-Categories
+Categories Manager
 
 </h1>
 
-<p className="text-neutral-500 mt-1">
+<p className="text-neutral-400">
 
-Manage your product categories
+Homepage slider categories
 
 </p>
 
 </div>
 
 
-<div className="bg-secondary px-4 py-2 rounded-lg font-medium">
+{/* CREATE CATEGORY */}
 
-Total: {categories.length}
+<div className="card p-4 space-y-4">
 
-</div>
-
-</div>
-
-
-
-{/* CREATE CARD */}
-
-<div className="bg-white border border-borderSoft rounded-xl shadow-soft p-6 max-w-xl">
-
-<h2 className="font-semibold text-primary mb-4">
-
-Create New Category
-
-</h2>
-
-
-<form
-onSubmit={handleSubmit}
-className="flex gap-3"
->
 
 <input
-type="text"
-placeholder="Enter category name"
-className="flex-1 border border-borderSoft p-3 rounded-lg outline-none focus:ring-2 focus:ring-primary/30"
+
 value={name}
+
 onChange={(e)=>setName(e.target.value)}
+
+placeholder="Category name"
+
+className="input-style"
+
 />
 
 
+{/* IMAGE UPLOAD */}
+
+<label className="upload-box">
+
+<Upload size={18}/>
+
+Upload Category Image
+
+<input
+
+type="file"
+
+hidden
+
+onChange={uploadImage}
+
+/>
+
+</label>
+
+
+{uploading &&(
+
+<p className="text-sm text-neutral-400">
+
+Uploading...
+
+</p>
+
+)}
+
+
+{/* IMAGE PREVIEW */}
+
+{image &&(
+
+<div className="relative w-24">
+
+<img
+
+src={image}
+
+className="rounded-lg"
+
+/>
+
 <button
-disabled={loading}
-className="bg-primary text-white px-6 rounded-lg hover:opacity-90 transition"
+
+onClick={removeImage}
+
+className="absolute -top-2 -right-2 bg-red-500 p-1 rounded-full"
+
 >
 
-{loading ? "Creating..." : "Create"}
+<X size={14}/>
 
 </button>
 
-</form>
-
 </div>
 
+)}
+
+
+<button
+
+onClick={createCategory}
+
+className="bg-yellow-400 text-black py-2 rounded-xl font-semibold flex items-center justify-center gap-2"
+
+>
+
+<Plus size={16}/>
+
+Create Category
+
+</button>
+
+</div>
 
 
 {/* CATEGORY LIST */}
 
-<div className="bg-white border border-borderSoft rounded-xl shadow-soft">
+<div className="grid grid-cols-2 gap-3">
 
-{categories.length === 0 ? (
 
-<div className="p-8 text-center text-neutral-400">
+{categories.map((cat,index)=>(
 
-No categories yet
+<motion.div
 
-</div>
-
-) : (
-
-categories.map((cat)=> (
-
-<div
 key={cat._id}
-className="flex justify-between items-center px-6 py-4 border-b last:border-none hover:bg-secondary transition"
+
+initial={{opacity:0,y:10}}
+
+animate={{opacity:1,y:0}}
+
+transition={{delay:index*0.05}}
+
+className="card flex items-center justify-between p-3"
+
 >
 
-<div className="font-medium text-text">
+
+<div className="flex items-center gap-2">
+
+
+{cat.image &&(
+
+<img
+
+src={cat.image}
+
+className="w-10 h-10 rounded-full object-cover"
+
+/>
+
+)}
+
+
+<span>
 
 {cat.name}
+
+</span>
 
 </div>
 
 
 <button
+
 onClick={()=>deleteCategory(cat._id)}
-className="text-red-500 text-sm hover:underline"
+
+className="text-red-400"
+
+>
+
+<Trash2 size={18}/>
+
+</button>
+
+</motion.div>
+
+))}
+
+
+</div>
+
+
+{/* POPUP */}
+
+<AnimatePresence>
+
+{popup &&(
+
+<motion.div
+
+initial={{opacity:0}}
+
+animate={{opacity:1}}
+
+exit={{opacity:0}}
+
+className="fixed inset-0 flex items-center justify-center bg-black/70 z-50"
+
+>
+
+<motion.div
+
+initial={{scale:0.8}}
+
+animate={{scale:1}}
+
+exit={{scale:0.8}}
+
+className="card p-6 space-y-4 max-w-sm"
+
+>
+
+
+{popup.type==="delete" &&(
+
+<>
+
+<h2 className="text-lg font-semibold">
+
+Delete category permanently?
+
+</h2>
+
+
+<div className="flex gap-3">
+
+<button
+
+onClick={confirmDelete}
+
+className="flex-1 bg-red-500 py-2 rounded-lg"
+
 >
 
 Delete
 
 </button>
 
+
+<button
+
+onClick={()=>setPopup(null)}
+
+className="flex-1 bg-neutral-700 py-2 rounded-lg"
+
+>
+
+Cancel
+
+</button>
+
 </div>
 
-))
+</>
 
 )}
 
-</div>
+
+{popup.type==="error" &&(
+
+<>
+
+<h2 className="text-lg font-semibold">
+
+{popup.message}
+
+</h2>
+
+
+<button
+
+onClick={()=>setPopup(null)}
+
+className="w-full bg-yellow-400 py-2 rounded-lg text-black"
+
+>
+
+OK
+
+</button>
+
+</>
+
+)}
+
+
+</motion.div>
+
+</motion.div>
+
+)}
+
+</AnimatePresence>
+
 
 </div>
 

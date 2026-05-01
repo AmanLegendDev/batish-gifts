@@ -1,45 +1,153 @@
 import mongoose from "mongoose";
 
+const orderItemSchema = new mongoose.Schema({
+  productId: mongoose.Schema.Types.ObjectId,
+
+  title: String,
+
+  sellingPrice: Number,
+
+  actualPrice: Number,
+
+  qty: Number,
+
+  profit: Number,
+});
+
+
 const orderSchema = new mongoose.Schema(
-{
-customerName: String,
+  {
+    customerName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
-phone: String,
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
-address: String,
+    hostel: {
+      type: String,
+      required: true,
+    },
 
-note: String,
+    room: {
+      type: String,
+      required: true,
+    },
 
-items: [
+    note: {
+      type: String,
+      default: "",
+    },
 
-{
-productId: mongoose.Schema.Types.ObjectId,
+    items: [orderItemSchema],
 
-title: String,
+    subtotal: {
+      type: Number,
+      required: true,
+    },
 
-price: Number,
+    deliveryCharge: {
+      type: Number,
+      required: true,
+    },
 
-qty: Number
+    totalAmount: {
+      type: Number,
+      required: true,
+    },
 
-}
+    productProfit: {
+      type: Number,
+      default: 0,
+    },
 
-],
+    netProfit: {
+      type: Number,
+      default: 0,
+    },
 
-totalAmount: Number,
+    campus: {
+      type: String,
+      default: "HPU",
+      index: true,
+    },
 
-paymentStatus: {
-type: String,
-default: "pending"
-},
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid"],
+      default: "pending",
+    },
 
-orderStatus: {
-type: String,
-default: "placed"
-}
+    orderStatus: {
+      type: String,
+      enum: [
+       "placed",
+"confirmed",
+"out_for_delivery",
+"delivered",
+        "cancelled",
+      ],
+      default: "placed",
+      index: true,
+    },
 
-},
-{ timestamps: true }
+    estimatedDeliveryTime: {
+      type: Number,
+      default: 20,
+    },
+
+    whatsappAlertSent: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
 );
 
+
+/*
+AUTO PROFIT CALCULATION MIDDLEWARE
+*/
+
+orderSchema.pre("save", function (next) {
+
+  let productProfitTotal = 0;
+
+  this.items.forEach((item) => {
+
+    const itemProfit =
+      (item.sellingPrice - item.actualPrice) *
+      item.qty;
+
+    item.profit = itemProfit;
+
+    productProfitTotal += itemProfit;
+
+  });
+
+
+  this.productProfit = productProfitTotal;
+
+
+  /*
+  MIDNIGHT MART MODEL:
+  DELIVERY CHARGE = EXTRA PROFIT
+  */
+
+  this.netProfit =
+    this.productProfit + this.deliveryCharge;
+
+
+  next();
+});
+
+
 export default mongoose.models.Order ||
-mongoose.model("Order", orderSchema);
+  mongoose.model("Order", orderSchema);

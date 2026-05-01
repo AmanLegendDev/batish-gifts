@@ -1,129 +1,209 @@
 "use client";
 
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+
+const backgrounds = [
+"/hero/hero-bg-1.jpg",
+"/hero/hero-bg-2.jpg",
+"/hero/hero-bg-3.jpg"
+];
 
 export default function Hero() {
 
+const [index,setIndex]=useState(0);
+
+/*
+AUTO BACKGROUND SLIDESHOW
+*/
+
+useEffect(()=>{
+
+const interval=setInterval(()=>{
+
+setIndex(prev=>(prev+1)%backgrounds.length);
+
+},5000);
+
+return ()=>clearInterval(interval);
+
+},[]);
+
+
+
 return (
 
-<section className="bg-secondary relative overflow-hidden">
-
-
-{/* SOFT BACKGROUND GLOW */}
-
-<div className="absolute top-[-120px] right-[-120px] w-[400px] h-[400px] bg-primary/10 rounded-full blur-3xl hidden md:block"/>
-
-
-<div className="max-w-7xl mx-auto px-6 py-20 md:py-24 grid md:grid-cols-2 gap-10 items-center">
-
-
-{/* LEFT CONTENT */}
-
-<motion.div
-initial={{ opacity: 0, y: 30 }}
-animate={{ opacity: 1, y: 0 }}
-transition={{ duration: 0.6 }}
+<section
+className="relative min-h-screen flex items-center justify-center overflow-hidden"
 >
 
 
-{/* BADGE */}
+{/* BACKGROUND SLIDESHOW */}
 
-<span className="inline-block text-xs tracking-wide bg-primary/10 text-primary px-4 py-1 rounded-full font-medium">
+<AnimatePresence mode="wait">
 
-Premium Beauty Collection
+<motion.div
+key={backgrounds[index]}
+initial={{opacity:0}}
+animate={{opacity:1}}
+exit={{opacity:0}}
+transition={{duration:1.6}}
+className="absolute inset-0"
+>
+
+<Image
+src={backgrounds[index]}
+fill
+priority
+alt="HPU campus night delivery background"
+className="object-cover"
+/>
+
+</motion.div>
+
+</AnimatePresence>
+
+
+
+{/* DARK GLASS OVERLAY */}
+
+<div className="absolute inset-0 bg-[#020617]/75 backdrop-blur-[2px]" />
+
+
+
+{/* GLOW PARTICLE */}
+
+<div className="absolute top-[-150px] left-1/2 -translate-x-1/2 w-[650px] h-[650px] bg-yellow-400/10 blur-[160px] rounded-full animate-pulse" />
+
+
+
+{/* HERO CONTENT */}
+
+<div className="relative z-10 max-w-3xl px-6 text-center space-y-6">
+
+
+{/* HEADLINE */}
+
+<motion.h1
+initial={{opacity:0,y:40}}
+animate={{opacity:1,y:0}}
+transition={{duration:.7}}
+className="mt-6text-4xl md:text-6xl font-semibold text-white leading-tight drop-shadow-[0_4px_40px_rgba(255,215,0,0.25)]"
+>
+
+HPU campus me late night
+
+<span className="text-yellow-400">
+
+&nbsp;ab sab milta hai room tak ⚡
 
 </span>
 
-
-{/* TITLE */}
-
-<h1 className="mt-5 text-4xl md:text-5xl lg:text-6xl font-semibold text-primary leading-tight">
-
-Elevate Your Natural Beauty
-With Premium Cosmetics
-
-</h1>
+</motion.h1>
 
 
-{/* DESCRIPTION */}
 
-<p className="mt-6 text-neutral-600 max-w-lg text-lg">
+{/* SUBTEXT */}
 
-Discover skincare and makeup crafted for confidence,
-radiance, and everyday elegance.
+<motion.p
+initial={{opacity:0}}
+animate={{opacity:1}}
+transition={{delay:.3}}
+className="text-neutral-300 text-sm md:text-lg max-w-xl mx-auto"
+>
 
-</p>
+Maggi, cold drinks, snacks ya emergency items —  
+ab hostel se hi order karo aur 10-20 minutes me gate par delivery pao.
+
+</motion.p>
+
 
 
 {/* CTA BUTTONS */}
 
-<div className="flex gap-4 mt-8 flex-wrap">
-
-<Link
-href="/products" prefetch={true}
-className="bg-primary text-white px-7 py-3 rounded-xl shadow-soft hover:scale-[1.03] transition"
+<motion.div
+initial={{opacity:0,y:20}}
+animate={{opacity:1,y:0}}
+transition={{delay:.5}}
+className="flex gap-4 justify-center flex-wrap"
 >
 
-Shop Now
+
+<Link
+href="#categories"
+className="bg-yellow-400 text-black px-7 py-3 rounded-xl font-semibold shadow-xl hover:scale-[1.07] transition"
+>
+
+Start Ordering Now
 
 </Link>
 
 
 <Link
-href="/products" prefetch={true}
-className="border border-primary text-primary px-7 py-3 rounded-xl hover:bg-primary hover:text-white transition"
+href="/custom-order"
+className="border border-yellow-400 text-yellow-400 px-7 py-3 rounded-xl hover:bg-yellow-400 hover:text-black transition"
 >
 
-Explore Collection
+Request Item Not Listed
 
 </Link>
-
-</div>
-
-
-{/* TRUST BADGE MOBILE VERSION */}
-
-<div className="mt-6 md:hidden bg-white px-5 py-3 rounded-xl shadow-soft text-sm w-fit">
-
-✨ Trusted by 2,000+ happy customers
-
-</div>
 
 
 </motion.div>
 
 
 
-{/* RIGHT IMAGE */}
+{/* TRUST STRIP */}
 
 <motion.div
-initial={{ opacity: 0, scale: 0.95 }}
-animate={{ opacity: 1, scale: 1 }}
-transition={{ duration: 0.7 }}
-className="relative"
+initial={{opacity:0}}
+animate={{opacity:1}}
+transition={{delay:.8}}
+className="flex gap-6 justify-center text-xs text-neutral-400"
 >
 
+<span>⚡ 10-20 min campus delivery</span>
 
-<img
-src="/hero-banner.jpg"
-className="rounded-2xl shadow-soft object-cover w-full max-h-[420px]"
-/>
+<span>🏫 Only for HPU students</span>
+
+<span>🌙 Late night active service</span>
+
+</motion.div>
 
 
-{/* FLOATING TRUST BADGE DESKTOP */}
 
-<div className="hidden md:block absolute bottom-6 left-6 bg-white px-5 py-3 rounded-xl shadow-soft text-sm">
+{/* PHONE MOCKUP */}
 
-✨ Trusted by 2,000+ happy customers
+<motion.div
+initial={{opacity:0,y:40}}
+animate={{opacity:1,y:0}}
+transition={{delay:1}}
+className="pt-6"
+>
 
-</div>
 
 
 </motion.div>
 
 
 </div>
+
+
+{/* SCROLL INDICATOR */}
+
+<motion.div
+initial={{opacity:0}}
+animate={{opacity:1}}
+transition={{delay:1.4}}
+className="absolute bottom-6 left-1/2 -translate-x-1/2 text-neutral-400 text-xs"
+>
+
+↓ Scroll to browse items
+
+</motion.div>
+
 
 </section>
 
