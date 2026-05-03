@@ -145,7 +145,7 @@ const totalPrice = cart.reduce(
 
 return(
 
-<section  id="products" className="bg-[#020617] text-white px-4 pt-2 pb-32 mt-6">
+<section  id="products" className="bg-[#020617] text-white px-4 pt-1 pb-2 mt-2">
 
 
 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -170,9 +170,9 @@ className="bg-[#020617] border border-white/10 rounded-2xl p-3 shadow-md hover:b
 <Image
 src={product.image}
 fill
-sizes="(max-width:768px) 50vw, 25vw"
+sizes="(max-width:740px) 50vw, 25vw"
 alt={product.name}
-className="object-contain p-3"
+className="object-cover rounded-t-2xl"
 />
 
 </div>

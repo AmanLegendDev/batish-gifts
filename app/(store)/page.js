@@ -13,7 +13,7 @@ export default function HomePage() {
 
 return (
 
-<div className="snap-y snap-mandatory h-screen overflow-y-scroll scroll-smooth">
+<div className=" h-screen ">
   <Navbar/>
 
 <section className="">
