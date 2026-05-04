@@ -1,63 +1,169 @@
-import Link from "next/link";
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
+import { useCartStore } from "@/store/cartStore";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRef } from "react";
+
 export default function ProductCard({ product }) {
 
-return (
+  const { cart, addToCart, increaseQty, decreaseQty } = useCartStore();
 
-<Link href={`/products/${product.slug}`} prefetch={true}>
+  const item = cart.find(i => i._id === product._id);
+  const qty = item ? item.qty : 0;
 
-<div className="bg-white rounded-2xl shadow-soft hover:shadow-lg transition overflow-hidden cursor-pointer group">
+  const imgRef = useRef(null);
 
-<div className="relative w-full h-44 overflow-hidden">
+  /*
+  🔥 FLY TO CART
+  */
 
-<Image
-src={product.images?.[0] || "/placeholder.png"}
-alt={product.title}
-fill
-sizes="(max-width: 768px) 50vw, 25vw"
-className="object-cover group-hover:scale-105 transition"
-loading="lazy"
-/>
+  const handleAdd = () => {
 
-</div>
+    const img = imgRef.current;
+    if (!img) {
+      addToCart(product);
+      return;
+    }
 
-<div className="p-4">
+    const rect = img.getBoundingClientRect();
+    const clone = img.cloneNode(true);
 
-<h3 className="font-medium text-text line-clamp-1">
+    clone.style.position = "fixed";
+    clone.style.left = rect.left + "px";
+    clone.style.top = rect.top + "px";
+    clone.style.width = rect.width + "px";
+    clone.style.height = rect.height + "px";
+    clone.style.zIndex = 9999;
+    clone.style.borderRadius = "12px";
+    clone.style.transition = "all 0.7s cubic-bezier(.65,-0.2,.2,1.2)";
 
-{product.title}
+    document.body.appendChild(clone);
 
-</h3>
+    const targetX = window.innerWidth - 60;
+    const targetY = 20;
+
+    requestAnimationFrame(() => {
+      clone.style.left = targetX + "px";
+      clone.style.top = targetY + "px";
+      clone.style.width = "20px";
+      clone.style.height = "20px";
+      clone.style.opacity = 0.5;
+    });
+
+    setTimeout(() => {
+      clone.remove();
+      addToCart(product);
+    }, 700);
+  };
+
+  return (
+
+    <motion.div
+      whileHover={{ y: -6 }}
+      className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition overflow-hidden flex flex-col"
+    >
+
+      {/* IMAGE */}
+      <div className="relative w-full aspect-square overflow-hidden">
+
+        <Link href={`/products/${product.slug}`}>
+
+          <div ref={imgRef} className="w-full h-full">
+
+            <Image
+              src={product.image || "/placeholder.png"}
+              alt={product.name}
+              fill
+              className="object-cover transition duration-500 group-hover:scale-110"
+            />
+
+          </div>
+
+        </Link>
+
+        {/* SOFT GRADIENT */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+
+        {/* ADD BUTTON */}
+        {qty === 0 && (
+          <motion.button
+            onClick={handleAdd}
+            whileTap={{ scale: 0.9 }}
+            className="absolute bottom-2 right-2 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full text-xs font-semibold shadow-md text-[var(--primary)]"
+          >
+            Add +
+          </motion.button>
+        )}
+
+      </div>
 
 
-<p className="text-xs text-neutral-500 mt-1 line-clamp-2">
+      {/* CONTENT */}
+      <div className="p-3 flex flex-col flex-1">
 
-{product.shortDescription}
+        <Link href={`/products/${product.slug}`}>
 
-</p>
+          <h3 className="text-sm font-semibold text-gray-800 line-clamp-2">
+            {product.name}
+          </h3>
+
+        </Link>
+
+        <p className="text-xs text-gray-400 line-clamp-2 mt-1">
+          {product.description}
+        </p>
 
 
-<div className="flex justify-between items-center mt-4">
+        <div className="flex justify-between items-center mt-3">
 
-<span className="text-primary font-semibold">
+          <span className="text-[var(--primary)] font-bold text-sm">
+            ₹ {product.sellingPrice}
+          </span>
 
-₹ {product.price}
 
-</span>
+          {/* QTY CONTROLLER */}
+          <AnimatePresence mode="wait">
 
-<span className="text-sm text-primary group-hover:underline">
+            {qty > 0 && (
 
-View →
+              <motion.div
+                initial={{ scale: 0.7, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.7, opacity: 0 }}
+                className="flex items-center gap-2 bg-[var(--primary)] text-white rounded-full px-3 py-1"
+              >
 
-</span>
+                <button
+                  onClick={() => decreaseQty(product._id)}
+                  className="text-lg font-bold"
+                >
+                  −
+                </button>
 
-</div>
+                <span className="text-xs font-semibold">
+                  {qty}
+                </span>
 
-</div>
+                <button
+                  onClick={() => increaseQty(product._id)}
+                  className="text-lg font-bold"
+                >
+                  +
+                </button>
 
-</div>
+              </motion.div>
 
-</Link>
+            )}
 
-);
+          </AnimatePresence>
+
+        </div>
+
+      </div>
+
+    </motion.div>
+
+  );
 }

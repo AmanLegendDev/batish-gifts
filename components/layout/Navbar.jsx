@@ -8,222 +8,128 @@ import {
 Menu,
 X,
 ShoppingCart,
-Package,
 ClipboardList,
 Search
 } from "lucide-react";
 
-
 import SearchOverlay from "@/components/store/SearchOverlay";
-
-import {
-motion,
-AnimatePresence
-} from "framer-motion";
-
-import {
-useCartStore
-} from "@/store/cartStore";
-
+import { motion, AnimatePresence } from "framer-motion";
+import { useCartStore } from "@/store/cartStore";
 
 export default function Navbar() {
-    const pathname = usePathname();
+
+const pathname = usePathname();
+
+const showSearch =
+  pathname === "/" || pathname.startsWith("/category");
 
 const [open,setOpen]=useState(false);
 const [searchOpen,setSearchOpen]=useState(false);
 
-const cart = useCartStore(
-state=>state.cart
-);
+const cart = useCartStore(state=>state.cart);
 
-const totalItems = cart.reduce(
-(acc,item)=>acc+item.qty,
-0
-);
-
+const totalItems = cart.reduce((acc,item)=>acc+item.qty,0);
 
 return (
-    <>
 
-<nav className="sticky top-0 z-50 backdrop-blur-xl bg-[#020617]/90 border-b border-white/10 shadow-lg">
+<>
 
+<nav className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-200">
 
-<div className="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
+<div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
 
+{/* LOGO */}
+<Link href="/" className="flex items-center gap-3">
 
-{/* LEFT SIDE LOGO */}
-
-<Link
-href="/"
-className="flex items-center gap-3 group"
->
-
-<motion.div
-whileHover={{scale:1.05}}
-className="relative w-12 h-12 rounded-full   overflow-hidden shadow-md"
->
-
+<div className="relative w-10 h-10 rounded-xl overflow-hidden shadow-sm">
 <Image
 src="/logo.jpg"
 fill
 alt="logo"
 className="object-cover"
 />
+</div>
 
-</motion.div>
-
-
-<motion.span
-whileHover={{x:2}}
-className="text-yellow-400 text-lg font-semibold tracking-wide"
->
-
+<span className="text-sm font-semibold text-gray-800">
 Aarav Gift Gallery
-
-</motion.span>
+</span>
 
 </Link>
 
 
+{/* RIGHT */}
+<div className="flex items-center gap-4">
 
-{/* DESKTOP MENU */}
-
-<div className="hidden md:flex items-center gap-6 text-sm font-medium text-neutral-300">
-
-    <button
-onClick={()=>{
-if(pathname==="/" || pathname.startsWith("/category")){
-setSearchOpen(true);
-}
-}}
-className={`transition ${
-pathname==="/" || pathname.startsWith("/category")
-? "hover:text-yellow-400 cursor-pointer"
-: "opacity-40 cursor-not-allowed"
-}`}
->
-<Search size={20}/>
-</button>
-
-
-<NavItem
-href="/orders"
-icon={<ClipboardList size={18}/>}
-label="Track Orders"
-/>
-
-
+{/* SEARCH */}
+{showSearch && (
+  <button
+    onClick={() => setSearchOpen(true)}
+    className="text-gray-700 hover:text-[var(--primary)] transition"
+  >
+    <Search size={20}/>
+  </button>
+)}
 
 {/* CART */}
+<Link href="/cart" className="relative">
 
-<Link
-href="/cart"
-className="relative group"
-label="cart"
->
-
-<motion.div
-whileHover={{scale:1.1}}
-className="text-neutral-300 group-hover:text-yellow-400 transition"
->
-
-<ShoppingCart size={20}/>
-
+<motion.div whileTap={{scale:0.9}}>
+<ShoppingCart className="text-gray-700" size={20}/>
 </motion.div>
 
-
 {totalItems>0 &&(
-
-<motion.span
-initial={{scale:0}}
-animate={{scale:1}}
-className="absolute -top-2 -right-2 bg-yellow-400 text-black text-[10px] px-1.5 rounded-full font-semibold"
->
-
+<span className="absolute -top-2 -right-2 bg-[var(--primary)] text-white text-[10px] px-1.5 rounded-full font-semibold">
 {totalItems}
-
-</motion.span>
-
+</span>
 )}
 
 </Link>
 
 
-</div>
-
-
-
-{/* MOBILE BUTTON */}
-
-<div className="flex items-center gap-4 md:hidden">
-
-<button
-onClick={()=>{
-if(pathname==="/" || pathname.startsWith("/category")){
-setSearchOpen(true);
-}
-}}
-className={`transition ${
-pathname==="/" || pathname.startsWith("/category")
-? "hover:text-yellow-400 cursor-pointer"
-: "opacity-40 cursor-not-allowed"
-}`}
->
-<Search size={22}/>
-</button>
-
+{/* MENU */}
 <button
 onClick={()=>setOpen(!open)}
-className="text-yellow-400"
+className="text-[var(--primary)]"
 >
-{open ? <X size={24}/> : <Menu size={24}/>}
+{open ? <X size={22}/> : <Menu size={22}/>}
 </button>
 
 </div>
 
-
 </div>
-
 
 
 {/* MOBILE MENU */}
-
 <AnimatePresence>
 
 {open &&(
 
 <motion.div
-
-initial={{opacity:0,y:-20}}
+initial={{opacity:0,y:-10}}
 animate={{opacity:1,y:0}}
-exit={{opacity:0,y:-20}}
-
-transition={{duration:0.25}}
-
-className="md:hidden bg-[#020617] border-t border-white/10 backdrop-blur-xl"
+exit={{opacity:0,y:-10}}
+className="bg-white border-t border-gray-200"
 >
 
-<div className="flex flex-col px-6 py-5 gap-5 text-neutral-300">
+<div className="flex flex-col px-5 py-4 gap-4 text-gray-700">
 
-
-
-
-
-<MobileNavItem
+<Link
 href="/orders"
-icon={<ClipboardList size={18}/>}
-label="Track Orders"
-close={()=>setOpen(false)}
-/>
+onClick={()=>setOpen(false)}
+className="flex items-center gap-3 hover:text-[var(--primary)]"
+>
+<ClipboardList size={18}/>
+Track Orders
+</Link>
 
-
-<MobileNavItem
+<Link
 href="/cart"
-icon={<ShoppingCart size={18}/>}
-label={`Cart (${totalItems})`}
-close={()=>setOpen(false)}
-/>
-
+onClick={()=>setOpen(false)}
+className="flex items-center gap-3 hover:text-[var(--primary)]"
+>
+<ShoppingCart size={18}/>
+Cart ({totalItems})
+</Link>
 
 </div>
 
@@ -234,6 +140,9 @@ close={()=>setOpen(false)}
 </AnimatePresence>
 
 </nav>
+
+
+{/* 🔥 SEARCH OVERLAY */}
 <SearchOverlay
 open={searchOpen}
 onClose={()=>setSearchOpen(false)}
@@ -242,69 +151,4 @@ onClose={()=>setSearchOpen(false)}
 </>
 
 );
-
-}
-
-
-
-
-/*
-DESKTOP NAV ITEM
-*/
-
-function NavItem({href,icon,label}){
-
-return(
-
-<Link
-href={href}
-className="flex items-center gap-2 hover:text-yellow-400 transition relative group"
->
-
-{icon}
-
-<span>{label}</span>
-
-
-<motion.div
-
-layoutId="navUnderline"
-
-className="absolute left-0 -bottom-1 h-[2px] w-0 bg-yellow-400 group-hover:w-full transition-all"
-
-/>
-
-</Link>
-
-);
-
-}
-
-
-
-/*
-MOBILE NAV ITEM
-*/
-
-function MobileNavItem({href,icon,label,close}){
-
-return(
-
-<Link
-href={href}
-
-onClick={close}
-
-className="flex items-center gap-3 text-sm hover:text-yellow-400 transition"
-
->
-
-{icon}
-
-{label}
-
-</Link>
-
-);
-
 }

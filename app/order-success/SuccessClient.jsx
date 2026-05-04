@@ -7,312 +7,153 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { CheckCircle2 } from "lucide-react";
 
 export default function SuccessPage() {
 
 const [order,setOrder] = useState(null);
-
 const params = useSearchParams();
-
 const type = params.get("type");
 
-
 /*
-LOAD ORDER FROM LOCAL STORAGE
-NORMAL ORDER ONLY
+LOAD ORDER
 */
-
 useEffect(()=>{
-
-if(type === "custom") return;
-
-const storedOrder = localStorage.getItem("lastOrder");
-
-if(storedOrder){
-
-setOrder(JSON.parse(storedOrder));
-
-}
-
+if(type==="custom") return;
+const stored = localStorage.getItem("lastOrder");
+if(stored) setOrder(JSON.parse(stored));
 },[type]);
 
-
 /*
-CUSTOM ORDER MODE
-NO LOCAL STORAGE REQUIRED
+CUSTOM ORDER
 */
-
-if(type === "custom"){
-
+if(type==="custom"){
 return(
-
-<section className="min-h-screen bg-[#020617] text-white flex flex-col items-center justify-center px-6 text-center">
-
-
-{/* SPINNING LOGO */}
+<section className="min-h-screen bg-white flex flex-col items-center justify-center px-6 text-center">
 
 <motion.div
-animate={{rotate:360}}
-transition={{
-repeat:Infinity,
-duration:6,
-ease:"linear"
-}}
-className="w-20 h-20 rounded-full border border-yellow-400 overflow-hidden shadow-lg"
+initial={{scale:0.7,opacity:0}}
+animate={{scale:1,opacity:1}}
+className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center shadow"
 >
-
-<Image
-src="/logo.png"
-alt="logo"
-width={80}
-height={80}
-/>
-
+<CheckCircle2 size={40} className="text-green-500"/>
 </motion.div>
 
-
-
-{/* HEADLINE */}
-
-<h1 className="text-3xl font-semibold text-yellow-400 mt-6">
-
-Custom Request Sent 🚀
-
+<h1 className="text-2xl font-semibold mt-6 text-gray-900">
+Custom Order Received 🎁
 </h1>
 
-
-<p className="text-neutral-400 mt-3 max-w-md">
-
-We received your custom item request successfully.
-
-Our team will contact you shortly on WhatsApp with availability and pricing.
-
+<p className="text-gray-500 mt-2 max-w-sm">
+We’ve received your request successfully.  
+Our team will contact you shortly with availability & pricing.
 </p>
 
-
-
-{/* STATUS BADGE */}
-
-<div className="mt-4 bg-yellow-400/10 border border-yellow-400 text-yellow-400 px-4 py-2 rounded-full text-sm">
-
-Response expected within 5–10 minutes
-
+<div className="mt-4 text-sm bg-yellow-50 text-yellow-600 px-4 py-2 rounded-full">
+Response time: 5–15 minutes ⚡
 </div>
-
-
-
-{/* SUPPORT TEXT */}
-
-<p className="text-neutral-500 text-xs mt-6 max-w-sm">
-
-If urgent, feel free to contact us directly on WhatsApp anytime.
-
-</p>
-
-
-
-{/* BACK HOME BUTTON */}
 
 <Link
 href="/"
-className="mt-6 bg-yellow-400 text-black px-6 py-3 rounded-xl font-semibold shadow-lg"
+className="mt-6 bg-[var(--primary)] text-white px-6 py-3 rounded-xl font-semibold shadow"
 >
-
-Browse More Items
-
+Continue Shopping
 </Link>
 
-
 </section>
-
 );
-
 }
 
-
 /*
-NORMAL ORDER LOADING STATE
+LOADING
 */
-
 if(!order){
-
 return(
-
-<section className="min-h-screen flex items-center justify-center bg-[#020617] text-white">
-
-Preparing your order confirmation...
-
+<section className="min-h-screen flex items-center justify-center bg-white text-gray-500">
+Loading your order...
 </section>
-
 );
-
 }
 
-
 /*
-NORMAL ORDER SUCCESS UI
+NORMAL SUCCESS
 */
-
 return(
 
-<section className="min-h-screen bg-[#020617] text-white flex flex-col items-center justify-center px-6 text-center">
+<section className="min-h-screen bg-white flex flex-col items-center justify-center px-6 text-center">
 
 
-{/* SPINNING LOGO */}
+{/* ICON */}
 
 <motion.div
-animate={{rotate:360}}
-transition={{
-repeat:Infinity,
-duration:6,
-ease:"linear"
-}}
-className="w-20 h-20 rounded-full border border-yellow-400 overflow-hidden shadow-lg"
+initial={{scale:0.6,opacity:0}}
+animate={{scale:1,opacity:1}}
+transition={{duration:.4}}
+className="mb-4"
 >
-
-<Image
-src="/logo.png"
-alt="logo"
-width={80}
-height={80}
-/>
-
+<CheckCircle2 size={64} className="text-green-500"/>
 </motion.div>
-
 
 
 {/* HEADLINE */}
 
-<motion.h1
-initial={{opacity:0,y:20}}
-animate={{opacity:1,y:0}}
-transition={{delay:.2}}
-className="text-3xl font-semibold text-yellow-400 mt-6"
->
+<h1 className="text-2xl font-semibold text-gray-900">
+Order Placed Successfully 🎉
+</h1>
 
-Order Confirmed 🎉
-
-</motion.h1>
-
-
-<p className="text-neutral-400 mt-2 max-w-md">
-
-Your order has been received successfully.
-
-Our delivery partner is preparing your items now.
-
+<p className="text-gray-500 mt-2 max-w-sm">
+Your order has been received. We’ll contact you shortly for confirmation.
 </p>
 
 
+{/* PAYMENT BADGE */}
 
-{/* ETA BADGE */}
+<div className="mt-4 text-sm bg-green-50 text-green-600 px-4 py-2 rounded-full">
+💵 Cash on Delivery — Pay when it arrives
+</div>
 
-<div className="mt-4 bg-yellow-400/10 border border-yellow-400 text-yellow-400 px-4 py-2 rounded-full text-sm">
 
-Estimated delivery: 10–20 minutes 🚀
+{/* SUMMARY CARD */}
+
+<div className="mt-6 bg-gray-50 rounded-2xl p-5 w-full max-w-sm text-left space-y-2 shadow-sm">
+
+<p><span className="text-gray-400 text-sm">Name:</span><br/>{order.customerName}</p>
+
+<p><span className="text-gray-400 text-sm">Phone:</span><br/>{order.phone}</p>
+
+<p><span className="text-gray-400 text-sm">Address:</span><br/>{order.address}</p>
+
+<hr/>
+
+<p className="flex justify-between font-medium">
+<span>Total</span>
+<span className="text-[var(--primary)]">₹ {order.totalAmount}</span>
+</p>
 
 </div>
 
 
+{/* ACTION BUTTONS */}
 
-{/* ORDER SUMMARY */}
-
-<div className="mt-6 bg-[#020617] border border-white/10 rounded-xl p-5 text-left max-w-md w-full space-y-3">
-
-
-<p>
-
-<span className="text-neutral-400">
-
-Customer:
-
-</span>
-
-&nbsp;
-
-{order.customerName}
-
-</p>
-
-
-<p>
-
-<span className="text-neutral-400">
-
-Hostel:
-
-</span>
-
-&nbsp;
-
-{order.hostel}
-
-</p>
-
-
-<p>
-
-<span className="text-neutral-400">
-
-Room:
-
-</span>
-
-&nbsp;
-
-{order.room}
-
-</p>
-
-
-<p className="text-yellow-400 font-semibold">
-
-Total Paid: ₹ {order.totalAmount}
-
-</p>
-
-
-</div>
-
-
-
-{/* TRACK BUTTON */}
-
-<Link
-href="/orders"
-className="mt-6 bg-yellow-400 text-black px-6 py-3 rounded-xl font-semibold shadow-lg"
->
-
-Track Order
-
-</Link>
-
-
-
-{/* SUPPORT TEXT */}
-
-<p className="text-neutral-500 text-xs mt-6 max-w-sm">
-
-If your order is delayed, our delivery team will contact you shortly.
-
-</p>
-
-
-
-{/* BACK HOME BUTTON */}
+<div className="mt-6 flex gap-3">
 
 <Link
 href="/"
-className="mt-4 border border-yellow-400 text-yellow-400 px-5 py-2 rounded-xl hover:bg-yellow-400 hover:text-black transition"
+className="bg-[var(--primary)] text-white px-5 py-3 rounded-xl font-semibold"
 >
-
-Back to Home
-
+Shop More
 </Link>
+
+</div>
+
+
+{/* FOOTER TEXT */}
+
+<p className="text-xs text-gray-400 mt-6 max-w-xs">
+Need help? Our team will contact you soon or you can reach us anytime.
+</p>
 
 
 </section>
 
 );
-
 }

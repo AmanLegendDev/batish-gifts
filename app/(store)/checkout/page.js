@@ -5,108 +5,51 @@ import { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import { motion } from "framer-motion";
 
-const hostelCharges = {
-"Boys Hostel": 15,
-"Girls Hostel": 10,
-"Library Side": 20,
-"Admin Block": 5,
-"Main Gate": 25
-};
+const DELIVERY_FEE = 30;
 
 export default function CheckoutPage() {
 
-/*
-ZUSTAND STORE ACCESS (INSIDE COMPONENT ONLY)
-*/
-
 const cart = useCartStore(state => state.cart);
-
 const clearCart = useCartStore(state => state.clearCart);
-
-
-/*
-SUBTOTAL
-*/
 
 const subtotal = cart.reduce(
 (acc,item)=>acc + item.sellingPrice * item.qty,
 0
 );
 
+const totalAmount = subtotal + DELIVERY_FEE;
 
-/*
-FORM STATE
-*/
+const [loading,setLoading]=useState(false);
 
 const [form,setForm] = useState({
-
 customerName:"",
 phone:"",
-hostel:"",
-room:"",
+address:"",
 note:""
-
 });
-
-
-/*
-DELIVERY CHARGE
-*/
-
-const deliveryCharge =
-hostelCharges[form.hostel] || 0;
-
-
-/*
-TOTAL
-*/
-
-const totalAmount =
-subtotal + deliveryCharge;
-
-
-/*
-FORM HANDLER
-*/
 
 const handleChange = e => {
-
-setForm({
-
-...form,
-[e.target.name]:e.target.value
-
-});
-
+setForm({...form,[e.target.name]:e.target.value});
 };
 
 
 /*
-CREATE ORDER
+PLACE ORDER
 */
 
 const handlePlaceOrder = async () => {
 
-if(
-!form.customerName ||
-!form.phone ||
-!form.hostel ||
-!form.room
-){
-alert("Fill required fields");
+if(!form.customerName || !form.phone || !form.address){
+alert("Please fill all required fields");
 return;
 }
 
+setLoading(true);
+
 const res = await fetch("/api/orders/create", {
-
 method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
+headers:{ "Content-Type":"application/json" },
 body:JSON.stringify({
-
 ...form,
 items: cart.map(item => ({
 productId: item._id,
@@ -116,36 +59,28 @@ actualPrice: item.actualPrice,
 qty: item.qty
 })),
 subtotal,
-deliveryCharge,
-totalAmount
-
+deliveryCharge: DELIVERY_FEE,
+totalAmount,
+paymentMethod: "COD"
 })
-
 });
 
 const data = await res.json();
 
-
 /*
-SAVE ORDER FOR SUCCESS PAGE
+SAVE FOR SUCCESS PAGE
 */
 
-localStorage.setItem(
-"lastOrder",
-JSON.stringify(data)
-);
-
-
-/*
-CLEAR CART
-*/
+localStorage.setItem("lastOrder", JSON.stringify({
+...form,
+items: cart,
+subtotal,
+deliveryCharge: DELIVERY_FEE,
+totalAmount,
+paymentMethod: "Cash on Delivery"
+}));
 
 clearCart();
-
-
-/*
-REDIRECT
-*/
 
 window.location.href="/order-success";
 
@@ -154,23 +89,28 @@ window.location.href="/order-success";
 
 return(
 
-<section className="bg-[#020617] min-h-screen text-white pb-32">
+<section className="min-h-screen bg-white pb-28">
 
 <Navbar/>
 
-<div className="max-w-6xl mx-auto px-4 pt-6 grid md:grid-cols-2 gap-6">
+<div className="max-w-md mx-auto px-4 pt-6 space-y-6">
 
 
-{/* CUSTOMER FORM */}
+{/* HEADER */}
 
-<div className="bg-[#020617] border border-white/10 rounded-2xl p-5 space-y-4">
+<div>
+<h1 className="text-xl font-semibold text-gray-900">
+Checkout
+</h1>
+<p className="text-sm text-gray-500">
+Enter your delivery details
+</p>
+</div>
 
-<h2 className="text-lg text-yellow-400 font-semibold">
 
-Delivery Details
+{/* FORM */}
 
-</h2>
-
+<div className="space-y-3">
 
 <input
 name="customerName"
@@ -179,7 +119,6 @@ className="input-style"
 onChange={handleChange}
 />
 
-
 <input
 name="phone"
 placeholder="Phone Number"
@@ -187,37 +126,16 @@ className="input-style"
 onChange={handleChange}
 />
 
-
-<select
-name="hostel"
-className="input-style"
-onChange={handleChange}
->
-
-<option value="">
-Select Hostel
-</option>
-
-{Object.keys(hostelCharges).map(hostel=>(
-<option key={hostel}>
-{hostel}
-</option>
-))}
-
-</select>
-
-
 <input
-name="room"
-placeholder="Room Number"
+name="address"
+placeholder="Full Address"
 className="input-style"
 onChange={handleChange}
 />
-
 
 <textarea
 name="note"
-placeholder="Extra instructions (optional)"
+placeholder="Extra note (optional)"
 className="input-style"
 onChange={handleChange}
 />
@@ -225,88 +143,62 @@ onChange={handleChange}
 </div>
 
 
+{/* SUMMARY */}
 
-{/* ORDER SUMMARY */}
-
-<div className="bg-[#020617] border border-white/10 rounded-2xl p-5">
-
-<h2 className="text-lg text-yellow-400 font-semibold mb-4">
-
-Order Summary
-
-</h2>
-
+<div className="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
 
 {cart.map(item=>(
-
-<div
-key={item._id}
-className="flex justify-between mb-2 text-sm"
->
-
-<span>
-{item.title} × {item.qty}
-</span>
-
-<span>
-₹ {item.sellingPrice * item.qty}
-</span>
-
+<div key={item._id} className="flex justify-between">
+<span>{item.name} × {item.qty}</span>
+<span>₹ {item.qty * item.sellingPrice}</span>
 </div>
-
 ))}
 
+<hr/>
 
-<hr className="my-3 border-white/10"/>
-
-
-<div className="flex justify-between text-sm">
-
+<div className="flex justify-between">
 <span>Subtotal</span>
-
 <span>₹ {subtotal}</span>
-
 </div>
 
-
-<div className="flex justify-between text-sm">
-
-<span>Delivery Charge</span>
-
-<span>₹ {deliveryCharge}</span>
-
+<div className="flex justify-between">
+<span>Delivery</span>
+<span>₹ {DELIVERY_FEE}</span>
 </div>
 
-
-<hr className="my-3 border-white/10"/>
-
-
-<div className="flex justify-between text-lg font-semibold text-yellow-400">
-
+<div className="flex justify-between font-semibold text-[var(--primary)] text-base">
 <span>Total</span>
-
 <span>₹ {totalAmount}</span>
+</div>
 
 </div>
 
+
+{/* PAYMENT INFO */}
+
+<div className="text-sm text-gray-600 bg-green-50 border border-green-100 rounded-xl p-3">
+💵 Payment Method: <b>Cash on Delivery</b><br/>
+Pay when your order arrives.
+</div>
+
+
+{/* BUTTON */}
 
 <motion.button
 whileTap={{scale:.95}}
 onClick={handlePlaceOrder}
-className="w-full mt-6 bg-yellow-400 text-black py-3 rounded-xl font-semibold shadow-lg"
+disabled={loading}
+className="w-full bg-[var(--primary)] text-white py-3 rounded-xl font-semibold shadow-lg"
 >
 
-Place Order
+{loading ? "Placing Order..." : "Place Order"}
 
 </motion.button>
 
 
 </div>
 
-</div>
-
 </section>
 
 );
-
 }

@@ -7,7 +7,7 @@ export async function POST(req){
   const { id } = await req.json();
 
   await Order.findByIdAndUpdate(id,{
-    status:"confirmed"
+    status:"delivered"
   });
 
   return Response.json({ success:true });

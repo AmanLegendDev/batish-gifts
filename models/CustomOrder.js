@@ -1,38 +1,21 @@
 import mongoose from "mongoose";
 
-const customOrderSchema=new mongoose.Schema({
+const customOrderSchema = new mongoose.Schema(
+  {
+    name: String,
+    phone: String,
+    address: String,
+    item: String,
+    note: String,
 
-name:String,
-
-phone:String,
-
-hostel:String,
-
-room:String,
-
-item:String,
-
-note:String,
-
-status:{
-type:String,
-default:"pending"
-},
-
-campus:{
-type:String,
-default:"HPU"
-},
-
-status:{
-type:String,
-enum:["new","delivered"],
-default:"new"
-}
-
-},{
-timestamps:true
-});
+    status: {
+      type: String,
+      enum: ["new", "completed"],
+      default: "new",
+    },
+  },
+  { timestamps: true }
+);
 
 export default mongoose.models.CustomOrder ||
-mongoose.model("CustomOrder",customOrderSchema);
+  mongoose.model("CustomOrder", customOrderSchema);

@@ -4,71 +4,66 @@ import { useCartStore } from "@/store/cartStore";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import { Trash2 } from "lucide-react";
-import { motion } from "framer-motion";
-import FreebieProgress from "@/components/store/FreebieProgress";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function CartPage(){
 
-const cart = useCartStore(state=>state.cart);
+const { cart, addToCart, removeItem, decreaseQty } = useCartStore();
 
-const addToCart = useCartStore(state=>state.addToCart);
-const removeItem = useCartStore(state=>state.removeItem);
-const decreaseQty = useCartStore(state=>state.decreaseQty);
-
-
-/*
-TOTAL ITEMS
-*/
-
-const totalItems = cart.reduce(
-(acc,item)=>acc+item.qty,
-0
-);
-
-
-/*
-TOTAL PRICE
-*/
+const totalItems = cart.reduce((a,i)=>a+i.qty,0);
 
 const subtotal = cart.reduce(
-(acc,item)=>acc + item.sellingPrice * item.qty,
+(a,i)=>a + i.sellingPrice * i.qty,
 0
 );
 
 
 /*
-EMPTY CART
+WHATSAPP MESSAGE
 */
 
-if(cart.length===0)
+const generateMessage = () => {
+
+let message = "Hello, I want to order:\n\n";
+
+cart.forEach(item=>{
+message += `- ${item.name} x${item.qty}\n`;
+});
+
+message += `\nTotal: ₹${subtotal}\n\nName:\nAddress:\n`;
+
+return encodeURIComponent(message);
+
+};
+
+
+/*
+EMPTY
+*/
+
+if(cart.length===0){
 
 return(
 
-<section className="bg-[#020617] min-h-screen text-white">
+<section className="min-h-screen bg-white">
 
 <Navbar/>
 
 <div className="flex flex-col items-center justify-center py-32 text-center">
 
-<h2 className="text-2xl font-semibold">
-
-Cart is empty 🛒
-
+<h2 className="text-2xl font-semibold text-gray-800">
+Your cart is empty 🛒
 </h2>
 
-<p className="text-neutral-400 mt-2">
-
-Add snacks to unlock FREE rewards 🎁
-
+<p className="text-gray-500 mt-2">
+Add some beautiful gifts 🎁
 </p>
 
 <Link
 href="/"
-className="mt-6 bg-yellow-400 text-black px-6 py-3 rounded-xl font-semibold shadow-lg"
+className="mt-6 bg-[var(--primary)] text-white px-6 py-3 rounded-xl font-medium shadow"
 >
-
-Browse Items
-
+Browse Products
 </Link>
 
 </div>
@@ -77,82 +72,55 @@ Browse Items
 
 );
 
+}
 
+
+/*
+MAIN
+*/
 
 return(
 
-<section className="bg-[#020617] min-h-screen text-white pb-32">
+<section className="min-h-screen bg-white pb-32">
 
 <Navbar/>
 
 
 {/* HEADER */}
 
-<div className="px-5 pt-6 pb-2">
+<div className="px-5 pt-6">
 
-<h1 className="text-xl font-semibold text-yellow-400">
-
+<h1 className="text-xl font-semibold text-gray-900">
 Your Cart
-
 </h1>
 
-<p className="text-xs text-neutral-400">
-
-{totalItems} items selected
-
+<p className="text-sm text-gray-500">
+{totalItems} item{totalItems>1 && "s"}
 </p>
 
 </div>
 
 
-{/* FREEBIE PROGRESS */}
 
-<FreebieProgress/>
-
-
-{/* REWARD HINT STRIP */}
-
-<div className="px-4 mt-3">
-
-<div className="bg-[#111827] border border-yellow-400/20 rounded-xl px-4 py-3 text-xs text-neutral-300">
-
-🎁 Unlock FREE Lollipop @ ₹150  
-🍪 FREE Biscuit @ ₹300  
-🧃 FREE Slice Bottle @ ₹500
-
-</div>
-
-</div>
-
-
-
-{/* CART LIST */}
+{/* LIST */}
 
 <div className="px-4 mt-4 space-y-4">
 
 {cart.map(item=>(
 
 <motion.div
-
 key={item._id}
-
 initial={{opacity:0,y:10}}
-
 animate={{opacity:1,y:0}}
-
-className="flex gap-4 items-center bg-[#111827] border border-white/10 rounded-2xl p-3"
-
+className="flex gap-4 items-center bg-white border border-gray-100 rounded-2xl p-3 shadow-sm"
 >
 
 
 {/* IMAGE */}
 
 <img
-
-src={item.image || "/placeholder.png"}
-
-className="w-20 h-20 rounded-xl object-contain bg-black/20 p-2"
-
+src={item.image}
+className="w-20 h-20 rounded-xl object-cover"
 />
 
 
@@ -160,87 +128,54 @@ className="w-20 h-20 rounded-xl object-contain bg-black/20 p-2"
 
 <div className="flex-1">
 
-
-<h3 className="text-sm font-medium line-clamp-2">
-
+<h3 className="text-sm font-medium text-gray-800 line-clamp-2">
 {item.name}
-
 </h3>
 
-
-<p className="text-yellow-400 text-sm font-semibold mt-1">
-
+<p className="text-[var(--primary)] font-semibold text-sm mt-1">
 ₹ {item.sellingPrice}
+</p>
 
+<p className="text-xs text-gray-400">
+Total ₹ {item.qty * item.sellingPrice}
 </p>
 
 
-<p className="text-[11px] text-neutral-400">
-
-Item total ₹ {item.qty * item.sellingPrice}
-
-</p>
-
-
-
-{/* QTY CONTROLS */}
+{/* QTY */}
 
 <div className="flex items-center gap-2 mt-2">
 
-
 <button
-
 onClick={()=>decreaseQty(item._id)}
-
-className="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center"
-
+className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
 >
-
 −
-
 </button>
-
 
 <span className="text-sm font-semibold">
-
 {item.qty}
-
 </span>
 
-
 <button
-
 onClick={()=>addToCart(item)}
-
-className="w-8 h-8 rounded-lg bg-yellow-400 text-black flex items-center justify-center font-bold"
-
+className="w-8 h-8 rounded-full bg-[var(--primary)] text-white flex items-center justify-center"
 >
-
 +
-
 </button>
 
-
 </div>
 
 </div>
 
 
-
-{/* REMOVE */}
+{/* DELETE */}
 
 <button
-
 onClick={()=>removeItem(item._id)}
-
-className="text-red-400"
-
+className="text-red-500"
 >
-
 <Trash2 size={18}/>
-
 </button>
-
 
 </motion.div>
 
@@ -250,54 +185,56 @@ className="text-red-400"
 
 
 
-{/* STICKY CHECKOUT BAR */}
+{/* BOTTOM BAR */}
+
+<AnimatePresence>
 
 <motion.div
-
-initial={{y:120,opacity:0}}
-
+initial={{y:100,opacity:0}}
 animate={{y:0,opacity:1}}
-
-className="fixed bottom-0 left-0 w-full bg-[#020617] border-t border-white/10 px-4 py-4 flex items-center justify-between shadow-xl"
-
+className="fixed bottom-0 left-0 w-full bg-white border-t px-4 py-4 flex gap-3 items-center shadow"
 >
 
 
-<div>
+<div className="flex-1">
 
-<p className="text-xs text-neutral-400">
-
-Subtotal
-
+<p className="text-xs text-gray-400">
+Total
 </p>
 
-<p className="text-lg font-semibold text-yellow-400">
-
+<p className="text-lg font-semibold text-[var(--primary)]">
 ₹ {subtotal}
-
 </p>
 
 </div>
 
 
+{/* CHECKOUT */}
+
 <Link
-
 href="/checkout"
-
-className="bg-yellow-400 text-black px-6 py-3 rounded-xl font-semibold shadow-lg active:scale-95 transition"
-
+className="bg-gray-100 px-4 py-2 rounded-lg text-sm font-medium"
 >
-
-Checkout →
-
+Checkout
 </Link>
+
+
+{/* WHATSAPP */}
+
+<a
+href={`https://wa.me/?text=${generateMessage()}`}
+target="_blank"
+className="bg-[var(--primary)] text-white px-4 py-2 rounded-lg text-sm font-semibold"
+>
+WhatsApp Order
+</a>
 
 
 </motion.div>
 
+</AnimatePresence>
 
 </section>
 
 );
-
 }

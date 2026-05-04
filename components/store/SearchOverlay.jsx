@@ -3,10 +3,15 @@
 import { useEffect,useState } from "react";
 import { X,Search } from "lucide-react";
 
-export default function SearchOverlay({open,onClose}){
+import { useRouter, usePathname } from "next/navigation";
 
-const [query,setQuery]=useState("");
-const [results,setResults]=useState([]);
+
+export default function SearchOverlay({open,onClose}){
+    
+    const [query,setQuery]=useState("");
+    const [results,setResults]=useState([]);
+    const router = useRouter();
+    const pathname = usePathname();
 
 useEffect(()=>{
 
@@ -77,28 +82,33 @@ className="bg-transparent outline-none text-white w-full"
 
 <div
 key={item._id}
-onClick={()=>{
+onClick={() => {
 
-window.dispatchEvent(
-new CustomEvent(
-"categorySelected",
-{detail:item.category._id}
-)
-);
+  // CASE: already on category page
+  if (pathname.startsWith("/category")) {
 
-setTimeout(()=>{
+    window.dispatchEvent(
+      new CustomEvent("categorySelected", {
+        detail: item.category._id
+      })
+    );
 
-window.dispatchEvent(
-new CustomEvent(
-"scrollToProduct",
-{detail:item._id}
-)
-);
+    setTimeout(() => {
+      window.dispatchEvent(
+        new CustomEvent("scrollToProduct", {
+          detail: item._id
+        })
+      );
+    }, 200);
 
-},200);
+  } else {
 
-onClose();
+    // 🔥 go to category page
+    router.push(`/category/${item.category._id}?product=${item._id}`);
 
+  }
+
+  onClose();
 }}
 
 className="text-white border-b border-white/5 pb-3"

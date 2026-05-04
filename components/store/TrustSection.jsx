@@ -1,29 +1,64 @@
+"use client";
+
+import { motion } from "framer-motion";
+
 export default function TrustSection(){
+
+const data = [
+  { icon:"🎁", title:"Unique Gifts", desc:"Handpicked for every occasion" },
+  { icon:"💝", title:"Made with Love", desc:"Perfect for your loved ones" },
+  { icon:"⚡", title:"Quick Response", desc:"Fast & reliable service" },
+  { icon:"📦", title:"Easy Ordering", desc:"Simple & smooth experience" }
+];
 
 return(
 
-<section className="px-6 py-12">
+<section className="px-5 py-16 bg-gradient-to-b from-white to-pink-50">
 
-<h2 className="text-lg font-semibold mb-6">
+  {/* HEADER */}
+  <div className="text-center mb-10">
+    <p className="text-xs tracking-[4px] text-[var(--primary)] uppercase">
+      Why Choose Us
+    </p>
 
-Why Students Choose MidnightMartHPU
+    <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 mt-2">
+      Gifts That Feel Special 💝
+    </h2>
+  </div>
 
-</h2>
 
-<ul className="space-y-3 text-neutral-400">
+  {/* GRID */}
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
 
-<li>⚡ 10–15 min hostel delivery</li>
+    {data.map((item,index)=>(
 
-<li>🌙 Late night availability</li>
+      <motion.div
+        key={index}
+        initial={{opacity:0,y:20}}
+        whileInView={{opacity:1,y:0}}
+        transition={{delay:index*0.1}}
+        className="bg-white rounded-2xl p-5 text-center shadow-sm hover:shadow-md transition"
+      >
 
-<li>🏫 Only inside HPU campus</li>
+        <div className="text-2xl mb-2">
+          {item.icon}
+        </div>
 
-<li>💬 WhatsApp support anytime</li>
+        <h3 className="text-sm font-semibold text-gray-900">
+          {item.title}
+        </h3>
 
-</ul>
+        <p className="text-xs text-gray-500 mt-1">
+          {item.desc}
+        </p>
+
+      </motion.div>
+
+    ))}
+
+  </div>
 
 </section>
 
 );
-
 }

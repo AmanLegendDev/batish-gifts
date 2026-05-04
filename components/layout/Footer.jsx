@@ -1,146 +1,99 @@
 import Link from "next/link";
 
-export default function Footer() {
+export default function Footer(){
 
-return (
+return(
 
-<footer className="bg-[#0B0F19] border-t border-white/5 mt-10">
+<footer className="bg-white border-t border-gray-100 mt-12">
 
-<div className="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-4 gap-10">
-
+<div className="max-w-7xl mx-auto px-6 py-14 grid md:grid-cols-4 gap-10">
 
 {/* BRAND */}
-
 <div>
-
-<h2 className="text-yellow-400 text-lg font-semibold">
-
-MidnightMartHPU
-
+<h2 className="text-[var(--primary)] text-lg font-semibold">
+Aarav Gift Gallery
 </h2>
 
-<p className="text-neutral-400 mt-3 text-sm">
-
-Late night hostel delivery inside HPU Summerhill campus.
-
-Fast • Reliable • Student-friendly
-
+<p className="text-gray-500 mt-3 text-sm leading-relaxed">
+aesthetic & meaningful gifts for every special moment.
+Make your loved ones smile 💝
 </p>
-
 </div>
 
 
-
-{/* QUICK LINKS */}
-
+{/* LINKS */}
 <div>
+<h3 className="font-semibold mb-3 text-gray-900">Explore</h3>
 
-<h3 className="font-semibold mb-3 text-white">
-
-Quick Links
-
-</h3>
-
-<div className="flex flex-col gap-2 text-sm text-neutral-400">
+<div className="flex flex-col gap-2 text-sm text-gray-500">
 
 <Link href="/">Home</Link>
-
 <Link href="#categories">Categories</Link>
+<Link href="/category/all">Shop</Link>
 
-<Link href="/orders">Track Order</Link>
-
-<a
-href="https://wa.me/918219174058"
-target="_blank"
->
-
+<Link href="/custom-order">
 Custom Order
-
-</a>
-
-</div>
+</Link>
 
 </div>
+</div>
 
 
-
-{/* DELIVERY INFO */}
-
+{/* INFO */}
 <div>
+<h3 className="font-semibold mb-3 text-gray-900">Store Info</h3>
 
-<h3 className="font-semibold mb-3 text-white">
+<div className="flex flex-col gap-2 text-sm text-gray-500">
 
-Delivery Info
-
-</h3>
-
-<div className="flex flex-col gap-2 text-sm text-neutral-400">
-
-<p>⚡ 10–15 min delivery</p>
-
-<p>🏫 Inside HPU campus only</p>
-
-<p>🌙 Midnight service active</p>
+<p>🎁 Unique gift collections</p>
+<p>💝 Custom gift options</p>
+<p>📦 Easy ordering process</p>
 
 </div>
-
 </div>
-
 
 
 {/* CONTACT */}
-
 <div>
+<h3 className="font-semibold mb-3 text-gray-900">Contact</h3>
 
-<h3 className="font-semibold mb-3 text-white">
+<div className="flex flex-col gap-2 text-sm text-gray-500">
 
-Contact Support
-
-</h3>
-
-<div className="flex flex-col gap-2 text-sm text-neutral-400">
-
-<p>Shimla • HPU Summerhill</p>
+<p>Shimla</p>
 
 <a
-href="tel:8219174058"
-className="hover:text-yellow-400 transition"
+href="tel:9459365278"
+className="hover:text-[var(--primary)] transition"
 >
-
-📞 +91 8219174058
-
+📞 +91 9459365278
 </a>
 
 <a
-href="https://wa.me/918219174058"
+href="https://wa.me/919459365278"
 target="_blank"
-className="hover:text-yellow-400 transition"
+className="hover:text-[var(--primary)] transition"
 >
-
-💬 WhatsApp Support
-
+💬 WhatsApp
 </a>
 
 </div>
+</div>
 
 </div>
 
 
+{/* BOTTOM */}
+<div className="text-center text-xs text-gray-400 pb-6">
+
+© {new Date().getFullYear()} Aarav Gift Gallery  
+
+<br/>
+
+Built by <span className="text-[var(--primary)] font-medium">Aman Digital Solution</span>
+
 </div>
-
-
-
-{/* COPYRIGHT STRIP */}
-
-<div className="text-center text-xs text-neutral-500 pb-6">
-
-© {new Date().getFullYear()} MidnightMartHPU — Built for HPU Students 🚀
-
-</div>
-
 
 </footer>
 
 );
-
 }

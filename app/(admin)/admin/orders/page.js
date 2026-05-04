@@ -1,88 +1,65 @@
 "use client";
 
 import { useEffect,useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion,AnimatePresence } from "framer-motion";
-import {
-CheckCircle,
-Truck,
-Wallet,
-XCircle,
-Clock
-} from "lucide-react";
+import { CheckCircle } from "lucide-react";
 
 export default function OrdersPage(){
 
-const [tab,setTab]=useState("new");
+const params = useSearchParams();
+const initialTab = params.get("tab") || "new";
 
+const [tab,setTab]=useState(initialTab);
 const [orders,setOrders]=useState([]);
-
 const [popup,setPopup]=useState(null);
+const [loading,setLoading]=useState(false);
 
 
 /*
-FETCH ORDERS BASED ON TAB
+FETCH ORDERS
 */
 
 const fetchOrders=async()=>{
-
 const res=await fetch(`/api/admin/orders/${tab}`);
-
 const data=await res.json();
-
 setOrders(data);
-
 };
 
 
-/*
-REALTIME POLLING
-*/
-
 useEffect(()=>{
-
 fetchOrders();
-
-const interval=setInterval(fetchOrders,4000);
-
-return()=>clearInterval(interval);
-
+const i=setInterval(fetchOrders,4000);
+return()=>clearInterval(i);
 },[tab]);
 
 
 /*
-OPEN POPUP ACTION
+ACTION WITH ANIMATION
 */
 
-const openPopup=(type,id)=>{
+const handleAction=async(type,id)=>{
 
-setPopup({type,id});
+setLoading(true);
 
-};
-
-
-/*
-EXECUTE ACTION
-*/
-
-const executeAction=async()=>{
-
-const {type,id}=popup;
-
+/* API call */
 await fetch(`/api/admin/orders/${type}`,{
-
 method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
+headers:{ "Content-Type":"application/json" },
 body:JSON.stringify({id})
-
 });
+
+/* 🔥 animate remove */
+setOrders(prev => prev.filter(o => o._id !== id));
 
 setPopup(null);
 
-fetchOrders();
+/* 🔥 smooth tab switch */
+setTimeout(()=>{
+if(type==="confirm") setTab("confirmed");
+if(type==="deliver") setTab("delivered");
+setLoading(false);
+},350);
 
 };
 
@@ -94,71 +71,114 @@ return(
 
 {/* HEADER */}
 
-<h1 className="text-2xl font-semibold text-yellow-400">
-
-Orders Control Panel
-
+<h1 className="text-xl font-semibold">
+Orders
 </h1>
-
 
 
 {/* TABS */}
 
-<div className="flex gap-3 overflow-x-auto">
+<div className="flex gap-2">
 
-<TabBtn
-title="New"
-active={tab==="new"}
-onClick={()=>setTab("new")}
-/>
-
-<TabBtn
-title="Processing"
-active={tab==="processing"}
-onClick={()=>setTab("processing")}
-/>
-
-<TabBtn
-title="Completed"
-active={tab==="completed"}
-onClick={()=>setTab("completed")}
-/>
+<Tab title="New" active={tab==="new"} onClick={()=>setTab("new")} />
+<Tab title="Confirmed" active={tab==="confirmed"} onClick={()=>setTab("confirmed")} />
+<Tab title="Delivered" active={tab==="delivered"} onClick={()=>setTab("delivered")} />
 
 </div>
 
 
+{/* EMPTY */}
 
-{/* EMPTY STATE */}
-
-{orders.length===0 &&(
-
-<div className="card p-6 text-center text-neutral-400">
-
+{orders.length===0 && !loading &&(
+<div className="card p-6 text-center text-gray-400">
 No orders here
-
 </div>
-
 )}
 
 
+{/* LIST */}
 
-{/* ORDER LIST */}
+<div className="space-y-3">
 
-<div className="space-y-4">
+<AnimatePresence>
 
 {orders.map(order=>(
 
-<OrderCard
+<motion.div
 key={order._id}
-order={order}
-tab={tab}
-openPopup={openPopup}
-/>
+layout
+initial={{opacity:0,y:12}}
+animate={{opacity:1,y:0}}
+exit={{opacity:0,scale:0.9}}
+transition={{duration:0.25}}
+className="card p-4 space-y-3"
+>
 
+
+{/* CUSTOMER */}
+
+<div>
+<h3 className="font-medium">
+{order.customerName}
+</h3>
+<p className="text-xs text-gray-500">
+{order.phone}
+</p>
+<p className="text-xs text-gray-500">
+{order.address}
+</p>
+</div>
+
+
+{/* ITEMS */}
+
+<div className="text-sm space-y-1">
+{order.items.map(i=>(
+<p key={i.title}>
+{i.title} × {i.qty}
+</p>
 ))}
+</div>
+
+
+{/* TOTAL */}
+
+<p className="text-sm font-semibold text-[var(--primary)]">
+₹ {order.totalAmount}
+</p>
+
+
+{/* ACTIONS */}
+
+<div className="flex gap-2">
+
+{tab==="new" &&(
+<button
+onClick={()=>setPopup({type:"confirm",id:order._id})}
+className="btn-primary text-sm px-3 py-1"
+>
+Confirm
+</button>
+)}
+
+{tab==="confirmed" &&(
+<button
+onClick={()=>setPopup({type:"deliver",id:order._id})}
+className="btn-primary text-sm px-3 py-1"
+>
+Delivered
+</button>
+)}
 
 </div>
 
+</motion.div>
+
+))}
+
+</AnimatePresence>
+
+</div>
 
 
 {/* POPUP */}
@@ -168,65 +188,41 @@ openPopup={openPopup}
 {popup &&(
 
 <motion.div
-
 initial={{opacity:0}}
 animate={{opacity:1}}
 exit={{opacity:0}}
-
-className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-
+className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
 >
 
 <motion.div
-
-initial={{scale:0.8}}
+initial={{scale:0.9}}
 animate={{scale:1}}
-exit={{scale:0.8}}
-
-className="card p-6 space-y-4 w-[90%] max-w-sm"
-
+exit={{scale:0.9}}
+className="bg-white p-5 rounded-xl space-y-4 w-[90%] max-w-sm shadow-lg"
 >
 
-<h2 className="text-lg font-semibold">
+<p className="text-center font-medium">
 
-{popup.type==="confirm" && "Confirm this order?"}
+{popup.type==="confirm" && "Do you want to confirm this order?"}
+{popup.type==="deliver" && "Mark this order as delivered?"}
 
-{popup.type==="cancel" && "Cancel & delete this order permanently?"}
-
-{popup.type==="dispatch" && "Mark order as out for delivery?"}
-
-{popup.type==="delivered" && "Mark order delivered?"}
-
-{popup.type==="pay" && "Confirm payment received?"}
-
-</h2>
-
+</p>
 
 <div className="flex gap-3">
 
 <button
-
-onClick={executeAction}
-
-className="flex-1 bg-yellow-400 text-black py-2 rounded-lg font-semibold"
-
+onClick={()=>handleAction(popup.type,popup.id)}
+className="flex-1 btn-primary flex items-center justify-center gap-1"
 >
-
-OK
-
+<CheckCircle size={16}/>
+Yes
 </button>
 
-
 <button
-
 onClick={()=>setPopup(null)}
-
-className="flex-1 bg-neutral-700 py-2 rounded-lg"
-
+className="flex-1 bg-gray-200 rounded-lg"
 >
-
 Cancel
-
 </button>
 
 </div>
@@ -240,244 +236,30 @@ Cancel
 </AnimatePresence>
 
 
-
 </div>
 
 );
-
 }
 
 
-
 /*
-TAB BUTTON
+TAB
 */
 
-function TabBtn({title,active,onClick}){
+function Tab({title,active,onClick}){
 
 return(
 
 <button
-
 onClick={onClick}
-
-className={`
-
-px-4 py-2 rounded-xl transition whitespace-nowrap
-
-${active
-?"bg-yellow-400 text-black"
-:"bg-neutral-900 text-neutral-400"}
-
-`}
-
+className={`px-3 py-1 rounded-lg text-sm transition ${
+active
+? "bg-[var(--primary)] text-white shadow-sm"
+: "bg-gray-100"
+}`}
 >
-
 {title}
-
 </button>
 
 );
-
-}
-
-
-
-/*
-ORDER CARD
-*/
-
-function OrderCard({order,tab,openPopup}){
-
-return(
-
-<motion.div
-
-initial={{opacity:0,y:15}}
-animate={{opacity:1,y:0}}
-
-className="card p-5 space-y-4"
-
->
-
-
-{/* CUSTOMER */}
-
-<div>
-
-<h2 className="font-semibold">
-
-{order.customerName}
-
-</h2>
-
-<p className="text-sm text-neutral-400">
-
-{order.phone}
-
-</p>
-
-<p className="text-sm text-neutral-400">
-
-{order.hostel} • Room {order.room}
-
-</p>
-
-</div>
-
-
-
-{/* ITEMS */}
-
-<div className="space-y-1 text-sm">
-
-{order.items.map(item=>(
-
-<p key={item._id}>
-
-{item.title} × {item.qty}
-
-</p>
-
-))}
-
-</div>
-
-
-
-{/* BUTTONS */}
-
-<div className="flex gap-3 flex-wrap">
-
-
-{/* NEW ORDERS */}
-
-{tab==="new" &&(
-
-<>
-
-<ActionBtn
-text="Confirm"
-icon={<CheckCircle size={16}/>}
-onClick={()=>openPopup("confirm",order._id)}
-color="yellow"
-/>
-
-<ActionBtn
-text="Cancel"
-icon={<XCircle size={16}/>}
-onClick={()=>openPopup("cancel",order._id)}
-color="red"
-/>
-
-</>
-
-)}
-
-
-
-{/* PROCESSING ORDERS */}
-
-{tab==="processing" &&(
-
-<>
-
-{order.orderStatus==="confirmed" &&(
-
-<ActionBtn
-text="Dispatch"
-icon={<Truck size={16}/>}
-onClick={()=>openPopup("dispatch",order._id)}
-color="yellow"
-/>
-
-)}
-
-
-{order.orderStatus==="out_for_delivery" &&(
-
-<ActionBtn
-text="Delivered"
-icon={<Clock size={16}/>}
-onClick={()=>openPopup("delivered",order._id)}
-color="yellow"
-/>
-
-)}
-
-
-{order.orderStatus==="delivered" &&
-order.paymentStatus==="pending" &&(
-
-<ActionBtn
-text="Payment Received"
-icon={<Wallet size={16}/>}
-onClick={()=>openPopup("pay",order._id)}
-color="green"
-/>
-
-)}
-
-
-<ActionBtn
-text="Cancel"
-icon={<XCircle size={16}/>}
-onClick={()=>openPopup("cancel",order._id)}
-color="red"
-/>
-
-</>
-
-)}
-
-</div>
-
-</motion.div>
-
-);
-
-}
-
-
-
-/*
-ACTION BUTTON
-*/
-
-function ActionBtn({text,icon,onClick,color}){
-
-const colors={
-
-yellow:"bg-yellow-400 text-black",
-
-green:"bg-green-500 text-white",
-
-red:"bg-red-500 text-white"
-
-};
-
-return(
-
-<button
-
-onClick={onClick}
-
-className={`
-
-flex items-center gap-2 px-4 py-2 rounded-xl font-semibold
-
-${colors[color]}
-
-`}
-
->
-
-{icon}
-
-{text}
-
-</button>
-
-);
-
 }

@@ -4,7 +4,7 @@ import Order from "@/models/Order";
 export async function GET(){
   await connectDB();
 
-  const orders = await Order.find({ status:"delivered" })
+  const orders = await Order.find({ status:"confirmed" })
     .sort({ createdAt:-1 });
 
   return Response.json(orders);

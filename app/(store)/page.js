@@ -7,51 +7,32 @@ import CustomOrderSection from "@/components/store/CustomOrderSection";
 import DeliveryPricing from "@/components/store/DeliveryPricing";
 import TrustSection from "@/components/store/TrustSection";
 import Footer from "@/components/layout/Footer";
+import FeaturedProducts from "@/components/store/FeaturedProducts";
+import FloatingCart from "@/components/store/FloatingCart";
 
 
 export default function HomePage() {
 
 return (
 
-<div className=" h-screen ">
-  <Navbar/>
+<div className="min-h-screen">
 
-<section className="">
-<Hero />
-</section>
+<Navbar/>
 
-<section id="categories" className="">
-<CategorySlider />
-</section>
+<Hero/>
 
-<section className="">
-<ProductSection />
-</section>
+<CategorySlider/>
 
-<section className="">
-<FreebieProgress />
-</section>
+<FeaturedProducts/>
 
+{/* 🔥 MINI CTA */}
+<CustomOrderSection/>
 
-<section className="">
-<CustomOrderSection />
-</section>
+<TrustSection/>
 
+<Footer/>
 
-<section className="">
-<DeliveryPricing />
-</section>
-
-<section className="">
-<TrustSection />
-</section>
-
-
-<section className="">
-<Footer />
-</section>
-
-
+<FloatingCart />
 
 </div>
 

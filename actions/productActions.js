@@ -4,199 +4,161 @@ import { connectDB } from "@/lib/db";
 import Product from "@/models/Product";
 import slugify from "slugify";
 import mongoose from "mongoose";
-import Category from "@/models/Category";
 
 /*
 CREATE PRODUCT
 */
 
 export async function createProduct(data) {
+  try {
+    await connectDB();
 
-try {
+    if (!data.name) return { error: "Name required" };
+    if (!data.image) return { error: "Image required" };
+    if (!data.category) return { error: "Category required" };
+    if (!data.sellingPrice) return { error: "Price required" };
 
-await connectDB();
+    const slug =
+      slugify(data.name, { lower: true }) +
+      "-" +
+      Date.now();
 
-console.log("PRODUCT DATA RECEIVED:", data);
+    await Product.create({
+      name: data.name,
+      slug,
+      description: data.description || "",
+      sellingPrice: Number(data.sellingPrice),
+      image: data.image,
+      category: data.category,
+      isFeatured: data.isFeatured ?? false,
+      isVisible: data.isVisible ?? true,
+    });
 
-if(!data.image){
-return { error:"Image required" };
-}
-
-if(!data.category){
-return { error:"Category required" };
-}
-
-const slug =
-slugify(data.name,{ lower:true }) +
-"-" +
-Date.now();
-
-const product = await Product.create({
-
-name:data.name,
-slug,
-description:data.description || "",
-actualPrice:Number(data.actualPrice),
-sellingPrice:Number(data.sellingPrice),
-image:data.image,
-category:data.category,
-isFeatured:data.isFeatured ?? false,
-isVisible:data.isVisible ?? true
-
-});
-
-console.log("PRODUCT CREATED:", product);
-
-return { success:true };
-
-} catch(err){
-
-console.log("CREATE ERROR:", err);
-
-return { error:"Server error" };
-
-}
-
+    return { success: true };
+  } catch (err) {
+    console.log("CREATE PRODUCT ERROR:", err);
+    return { error: "Server error" };
+  }
 }
 
 /*
 GET ALL PRODUCTS
 */
 
-export async function getProducts(){
+export async function getProducts() {
+  await connectDB();
 
-await connectDB();
-
-return Product.find()
-.select(
-"name description sellingPrice actualPrice profitPerItem image category isVisible isFeatured"
-)
-
-.populate("category","name")
-
-.sort({ createdAt:-1 })
-
-.lean();
-
+  return Product.find({ isVisible: true })
+    .select("name description sellingPrice image category isFeatured slug")
+    .populate("category", "name")
+    .sort({ createdAt: -1 })
+    .lean();
 }
-
 
 /*
-DELETE PRODUCT
+ADMIN GET (ALL including hidden)
 */
 
-export async function deleteProduct(id){
+export async function getAllProductsAdmin() {
+  await connectDB();
 
-await connectDB();
-
-await Product.findByIdAndDelete(id);
-
-return { success:true };
-
+  return Product.find()
+    .select("name sellingPrice image category isVisible isFeatured slug")
+    .populate("category", "name")
+    .sort({ createdAt: -1 })
+    .lean();
 }
 
+/*
+DELETE PRODUCT (SOFT DELETE)
+*/
+
+export async function deleteProduct(id) {
+  await connectDB();
+
+  await Product.findByIdAndUpdate(id, {
+    isVisible: false,
+  });
+
+  return { success: true };
+}
 
 /*
 TOGGLE FEATURED / VISIBILITY
 */
 
-export async function toggleProductField(
-id,
-field,
-value
-){
+export async function toggleProductField(id, field, value) {
+  await connectDB();
 
-await connectDB();
+  if (!["isFeatured", "isVisible"].includes(field)) {
+    return { error: "Invalid field" };
+  }
 
-await Product.findByIdAndUpdate(id,{
-[field]:value
-});
+  await Product.findByIdAndUpdate(id, {
+    [field]: value,
+  });
 
-return { success:true };
-
+  return { success: true };
 }
-
 
 /*
 GET SINGLE PRODUCT
 */
 
-export async function getSingleProduct(id){
+export async function getSingleProduct(id) {
+  await connectDB();
 
-await connectDB();
+  if (!mongoose.Types.ObjectId.isValid(id)) return null;
 
-if(!mongoose.Types.ObjectId.isValid(id)){
-return null;
+  return Product.findById(id)
+    .populate("category", "name")
+    .lean();
 }
-
-return Product.findById(id)
-
-.populate("category","name")
-
-.lean();
-
-}
-
 
 /*
 UPDATE PRODUCT
 */
 
-export async function updateProduct(id,data){
+export async function updateProduct(id, data) {
+  await connectDB();
 
-await connectDB();
+  await Product.findByIdAndUpdate(
+    id,
+    {
+      name: data.name,
+      description: data.description,
+      sellingPrice: Number(data.sellingPrice),
+      image: data.image,
+      category: data.category,
+      isFeatured: data.isFeatured,
+      isVisible: data.isVisible,
+    },
+    { new: true }
+  );
 
-await Product.findByIdAndUpdate(
-
-id,
-
-{
-
-name:data.name,
-
-description:data.description,
-
-actualPrice:data.actualPrice,
-
-sellingPrice:data.sellingPrice,
-
-image:data.image,
-
-category:data.category,
-
-isFeatured:data.isFeatured,
-
-isVisible:data.isVisible
-
-},
-
-{ new:true }
-
-);
-
-return { success:true };
-
+  return { success: true };
 }
 
 /*
-GET FEATURED PRODUCTS
+FEATURED PRODUCTS (HOME)
 */
 
 export async function getFeaturedProducts() {
 
-await connectDB();
+  await connectDB();
 
-return Product.find({
+  const products = await Product.find({
+    isFeatured: true,
+    isVisible: true
+  })
+  .select("name sellingPrice image slug")
+  .limit(6)
+  .lean();
 
-isFeatured: true,
-isVisible: true
-
-})
-
-.select("name sellingPrice image slug")
-
-.limit(6)
-
-.lean();
+  // ✅ IMPORTANT FIX
+  return products.map(p => ({
+    ...p,
+    _id: p._id.toString()
+  }));
 
 }

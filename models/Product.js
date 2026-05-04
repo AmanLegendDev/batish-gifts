@@ -14,7 +14,6 @@ const productSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       index: true,
-      trim: true,
     },
 
     description: {
@@ -22,21 +21,9 @@ const productSchema = new mongoose.Schema(
       default: "",
     },
 
-    actualPrice: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-
     sellingPrice: {
       type: Number,
       required: true,
-      min: 0,
-    },
-
-    profitPerItem: {
-      type: Number,
-      default: 0,
     },
 
     image: {
@@ -48,76 +35,20 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       required: true,
-      index: true,
     },
 
     isVisible: {
       type: Boolean,
       default: true,
-      index: true,
     },
 
     isFeatured: {
       type: Boolean,
       default: false,
-      index: true,
-    },
-
-    campus: {
-      type: String,
-      default: "HPU",
-      index: true,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
-
-
-/*
-AUTO PROFIT CALCULATION
-sellingPrice - actualPrice
-*/
-
-productSchema.pre("save", function () {
-  this.profitPerItem =
-    this.sellingPrice - this.actualPrice;
-});
-
-
-/*
-AUTO PROFIT UPDATE ON EDIT
-*/
-
-productSchema.pre("findOneAndUpdate", function () {
-
-const update = this.getUpdate();
-
-if (
-update.actualPrice !== undefined ||
-update.sellingPrice !== undefined
-) {
-
-const actual =
-update.actualPrice ??
-this._update.actualPrice;
-
-const selling =
-update.sellingPrice ??
-this._update.sellingPrice;
-
-if (actual !== undefined && selling !== undefined) {
-
-update.profitPerItem =
-selling - actual;
-
-}
-
-}
-
-});
-
 
 export default mongoose.models.Product ||
   mongoose.model("Product", productSchema);

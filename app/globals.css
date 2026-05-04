@@ -2,37 +2,41 @@
 
 /*
 ========================
-MIDNIGHT MART THEME
+AARAV GIFT GALLERY THEME
 ========================
 */
 
 :root {
 
-  --background: #05070d;
-  --foreground: #e5e7eb;
+  --background: #ffffff;
+  --foreground: #1f2937;
 
-  --card: #0b0f19;
-  --border: #1f2937;
+  --card: #ffffff;
+  --border: #e5e7eb;
 
-  --primary: #facc15; /* neon yellow */
-  --primary-soft: rgba(250,204,21,0.15);
+  --primary: #2E8B8B; /* sea green */
+  --primary-soft: rgba(46,139,139,0.12);
+
+  --accent: #fff4e6; /* soft peach */
+  --accent-2: #fff9db; /* light yellow */
 
 }
 
 
 /*
 ========================
-BASE RESET
+BASE
 ========================
 */
 
 html, body {
-
   background: var(--background);
   color: var(--foreground);
-
   font-family: var(--font-inter);
+}
 
+html {
+  scroll-behavior: smooth;
 }
 
 
@@ -40,115 +44,157 @@ html, body {
 HEADINGS
 */
 
-h1,h2,h3,h4 {
-
+h1, h2, h3, h4 {
   font-family: var(--font-poppins);
-
+  color: #111827;
 }
 
 
 /*
-CARD STYLE (GLOBAL)
+========================
+CARD (PREMIUM SOFT UI)
+========================
 */
 
 .card {
-
   background: var(--card);
-
   border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  transition: 0.25s ease;
+}
 
-  border-radius: 18px;
-
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
 }
 
 
 /*
-INPUT STYLE
+========================
+INPUT
+========================
 */
 
 .input-style {
-
   width: 100%;
-
   padding: 12px;
-
-  border-radius: 14px;
-
-  background: #020617;
-
-  border: 1px solid #1f2937;
-
-  color: white;
-
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  color: #111827;
   transition: 0.2s ease;
-
 }
 
-
 .input-style:focus {
-
   outline: none;
-
   border-color: var(--primary);
-
-  box-shadow: 0 0 12px rgba(250,204,21,0.6);
-
+  box-shadow: 0 0 0 3px var(--primary-soft);
 }
 
 
 /*
+========================
 UPLOAD BOX
+========================
 */
 
 .upload-box {
-
-  border: 1px dashed #374151;
-
-  padding: 12px;
-
-  border-radius: 14px;
-
+  border: 1px dashed var(--border);
+  padding: 14px;
+  border-radius: 12px;
   cursor: pointer;
-
   display: flex;
-
   gap: 8px;
-
   align-items: center;
-
-  color: #9ca3af;
-
+  color: #6b7280;
+  background: #fafafa;
 }
-html {
-scroll-behavior: smooth;
+
+.upload-box:hover {
+  border-color: var(--primary);
+  background: #f9fdfd;
 }
 
 
 /*
+========================
 BUTTON PRIMARY
+========================
 */
 
 .btn-primary {
-
   width: 100%;
-
   background: var(--primary);
-
-  color: black;
-
+  color: white;
   font-weight: 600;
-
   padding: 12px;
-
-  border-radius: 14px;
-
+  border-radius: 12px;
   transition: 0.2s ease;
+}
 
+.btn-primary:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 18px rgba(46,139,139,0.25);
 }
 
 
-.btn-primary:hover {
+/*
+========================
+SECONDARY BUTTON
+========================
+*/
 
-  transform: scale(1.02);
+.btn-secondary {
+  width: 100%;
+  background: #f3f4f6;
+  color: #111827;
+  font-weight: 500;
+  padding: 12px;
+  border-radius: 12px;
+  transition: 0.2s ease;
+}
 
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+
+/*
+========================
+BADGE / TAG
+========================
+*/
+
+.badge {
+  background: var(--accent);
+  color: #92400e;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+}
+
+.badge-soft {
+  background: var(--accent-2);
+  color: #854d0e;
+}
+
+
+/*
+========================
+SCROLL (clean)
+========================
+*/
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }
