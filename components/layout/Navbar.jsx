@@ -64,7 +64,7 @@ className="relative w-12 h-12 rounded-full   overflow-hidden shadow-md"
 >
 
 <Image
-src="/logo.png"
+src="/logo.jpg"
 fill
 alt="logo"
 className="object-cover"
@@ -78,7 +78,7 @@ whileHover={{x:2}}
 className="text-yellow-400 text-lg font-semibold tracking-wide"
 >
 
-Midnight Mart
+Aarav Gift Gallery
 
 </motion.span>
 
