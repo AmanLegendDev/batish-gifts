@@ -114,7 +114,7 @@ className="bg-white border-t border-gray-200"
 <div className="flex flex-col px-5 py-4 gap-4 text-gray-700">
 
 <Link
-href="/orders"
+href="/caregory"
 onClick={()=>setOpen(false)}
 className="flex items-center gap-3 hover:text-[var(--primary)]"
 >

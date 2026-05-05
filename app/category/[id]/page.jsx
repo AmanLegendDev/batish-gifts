@@ -8,43 +8,40 @@ import ProductSection from "@/components/store/ProductSection";
 import { useSearchParams } from "next/navigation";
 
 
+
 export default function CategoryPage(){
+  
     
     const params = useSearchParams();
     const productId = params.get("product");
 
-  const { id } = useParams();
+  const [activeCategory, setActiveCategory] = useState("all");
 
   const [selected,setSelected] = useState("all");
 
 
-  useEffect(() => {
-  if (productId) {
+ useEffect(() => {
 
-    setTimeout(() => {
+  if(productId){
+
+    setTimeout(()=>{
+
       window.dispatchEvent(
         new CustomEvent("scrollToProduct", {
           detail: productId
         })
       );
-    }, 500);
+
+    },300);
 
   }
-}, [productId]);
 
+},[productId]);
   /*
   SET CATEGORY FROM URL
   */
 
-  useEffect(()=>{
-    if(id){
-      setSelected(id);
-
-      window.dispatchEvent(
-        new CustomEvent("categorySelected",{ detail:id })
-      );
-    }
-  },[id]);
+  
 
 
   return(
@@ -93,11 +90,14 @@ export default function CategoryPage(){
 
 
       {/* 🔥 CATEGORY PILLS (IMPORTANT) */}
-      <CategoryPills />
+      <CategoryPills
+  active={activeCategory}
+  onChange={setActiveCategory}
+/>
 
 
       {/* 🔥 PRODUCT LIST */}
-      <ProductSection key={id}/>
+      <ProductSection categoryId={activeCategory} />
 
     </section>
 

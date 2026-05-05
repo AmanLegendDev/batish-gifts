@@ -105,7 +105,7 @@ export default function ProductCard({ product }) {
 
         <Link href={`/products/${product.slug}`}>
 
-          <h3 className="text-sm font-semibold text-gray-800 line-clamp-2">
+          <h3 className="text-sm font-semibold text-gray-800 line-clamp-1">
             {product.name}
           </h3>
 

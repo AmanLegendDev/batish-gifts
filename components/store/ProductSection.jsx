@@ -3,128 +3,126 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCartStore } from "@/store/cartStore";
-import Image from "next/image";
 import Link from "next/link";
-
 import ProductCard from "@/components/store/ProductCard";
-export default function ProductSection() {
 
-const [products,setProducts]=useState([]);
-const [filtered,setFiltered]=useState([]);
+export default function ProductSection({ categoryId }) {
 
-const { cart, addToCart, increaseQty, decreaseQty } = useCartStore();
+const [products, setProducts] = useState(null);
 
-useEffect(() => {
+  const { cart } = useCartStore();
+
+
+  useEffect(() => {
 
   const listener = (e) => {
-    const id = e.detail;
 
-    const el = document.getElementById(`product-${id}`);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    const el = document.getElementById(`product-${e.detail}`);
+
+    if(el){
+      el.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+      });
     }
+
   };
 
-  window.addEventListener("scrollToProduct", listener);
+  window.addEventListener("scrollToProduct",listener);
 
-  return () => window.removeEventListener("scrollToProduct", listener);
+  return ()=>window.removeEventListener("scrollToProduct",listener);
 
-}, []);
-
-
-useEffect(()=>{
-fetch("/api/products/list")
-.then(res=>res.json())
-.then(data=>{
-setProducts(data);
-setFiltered(data);
-});
 },[]);
 
+  /*
+  🔥 FETCH PRODUCTS
+  */
+useEffect(() => {
 
-useEffect(()=>{
-const listener=(e)=>{
-const categoryId=e.detail;
+  fetch(`/api/products/list?category=${categoryId || "all"}`)
+    .then(res => res.json())
+    .then(data => {
 
-if(categoryId==="all"){
-setFiltered(products);
-return;
+      // 🔥 NO RESET → smooth replace
+      setProducts(data);
+
+    });
+
+}, [categoryId]);
+
+
+  /*
+  CART
+  */
+  const totalItems = cart.reduce((a, i) => a + i.qty, 0);
+  const totalPrice = cart.reduce((a, i) => a + i.sellingPrice * i.qty, 0);
+
+
+
+
+
+  /*
+  🔥 EMPTY STATE
+  */
+
+if (!products) {
+  return null; // first load only
 }
 
-setFiltered(products.filter(p=>p.category?._id===categoryId));
-};
-
-window.addEventListener("categorySelected",listener);
-return()=>window.removeEventListener("categorySelected",listener);
-
-},[products]);
 
 
-const getQty = (id) => {
-const item = cart.find(i => i._id === id);
-return item ? item.qty : 0;
-};
+  /*
+  🔥 MAIN UI
+  */
+  return (
+    <section id="products" className="px-4 py-6 bg-white">
 
-const totalItems = cart.reduce((a,i)=>a+i.qty,0);
-const totalPrice = cart.reduce((a,i)=>a+i.sellingPrice*i.qty,0);
-
-
-return(
-
-<section id="products" className="px-4 py-6 bg-white">
-
-{/* GRID */}
-
+      {/* PRODUCT GRID */}
 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
-{filtered.map(product => (
-
-  
-  <div key={product._id} id={`product-${product._id}`}>
-  <ProductCard  product={product} />
-</div>
-
-))}
+  {products.map(product => (
+    <div key={product._id} id={`product-${product._id}`}>
+      <ProductCard product={product} />
+    </div>
+  ))}
 
 </div>
 
 
-{/* FLOAT CART */}
+      {/* FLOAT CART */}
+      <AnimatePresence>
 
-<AnimatePresence>
+        {totalItems > 0 && (
 
-{totalItems > 0 && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[92%] max-w-md bg-[var(--primary)] text-white rounded-2xl px-5 py-3 shadow-lg flex justify-between items-center"
+          >
 
-<motion.div
-initial={{y:100,opacity:0}}
-animate={{y:0,opacity:1}}
-exit={{y:100,opacity:0}}
-className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[92%] max-w-md bg-[var(--primary)] text-white rounded-2xl px-5 py-3 shadow-lg flex justify-between items-center"
->
+            <div>
+              <p className="text-sm font-semibold">
+                {totalItems} item{totalItems > 1 && "s"}
+              </p>
+              <p className="text-xs opacity-80">
+                ₹ {totalPrice}
+              </p>
+            </div>
 
-<div>
-<p className="text-sm font-semibold">
-{totalItems} item{totalItems>1 && "s"}
-</p>
-<p className="text-xs opacity-80">
-₹ {totalPrice}
-</p>
-</div>
+            <Link
+              href="/cart"
+              className="bg-white text-[var(--primary)] px-4 py-2 rounded-lg text-sm font-semibold"
+            >
+              View Cart →
+            </Link>
 
-<Link
-href="/cart"
-className="bg-white text-[var(--primary)] px-4 py-2 rounded-lg text-sm font-semibold"
->
-View Cart →
-</Link>
+          </motion.div>
 
-</motion.div>
+        )}
 
-)}
+      </AnimatePresence>
 
-</AnimatePresence>
-
-</section>
-
-);
+    </section>
+  );
 }

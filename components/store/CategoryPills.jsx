@@ -2,16 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useParams, useRouter } from "next/navigation";
+
 import Image from "next/image";
 
-export default function CategoryPills(){
+export default function CategoryPills({ active, onChange }){
 
   const [categories,setCategories]=useState([]);
-  const params = useParams();
-  const router = useRouter();
+  
+ 
 
-  const active = params?.id || "all";
+  
 
   useEffect(()=>{
     fetch("/api/categories/dropdown")
@@ -21,12 +21,8 @@ export default function CategoryPills(){
 
 
   const handleClick = (id)=>{
-    router.push(`/category/${id}`);
-
-    window.dispatchEvent(
-      new CustomEvent("categorySelected",{ detail:id })
-    );
-  };
+  onChange(id);
+};
 
 
   return(
