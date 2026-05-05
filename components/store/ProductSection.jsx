@@ -72,7 +72,8 @@ export default function ProductSection({ categoryId }) {
 
 
   return (
-    <section id="products" className="px-4 py-6 bg-white">
+    <section id="products" className="px-4 py-6 bg-white min-h-[500px]">
+      
 
       <motion.div
         key="grid" // 🔥 REMOVE categoryId dependency

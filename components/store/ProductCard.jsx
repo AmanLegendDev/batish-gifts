@@ -60,8 +60,8 @@ export default function ProductCard({ product }) {
 
   return (
 
-    <motion.div
-      whileHover={{ y: -6 }}
+    <div
+      
       className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition overflow-hidden flex flex-col"
     >
 
@@ -70,14 +70,16 @@ export default function ProductCard({ product }) {
 
         <Link href={`/products/${product.slug}`}>
 
-          <div ref={imgRef} className="w-full h-full">
+          <div ref={imgRef} className="w-full h-full bg-gray-100">
 
-            <Image
-              src={product.image || "/placeholder.png"}
-              alt={product.name}
-              fill
-              className="object-cover transition duration-500 group-hover:scale-110"
-            />
+<Image
+  src={product.image || "/placeholder.png"}
+  alt={product.name}
+  fill
+  sizes="(max-width:768px) 50vw, 25vw"
+  className="object-cover bg-gray-100"
+  loading="eager"   // 🔥 IMPORTANT
+/>
 
           </div>
 
@@ -163,7 +165,7 @@ export default function ProductCard({ product }) {
 
       </div>
 
-    </motion.div>
+    </div>
 
   );
 }

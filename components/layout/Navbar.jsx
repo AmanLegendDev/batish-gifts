@@ -119,7 +119,7 @@ onClick={()=>setOpen(false)}
 className="flex items-center gap-3 hover:text-[var(--primary)]"
 >
 <ClipboardList size={18}/>
-Track Orders
+Explore
 </Link>
 
 <Link
@@ -130,7 +130,14 @@ className="flex items-center gap-3 hover:text-[var(--primary)]"
 <ShoppingCart size={18}/>
 Cart ({totalItems})
 </Link>
-
+<Link
+href="/custom-order"
+onClick={()=>setOpen(false)}
+className="flex items-center gap-3 hover:text-[var(--primary)]"
+>
+<ClipboardList size={18}/>
+Custom Order
+</Link>
 </div>
 
 </motion.div>

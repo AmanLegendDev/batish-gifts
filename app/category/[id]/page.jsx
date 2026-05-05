@@ -29,7 +29,7 @@ export default function CategoryPage(){
   return(
     <section className="bg-white min-h-screen">
 
-      <Navbar/>
+      
 
       {/* HEADER */}
       <div className="relative overflow-hidden">
@@ -46,7 +46,7 @@ export default function CategoryPage(){
 
       <ProductSection categoryId={id || "all"} />
 
-      <Footer/>
+      
     </section>
   );
 }

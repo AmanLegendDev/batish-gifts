@@ -31,7 +31,14 @@ useEffect(() => {
 
 const handleClick = (id) => {
   if(id === active) return;
+  
   router.replace(`/category/${id}`, { scroll: false });
+    setTimeout(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth" // chahe toh "auto" bhi kar sakta hai
+    });
+  }, 50);
 };
 
 

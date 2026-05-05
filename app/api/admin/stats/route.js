@@ -31,6 +31,9 @@ const completedOrders = await Order.countDocuments({
   status: "delivered"
 });
 
+const cancelledOrders = await Order.countDocuments({
+  status: "cancelled"
+});
 
 
 
@@ -72,7 +75,7 @@ const completedOrders = await Order.countDocuments({
   confirmedOrders: processingOrders,
   deliveredOrders: completedOrders,
   
-
+cancelledOrders,
   todayOrders: todayOrders.length,
 
   todayRevenue,

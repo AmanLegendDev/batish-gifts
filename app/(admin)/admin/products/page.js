@@ -19,114 +19,75 @@ const [categories,setCategories]=useState([]);
 const [selectedCat,setSelectedCat]=useState("");
 const [popup,setPopup]=useState(null);
 
-
-/*
-FETCH DATA
-*/
-
+/* FETCH */
 const fetchData=async()=>{
-
 const [prodRes,catRes]=await Promise.all([
 fetch("/api/products/list"),
 fetch("/api/categories/dropdown")
 ]);
 
-const products=await prodRes.json();
-const categories=await catRes.json();
-
-setProducts(products);
-setCategories(categories);
-
+setProducts(await prodRes.json());
+setCategories(await catRes.json());
 };
 
-useEffect(()=>{
-fetchData();
-},[]);
+useEffect(()=>{ fetchData(); },[]);
 
-
-/*
-FILTERED PRODUCTS
-*/
-
+/* FILTER */
 const filteredProducts = selectedCat
 ? products.filter(p=>p.category?._id===selectedCat)
 : products;
 
-
-/*
-DELETE
-*/
-
+/* DELETE */
 const confirmDelete=async()=>{
-
 await fetch("/api/products/delete",{
 method:"POST",
 headers:{ "Content-Type":"application/json" },
 body:JSON.stringify({ id:popup.id })
 });
-
 setPopup(null);
 fetchData();
-
 };
 
-
-/*
-TOGGLE
-*/
-
+/* TOGGLE */
 const toggleField=async(id,field,value)=>{
-
 await fetch("/api/products/toggle",{
 method:"POST",
 headers:{ "Content-Type":"application/json" },
 body:JSON.stringify({ id,field,value })
 });
-
 fetchData();
-
 };
-
 
 return(
 
-<div className="space-y-6">
-
+<div className="space-y-5">
 
 {/* HEADER */}
-
-<div className="flex justify-between items-center">
+<div className="flex items-center justify-between shrink-0">
 
 <div>
-<h1 className="text-lg font-semibold">
-Products
-</h1>
-<p className="text-sm text-gray-500">
-Manage your items
-</p>
+<h1 className="text-lg font-semibold">Products</h1>
+<p className="text-xs text-gray-500">Manage your items</p>
 </div>
 
 <Link
-  href="/admin/products/create"
-  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--primary)] text-white shadow-sm hover:shadow-md transition"
+href="/admin/products/create"
+className=" shrink-0 flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium bg-[var(--primary)] text-white"
 >
-  <Plus size={16}/>
-  Add Product
+<Plus size={14}/>
+Add
 </Link>
 
 </div>
 
 
-{/* CATEGORY FILTER */}
-
-<div className="flex gap-2 overflow-x-auto pb-2">
+{/* CATEGORY */}
+<div className="flex gap-2 overflow-x-auto no-scrollbar">
 
 <button
 onClick={()=>setSelectedCat("")}
-className={`px-3 py-1 rounded-full text-sm ${
-selectedCat===""
-? "bg-[var(--primary)] text-white"
-: "bg-gray-100"
+className={`px-3 py-1 rounded-full text-xs whitespace-nowrap ${
+selectedCat==="" ? "bg-[var(--primary)] text-white" : "bg-gray-100"
 }`}
 >
 All
@@ -136,10 +97,8 @@ All
 <button
 key={cat._id}
 onClick={()=>setSelectedCat(cat._id)}
-className={`px-3 py-1 rounded-full text-sm ${
-selectedCat===cat._id
-? "bg-[var(--primary)] text-white"
-: "bg-gray-100"
+className={`px-3 py-1 rounded-full text-xs whitespace-nowrap ${
+selectedCat===cat._id ? "bg-[var(--primary)] text-white" : "bg-gray-100"
 }`}
 >
 {cat.name}
@@ -149,44 +108,30 @@ selectedCat===cat._id
 </div>
 
 
-{/* EMPTY */}
-
-{filteredProducts.length===0 &&(
-<div className="card p-6 text-center text-gray-400">
-No products found
-</div>
-)}
-
-
 {/* LIST */}
-
 <div className="space-y-3">
 
 {filteredProducts.map(product=>(
 
 <div
 key={product._id}
-className="card p-3 flex gap-3 items-center"
+className="bg-white border rounded-xl p-3 flex items-center gap-3"
 >
 
-
 {/* IMAGE */}
-
 <img
 src={product.image || "/placeholder.png"}
-className="w-14 h-14 rounded-lg object-cover"
+className="w-12 h-12 rounded-lg object-cover"
 />
 
-
 {/* INFO */}
+<div className="flex-1 min-w-0">
 
-<div className="flex-1">
-
-<h3 className="font-medium text-sm">
+<p className="text-sm font-medium truncate">
 {product.name}
-</h3>
+</p>
 
-<p className="text-xs text-gray-500">
+<p className="text-xs text-gray-500 truncate">
 {product.category?.name}
 </p>
 
@@ -197,20 +142,16 @@ className="w-14 h-14 rounded-lg object-cover"
 </div>
 
 
-{/* ACTIONS */}
-
-<div className="flex flex-col gap-2">
-
+{/* ACTIONS RIGHT FIX */}
+<div className="flex items-center gap-3">
 
 <Link href={`/admin/products/edit/${product._id}`}>
 <Pencil size={16}/>
 </Link>
 
-
 <button onClick={()=>setPopup({id:product._id})}>
 <Trash2 size={16}/>
 </button>
-
 
 <button
 onClick={()=>toggleField(
@@ -223,7 +164,6 @@ className={product.isVisible ? "text-green-600":"text-gray-400"}
 {product.isVisible ? <Eye size={16}/> : <EyeOff size={16}/>}
 </button>
 
-
 <button
 onClick={()=>toggleField(
 product._id,
@@ -235,7 +175,6 @@ className={product.isFeatured ? "text-yellow-500":"text-gray-400"}
 {product.isFeatured ? <Star size={16}/> : <StarOff size={16}/>}
 </button>
 
-
 </div>
 
 </div>
@@ -245,29 +184,28 @@ className={product.isFeatured ? "text-yellow-500":"text-gray-400"}
 </div>
 
 
-{/* DELETE POPUP */}
-
+{/* POPUP */}
 {popup &&(
-<div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+<div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
 
-<div className="bg-white p-5 rounded-xl space-y-4 w-[90%] max-w-sm">
+<div className="bg-white p-5 rounded-xl space-y-4 w-full max-w-sm">
 
-<p className="font-medium text-center">
+<p className="text-center text-sm">
 Delete this product?
 </p>
 
-<div className="flex gap-3">
+<div className="flex gap-2">
 
 <button
 onClick={confirmDelete}
-className="flex-1 bg-red-500 text-white py-2 rounded-lg"
+className="flex-1 bg-red-500 text-white py-2 rounded-lg text-sm"
 >
 Delete
 </button>
 
 <button
 onClick={()=>setPopup(null)}
-className="flex-1 bg-gray-200 py-2 rounded-lg"
+className="flex-1 bg-gray-200 py-2 rounded-lg text-sm"
 >
 Cancel
 </button>
@@ -282,5 +220,4 @@ Cancel
 </div>
 
 );
-
 }

@@ -1,6 +1,8 @@
+import Navbar from "@/components/layout/Navbar";
 import "./globals.css";
 
 import { Inter, Poppins } from "next/font/google";
+import Footer from "@/components/layout/Footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -14,7 +16,7 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "Midnight Mart HPU",
+  title: "AARAV GIFTS ",
   description: "Campus midnight delivery in minutes",
 };
 
@@ -27,8 +29,10 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.variable} ${poppins.variable} min-h-screen bg-[var(--background)] text-[var(--foreground)]`}
       >
+        
 
         {children}
+        
 
       </body>
 

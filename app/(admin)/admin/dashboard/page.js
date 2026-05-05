@@ -74,34 +74,22 @@ icon={<CheckCircle size={18}/>}
 
 </Link>
 
-<Link href="/admin/custom-orders">
+<Link href="/admin/orders?tab=cancelled">
 <Card
-title="Custom Order"
-value={stats.customOrders}
+title="Cancelled"
+value={stats.cancelledOrders}
 icon={<CheckCircle size={18}/>}
 />
 
 </Link>
 
 
+
+
 </div>
 
 
-{/* TODAY */}
 
-<div className="grid grid-cols-2 gap-3">
-
-<Card
-title="Today's Orders"
-value={stats.todayOrders}
-/>
-
-<Card
-title="Revenue"
-value={`₹ ${stats.todayRevenue || 0}`}
-/>
-
-</div>
 
 
 {/* QUICK */}

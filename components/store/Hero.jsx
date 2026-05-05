@@ -121,18 +121,13 @@ className="flex gap-3 justify-center"
 >
 
 <Link
-href="#categories"
+href="category/all"
 className="bg-[var(--primary)] text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow hover:scale-[1.04] transition"
->
-Shop Now
-</Link>
-
-<Link
-href="#products"
-className="border border-[var(--primary)] text-[var(--primary)] px-5 py-2.5 rounded-lg text-sm hover:bg-[var(--primary)] hover:text-white transition"
 >
 Explore
 </Link>
+
+
 
 </motion.div>
 
