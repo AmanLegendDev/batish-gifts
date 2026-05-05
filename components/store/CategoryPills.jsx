@@ -6,14 +6,13 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-export default function CategoryPills({ active }){
+export default function CategoryPills({ active ,onChange}){
 const router = useRouter()
 
   const [categories,setCategories]=useState([]);
   
  
 
-  
 useEffect(() => {
   const el = document.querySelector(`[data-id="${active}"]`);
   if(el){
@@ -30,8 +29,9 @@ useEffect(() => {
   },[]);
 
 
-  const handleClick = (id) => {
-  router.push(`/category/${id}`); // 🔥 THIS IS KEY
+const handleClick = (id) => {
+  if(id === active) return;
+  router.replace(`/category/${id}`, { scroll: false });
 };
 
 

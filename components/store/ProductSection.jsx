@@ -8,48 +8,61 @@ import ProductCard from "@/components/store/ProductCard";
 
 export default function ProductSection({ categoryId }) {
 
-const [products, setProducts] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [cache, setCache] = useState({});
 
   const { cart } = useCartStore();
 
-
+  /*
+  SCROLL TO PRODUCT
+  */
   useEffect(() => {
+    const listener = (e) => {
+      const el = document.getElementById(`product-${e.detail}`);
+      if(el){
+        el.scrollIntoView({
+          behavior:"smooth",
+          block:"center"
+        });
+      }
+    };
 
-  const listener = (e) => {
-
-    const el = document.getElementById(`product-${e.detail}`);
-
-    if(el){
-      el.scrollIntoView({
-        behavior:"smooth",
-        block:"center"
-      });
-    }
-
-  };
-
-  window.addEventListener("scrollToProduct",listener);
-
-  return ()=>window.removeEventListener("scrollToProduct",listener);
-
-},[]);
+    window.addEventListener("scrollToProduct",listener);
+    return ()=>window.removeEventListener("scrollToProduct",listener);
+  },[]);
 
   /*
-  🔥 FETCH PRODUCTS
+  🔥 FIXED FETCH (NO EMPTY FRAME)
   */
-useEffect(() => {
+  useEffect(() => {
 
-  fetch(`/api/products/list?category=${categoryId || "all"}`)
-    .then(res => res.json())
-    .then(data => {
+    const category = categoryId || "all";
 
-      // 🔥 NO RESET → smooth replace
-      setProducts(data);
+    // ✅ cache hit → instantly show WITHOUT clearing
+    if(cache[category]){
+      setProducts(prev => {
+        // already same? no re-render
+        if(prev === cache[category]) return prev;
+        return cache[category];
+      });
+      return;
+    }
 
-    });
+    // ❌ IMPORTANT: yahan products clear nahi karna
+    fetch(`/api/products/list?category=${category}`)
+      .then(res => res.json())
+      .then(data => {
 
-}, [categoryId]);
+        setCache(prev => ({
+          ...prev,
+          [category]: data
+        }));
 
+        setProducts(data);
+
+      });
+
+  }, [categoryId]);
 
   /*
   CART
@@ -58,49 +71,33 @@ useEffect(() => {
   const totalPrice = cart.reduce((a, i) => a + i.sellingPrice * i.qty, 0);
 
 
-
-
-
-  /*
-  🔥 EMPTY STATE
-  */
-
-if (!products) {
-  return null; // first load only
-}
-
-
-
-  /*
-  🔥 MAIN UI
-  */
   return (
     <section id="products" className="px-4 py-6 bg-white">
 
-      {/* PRODUCT GRID */}
-<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <motion.div
+        key="grid" // 🔥 REMOVE categoryId dependency
+        initial={{ opacity: 0.95 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.15 }}
+        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+      >
 
-  {products.map(product => (
-    <div key={product._id} id={`product-${product._id}`}>
-      <ProductCard product={product} />
-    </div>
-  ))}
+        {products.map(product => (
+          <div key={product._id} id={`product-${product._id}`}>
+            <ProductCard product={product} />
+          </div>
+        ))}
 
-</div>
+      </motion.div>
 
-
-      {/* FLOAT CART */}
       <AnimatePresence>
-
         {totalItems > 0 && (
-
           <motion.div
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[92%] max-w-md bg-[var(--primary)] text-white rounded-2xl px-5 py-3 shadow-lg flex justify-between items-center"
           >
-
             <div>
               <p className="text-sm font-semibold">
                 {totalItems} item{totalItems > 1 && "s"}
@@ -116,11 +113,8 @@ if (!products) {
             >
               View Cart →
             </Link>
-
           </motion.div>
-
         )}
-
       </AnimatePresence>
 
     </section>
