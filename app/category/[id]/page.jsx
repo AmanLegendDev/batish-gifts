@@ -9,8 +9,15 @@ import { useSearchParams } from "next/navigation";
 
 
 
+
 export default function CategoryPage(){
-  
+  const { id } = useParams();
+
+  useEffect(() => {
+  if(id){
+    setActiveCategory(id);
+  }
+}, [id]);
     
     const params = useSearchParams();
     const productId = params.get("product");
@@ -24,7 +31,7 @@ export default function CategoryPage(){
 
   if(productId){
 
-    setTimeout(()=>{
+    const timer = setTimeout(() => {
 
       window.dispatchEvent(
         new CustomEvent("scrollToProduct", {
@@ -32,11 +39,12 @@ export default function CategoryPage(){
         })
       );
 
-    },300);
+    }, 800); // 🔥 increase delay
 
+    return () => clearTimeout(timer);
   }
 
-},[productId]);
+}, [productId]);
   /*
   SET CATEGORY FROM URL
   */
@@ -91,13 +99,13 @@ export default function CategoryPage(){
 
       {/* 🔥 CATEGORY PILLS (IMPORTANT) */}
       <CategoryPills
-  active={activeCategory}
+  active={id || "all"}
   onChange={setActiveCategory}
 />
 
 
       {/* 🔥 PRODUCT LIST */}
-      <ProductSection categoryId={activeCategory} />
+      <ProductSection categoryId={id || "all"} />
 
     </section>
 
