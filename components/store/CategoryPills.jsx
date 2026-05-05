@@ -4,15 +4,25 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-export default function CategoryPills({ active, onChange }){
+export default function CategoryPills({ active }){
+const router = useRouter()
 
   const [categories,setCategories]=useState([]);
   
  
 
   
-
+useEffect(() => {
+  const el = document.querySelector(`[data-id="${active}"]`);
+  if(el){
+    el.scrollIntoView({
+      behavior: "smooth",
+      inline: "center"
+    });
+  }
+}, [active]);
   useEffect(()=>{
     fetch("/api/categories/dropdown")
     .then(res=>res.json())
@@ -20,8 +30,8 @@ export default function CategoryPills({ active, onChange }){
   },[]);
 
 
-  const handleClick = (id)=>{
-  onChange(id);
+  const handleClick = (id) => {
+  router.push(`/category/${id}`); // 🔥 THIS IS KEY
 };
 
 
@@ -33,10 +43,12 @@ export default function CategoryPills({ active, onChange }){
 
         {/* ALL */}
         <Pill
+        id="all"
           label="All"
           image="/category/all.jpg"
           active={active==="all"}
           onClick={()=>handleClick("all")}
+          
         />
 
         {categories.map(cat=>(
@@ -46,6 +58,7 @@ export default function CategoryPills({ active, onChange }){
             image={cat.image}
             active={active===cat._id}
             onClick={()=>handleClick(cat._id)}
+            id={cat._id}
           />
         ))}
 
@@ -62,11 +75,12 @@ export default function CategoryPills({ active, onChange }){
 🔥 SINGLE PILL WITH IMAGE
 */
 
-function Pill({label,image,active,onClick}){
+function Pill({id,label,image,active,onClick}){
 
   return(
 
     <motion.button
+    data-id={id}
       whileTap={{scale:0.95}}
       onClick={onClick}
       className={`
