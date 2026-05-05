@@ -1,4 +1,5 @@
 "use server";
+import { unstable_noStore as noStore } from "next/cache";
 
 import { connectDB } from "@/lib/db";
 import Product from "@/models/Product";
@@ -144,6 +145,7 @@ FEATURED PRODUCTS (HOME)
 */
 
 export async function getFeaturedProducts() {
+  noStore();
 
   await connectDB();
 
@@ -151,14 +153,16 @@ export async function getFeaturedProducts() {
     isFeatured: true,
     isVisible: true
   })
-  .select("name sellingPrice image slug")
-  .limit(6)
-  .lean();
+    .sort({ updatedAt: -1 }) // 🔥 latest first
+    .limit(6)
+    .lean();
 
-  // ✅ IMPORTANT FIX
   return products.map(p => ({
-    ...p,
-    _id: p._id.toString()
+    _id: p._id.toString(),
+    name: p.name,
+    sellingPrice: p.sellingPrice,
+    image: p.image,
+    slug: p.slug
   }));
 
 }

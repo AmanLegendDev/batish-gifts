@@ -37,53 +37,71 @@ setForm({...form,[e.target.name]:e.target.value});
 PLACE ORDER
 */
 
-const handlePlaceOrder = async () => {
+const placeOrder = async (type) => {
 
-if(!form.customerName || !form.phone || !form.address){
-alert("Please fill all required fields");
-return;
-}
+  if(!form.customerName || !form.phone || !form.address){
+    alert("Please fill all required fields");
+    return;
+  }
 
-setLoading(true);
+  setLoading(true);
 
-const res = await fetch("/api/orders/create", {
-method:"POST",
-headers:{ "Content-Type":"application/json" },
-body:JSON.stringify({
-...form,
-items: cart.map(item => ({
-productId: item._id,
-title: item.name,
-sellingPrice: item.sellingPrice,
-actualPrice: item.actualPrice,
-qty: item.qty
-})),
-subtotal,
-deliveryCharge: DELIVERY_FEE,
-totalAmount,
-paymentMethod: "COD"
-})
-});
+  const orderPayload = {
+    customerName: form.customerName,
+    phone: form.phone.replace(/^0/, ""),
+    address: form.address,
+    note: form.note,
 
-const data = await res.json();
+    items: cart.map(item => ({
+      title: item.name,
+      price: item.sellingPrice,
+      qty: item.qty
+    })),
 
-/*
-SAVE FOR SUCCESS PAGE
-*/
+    totalAmount,
 
-localStorage.setItem("lastOrder", JSON.stringify({
-...form,
-items: cart,
-subtotal,
-deliveryCharge: DELIVERY_FEE,
-totalAmount,
-paymentMethod: "Cash on Delivery"
-}));
+    orderType: type // 🔥 MAIN GAME
+  };
 
-clearCart();
+  await fetch("/api/orders/create", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify(orderPayload)
+  });
 
-window.location.href="/order-success";
+  /*
+  LOCAL STORAGE (SUCCESS PAGE)
+  */
+  localStorage.setItem("lastOrder", JSON.stringify({
+    ...orderPayload,
+    paymentMethod: type.includes("whatsapp")
+      ? "WhatsApp Order"
+      : "Cash on Delivery"
+  }));
 
+  clearCart();
+
+  /*
+  WHATSAPP FLOW
+  */
+  if(type === "whatsapp"){
+
+    let msg = `Hi, I want to order:\n\n`;
+
+    cart.forEach(i=>{
+      msg += `- ${i.name} x${i.qty}\n`;
+    });
+
+    msg += `\nTotal: ₹${totalAmount}`;
+    msg += `\nName: ${form.customerName}`;
+    msg += `\nAddress: ${form.address}`;
+
+    const url = `https://wa.me/918219174058?text=${encodeURIComponent(msg)}`;
+
+    window.open(url, "_blank");
+  }
+
+  window.location.href="/order-success";
 };
 
 
@@ -184,16 +202,27 @@ Pay when your order arrives.
 
 {/* BUTTON */}
 
+<div className="flex gap-3">
+
 <motion.button
 whileTap={{scale:.95}}
-onClick={handlePlaceOrder}
+onClick={()=>placeOrder("cod")}
 disabled={loading}
-className="w-full bg-[var(--primary)] text-white py-3 rounded-xl font-semibold shadow-lg"
+className="w-full bg-gray-100 text-gray-800 py-3 rounded-xl font-semibold"
 >
-
-{loading ? "Placing Order..." : "Place Order"}
-
+{loading ? "Processing..." : "Order via COD"}
 </motion.button>
+
+<motion.button
+whileTap={{scale:.95}}
+onClick={()=>placeOrder("whatsapp")}
+disabled={loading}
+className="w-full bg-[var(--primary)] text-white py-3 rounded-xl font-semibold"
+>
+WhatsApp Order
+</motion.button>
+
+</div>
 
 
 </div>

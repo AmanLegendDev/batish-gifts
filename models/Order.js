@@ -19,9 +19,14 @@ const orderSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["new", "confirmed", "delivered"],
+      enum: ["new", "confirmed", "delivered","cancelled",],
       default: "new",
     },
+    orderType: {
+  type: String,
+  enum: ["cod", "whatsapp","custom_cod", "custom_whatsapp"],
+  default: "cod"
+},
   },
   { timestamps: true }
 );

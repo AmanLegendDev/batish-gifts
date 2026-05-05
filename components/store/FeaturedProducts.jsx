@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import ProductCard from "./ProductCard";
 import { getFeaturedProducts } from "@/actions/productActions";
 import Link from "next/link";

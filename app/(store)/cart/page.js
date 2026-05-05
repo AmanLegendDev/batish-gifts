@@ -189,46 +189,27 @@ className="text-red-500"
 
 <AnimatePresence>
 
+{/* BOTTOM BAR */}
+
 <motion.div
 initial={{y:100,opacity:0}}
 animate={{y:0,opacity:1}}
-className="fixed bottom-0 left-0 w-full bg-white border-t px-4 py-4 flex gap-3 items-center shadow"
+className="fixed bottom-0 left-0 w-full bg-white border-t px-4 py-4 flex items-center shadow"
 >
-
 
 <div className="flex-1">
-
-<p className="text-xs text-gray-400">
-Total
-</p>
-
-<p className="text-lg font-semibold text-[var(--primary)]">
-₹ {subtotal}
-</p>
-
+  <p className="text-xs text-gray-400">Total</p>
+  <p className="text-lg font-semibold text-[var(--primary)]">
+    ₹ {subtotal}
+  </p>
 </div>
 
-
-{/* CHECKOUT */}
-
 <Link
-href="/checkout"
-className="bg-gray-100 px-4 py-2 rounded-lg text-sm font-medium"
+  href="/checkout"
+  className="bg-[var(--primary)] text-white px-6 py-3 rounded-xl font-semibold"
 >
-Checkout
+  Proceed
 </Link>
-
-
-{/* WHATSAPP */}
-
-<a
-href={`https://wa.me/?text=${generateMessage()}`}
-target="_blank"
-className="bg-[var(--primary)] text-white px-4 py-2 rounded-lg text-sm font-semibold"
->
-WhatsApp Order
-</a>
-
 
 </motion.div>
 

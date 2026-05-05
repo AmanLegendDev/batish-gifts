@@ -7,38 +7,82 @@ import { motion } from "framer-motion";
 export default function CustomOrderPage(){
 
 const [form,setForm]=useState({
-name:"",
-phone:"",
-item:"",
-note:""
+  name:"",
+  phone:"",
+  address:"",
+  item:"",
+  note:""
 });
 
 const [loading,setLoading]=useState(false);
 
 const handleChange=(e)=>{
-setForm({...form,[e.target.name]:e.target.value});
+  setForm({...form,[e.target.name]:e.target.value});
 };
 
-const handleSubmit=async()=>{
+/*
+🔥 MAIN FUNCTION
+*/
 
-if(!form.name || !form.phone || !form.item){
-alert("Fill required fields");
-return;
-}
+const handleSubmit = async (type) => {
 
-setLoading(true);
+  if(!form.name || !form.phone || !form.address || !form.item){
+    alert("Fill required fields");
+    return;
+  }
 
-await fetch("/api/custom-orders/create",{
-method:"POST",
-headers:{ "Content-Type":"application/json" },
-body:JSON.stringify(form)
-});
+  setLoading(true);
 
-setLoading(false);
+  const payload = {
+    customerName: form.name,
+    phone: form.phone.replace(/^0/, ""),
+    address: form.address, // ✅ REAL ADDRESS
+    note: form.note,
 
-window.location.href="/order-success?type=custom";
+    items: [
+      {
+        title: `Custom: ${form.item}`,
+        price: 0,
+        qty: 1
+      }
+    ],
 
+    totalAmount: 0,
+
+    orderType: type
+  };
+
+  await fetch("/api/orders/create", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  setLoading(false);
+
+  /*
+  🔥 WHATSAPP FLOW
+  */
+
+  if(type === "custom_whatsapp"){
+
+    const msg = `Hi, I want a custom order:
+
+Item: ${form.item}
+
+Name: ${form.name}
+Phone: ${form.phone}
+Address: ${form.address}`;
+
+    window.open(
+      `https://wa.me/918219174058?text=${encodeURIComponent(msg)}`,
+      "_blank"
+    );
+  }
+
+  window.location.href="/order-success?type=custom";
 };
+
 
 return(
 
@@ -57,6 +101,7 @@ Custom Order 🎁
 Tell us what you need — we’ll arrange it for you
 </p>
 
+
 {/* FORM */}
 <div className="mt-6 space-y-4">
 
@@ -70,6 +115,13 @@ onChange={handleChange}
 <input
 name="phone"
 placeholder="Phone Number"
+className="input-style"
+onChange={handleChange}
+/>
+
+<input
+name="address"
+placeholder="Full Address"
 className="input-style"
 onChange={handleChange}
 />
@@ -88,14 +140,33 @@ className="input-style"
 onChange={handleChange}
 />
 
+<p className="text-xs text-gray-400">
+Price will be confirmed by owner after request
+</p>
+
+
+{/* 🔥 BUTTONS */}
+<div className="flex gap-3 pt-2">
+
 <motion.button
 whileTap={{scale:.95}}
-onClick={handleSubmit}
+onClick={()=>handleSubmit("custom_cod")}
 disabled={loading}
-className="w-full bg-[var(--primary)] text-white py-3 rounded-xl font-semibold shadow"
+className="w-full bg-gray-100 text-gray-800 py-3 rounded-xl font-semibold"
 >
-{loading?"Sending Request...":"Submit Request"}
+{loading?"Processing...":"Custom COD"}
 </motion.button>
+
+<motion.button
+whileTap={{scale:.95}}
+onClick={()=>handleSubmit("custom_whatsapp")}
+disabled={loading}
+className="w-full bg-[var(--primary)] text-white py-3 rounded-xl font-semibold"
+>
+WhatsApp Request
+</motion.button>
+
+</div>
 
 </div>
 

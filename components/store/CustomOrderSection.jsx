@@ -48,15 +48,7 @@ return(
       Request Custom Item
     </Link>
 
-    {/* WHATSAPP */}
-    <a
-      href="https://wa.me/918219174058?text=Hi, I want a custom order"
-      target="_blank"
-      className="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-xl hover:bg-[var(--primary)] hover:text-white transition"
-    >
-      WhatsApp Now
-    </a>
-
+   
   </motion.div>
 
 </section>

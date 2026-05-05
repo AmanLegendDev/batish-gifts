@@ -1,6 +1,6 @@
 import { connectDB } from "@/lib/db";
 import Order from "@/models/Order";
-import CustomOrder from "@/models/CustomOrder";
+
 
 export async function GET(){
 
@@ -32,12 +32,7 @@ const completedOrders = await Order.countDocuments({
 });
 
 
-  /*
-  CUSTOM ORDERS
-  */
-const customOrders = await CustomOrder.countDocuments({
-  status: "new"
-});
+
 
 
   /*
@@ -76,7 +71,7 @@ const customOrders = await CustomOrder.countDocuments({
   newOrders,
   confirmedOrders: processingOrders,
   deliveredOrders: completedOrders,
-  customOrders,
+  
 
   todayOrders: todayOrders.length,
 
