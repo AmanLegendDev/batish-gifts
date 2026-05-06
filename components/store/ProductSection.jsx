@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCartStore } from "@/store/cartStore";
 import Link from "next/link";
 import ProductCard from "@/components/store/ProductCard";
 const productCache = {};
+const preloaded = new Set();
 export default function ProductSection({ categoryId }) {
 
   const [products, setProducts] = useState([]);
@@ -17,15 +18,36 @@ export default function ProductSection({ categoryId }) {
   SCROLL TO PRODUCT
   */
   useEffect(() => {
-    const listener = (e) => {
-      const el = document.getElementById(`product-${e.detail}`);
-      if(el){
-        el.scrollIntoView({
-          behavior:"smooth",
-          block:"center"
-        });
-      }
-    };
+const listener = (e) => {
+
+  const tryScroll = () => {
+
+    const el = document.getElementById(
+      `product-${e.detail}`
+    );
+
+    if (!el) {
+      requestAnimationFrame(tryScroll);
+      return;
+    }
+
+    const navbarOffset = 140;
+
+    const top =
+      el.getBoundingClientRect().top +
+      window.scrollY -
+      navbarOffset;
+
+    window.scrollTo({
+      top,
+      behavior: "smooth"
+    });
+
+  };
+
+  tryScroll();
+
+};
 
     window.addEventListener("scrollToProduct",listener);
     return ()=>window.removeEventListener("scrollToProduct",listener);
@@ -64,6 +86,33 @@ if (productCache[category]) {
 
 }, [categoryId]);
 
+
+useEffect(() => {
+
+  if (preloaded.has("done")) return;
+
+  preloaded.add("done");
+
+  fetch("/api/categories/dropdown")
+    .then(res => res.json())
+    .then(categories => {
+
+      categories.forEach(cat => {
+
+        fetch(`/api/products/list?category=${cat._id}`)
+          .then(res => res.json())
+          .then(data => {
+
+            productCache[cat._id] = data;
+
+          });
+
+      });
+
+    });
+
+}, []);
+
   /*
   CART
   */
@@ -75,11 +124,9 @@ if (productCache[category]) {
     <section id="products" className="px-4 py-6 bg-white min-h-[500px]">
       
 
-      <motion.div
+      <div
       
-        initial={{ opacity: 0.95 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.15 }}
+       
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
 
@@ -89,7 +136,7 @@ if (productCache[category]) {
           </div>
         ))}
 
-      </motion.div>
+      </div>
 
       <AnimatePresence>
         {totalItems > 0 && (

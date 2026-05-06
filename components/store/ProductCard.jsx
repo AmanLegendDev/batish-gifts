@@ -78,7 +78,7 @@ export default function ProductCard({ product }) {
   fill
   sizes="(max-width:768px) 50vw, 25vw"
   className="object-cover bg-gray-100"
-  loading="eager"   // 🔥 IMPORTANT
+  loading="lazy"
 />
 
           </div>

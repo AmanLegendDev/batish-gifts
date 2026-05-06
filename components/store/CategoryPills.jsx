@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import { motion } from "framer-motion";
 
 import Image from "next/image";
@@ -11,18 +11,31 @@ export default function CategoryPills({ active ,onChange}){
 
 
   const [categories,setCategories]=useState([]);
+  const scrollRef = useRef(null);
   
  
 
 useEffect(() => {
-  const el = document.querySelector(`[data-id="${active}"]`);
-  if(el){
-    el.scrollIntoView({
-      behavior: "smooth",
-      inline: "center"
-    });
-  }
-}, [active]);
+
+  const container = scrollRef.current;
+
+  const activeEl = document.querySelector(
+    `[data-id="${active}"]`
+  );
+
+  if (!container || !activeEl) return;
+
+  const left =
+    activeEl.offsetLeft - 16;
+
+  container.scrollTo({
+    left,
+    behavior: "smooth"
+  });
+
+}, [active,categories]);
+
+
   useEffect(()=>{
     fetch("/api/categories/dropdown")
     .then(res=>res.json())
@@ -55,7 +68,10 @@ const handleClick = (id) => {
 
     <div className="px-4 py-3 sticky top-[60px] z-40 bg-white border-b border-gray-100">
 
-      <div className="flex gap-3 overflow-x-auto no-scrollbar">
+      <div
+  ref={scrollRef}
+  className="flex gap-3 overflow-x-auto no-scrollbar"
+>
 
         {/* ALL */}
         <Pill
@@ -123,12 +139,13 @@ function Pill({id,label,image,active,onClick}){
       `}>
 
         {image ? (
-          <Image
-            src={image}
-            alt={label}
-            fill
-            className="object-cover"
-          />
+<Image
+  src={image}
+  alt={label}
+  fill
+  sizes="28px"
+  className="object-cover"
+/>
         ) : (
           <div className="w-full h-full flex items-center justify-center text-xs">
             🎁

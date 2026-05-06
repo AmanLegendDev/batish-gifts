@@ -2,7 +2,7 @@
 
 import { useEffect,useState } from "react";
 import { X,Search } from "lucide-react";
-import { useRouter, usePathname } from "next/navigation";
+
 import Image from "next/image";
 
 export default function SearchOverlay({open,onClose}){
@@ -11,8 +11,8 @@ export default function SearchOverlay({open,onClose}){
   const [results,setResults]=useState([]);
   const [loading,setLoading]=useState(false);
 
-  const router = useRouter();
-  const pathname = usePathname();
+  
+  
 
   /*
   🔥 INSTANT SEARCH (NO LAG)
@@ -82,13 +82,20 @@ export default function SearchOverlay({open,onClose}){
 
           <div
             key={item._id}
-            onClick={() => {
+onClick={() => {
 
-              // 🔥 ALWAYS GO TO CATEGORY PAGE WITH PRODUCT
-              router.push(`/category/${item.category._id}?product=${item._id}`);
+  sessionStorage.setItem(
+    "searchProduct",
+    JSON.stringify({
+      categoryId: item.category._id,
+      productId: item._id
+    })
+  );
 
-              onClose();
-            }}
+  window.location.href =
+    `/category/${item.category._id}?product=${item._id}`;
+
+}}
             className="flex items-center gap-3 py-3 border-b border-white/10 cursor-pointer"
           >
 

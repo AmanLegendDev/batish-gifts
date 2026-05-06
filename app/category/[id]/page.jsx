@@ -18,18 +18,35 @@ const initialCategory = paramsData?.id || "all";
   const productId = params.get("product");
   const [activeCategory, setActiveCategory] = useState(initialCategory);
 
-  useEffect(() => {
-    if(productId){
-      const timer = setTimeout(() => {
-        window.dispatchEvent(
-          new CustomEvent("scrollToProduct", {
-            detail: productId
-          })
-        );
-      }, 400); // thoda fast
-      return () => clearTimeout(timer);
-    }
-  }, [productId]);
+useEffect(() => {
+
+  const searchData =
+    sessionStorage.getItem("searchProduct");
+
+  if (!searchData) return;
+
+  const { categoryId, productId } =
+    JSON.parse(searchData);
+
+  setActiveCategory(categoryId);
+
+  const timer = setTimeout(() => {
+
+    window.dispatchEvent(
+      new CustomEvent("scrollToProduct", {
+        detail: productId
+      })
+    );
+
+    sessionStorage.removeItem(
+      "searchProduct"
+    );
+
+  }, 350);
+
+  return () => clearTimeout(timer);
+
+}, []);
 
   return(
     <section className="bg-white min-h-screen">
@@ -37,16 +54,34 @@ const initialCategory = paramsData?.id || "all";
       <Navbar/>
 
       {/* HEADER */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img src="/category/banner.jpg" className="w-full h-full object-cover"/>
-        </div>
-        <div className="absolute inset-0 bg-black/50"/>
-        <div className="relative z-10 px-5 py-10 text-center text-white">
-          <h1 className="text-2xl font-semibold">Find Your Perfect Gift 🎁</h1>
-          <h1>For your special onece</h1>
-        </div>
-      </div>
+<div className="relative overflow-hidden">
+
+  {/* BG */}
+  <div className="absolute inset-0">
+    <img
+      src="/category/banner.jpg"
+      className="w-full h-full object-cover"
+      alt="Gift Banner"
+    />
+  </div>
+
+  {/* OVERLAY */}
+  <div className="absolute inset-0 bg-black/55" />
+
+  {/* CONTENT */}
+  <div className="relative z-10 px-5 py-9 text-center text-white">
+
+    <h1 className="text-2xl font-semibold tracking-wide">
+      Gifts That Make Moments Special 🎁
+    </h1>
+
+    <p className="mt-2 text-sm text-white/85">
+      Find the perfect surprise for your loved ones ✨
+    </p>
+
+  </div>
+
+</div>
 
       <CategoryPills
   active={activeCategory}
