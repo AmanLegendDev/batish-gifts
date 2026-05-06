@@ -1,4 +1,6 @@
-export const dynamic = "force-dynamic";
+
+export const runtime = "nodejs";
+export const revalidate = 0;
 import { connectDB } from "@/lib/db";
 import Product from "@/models/Product";
 
@@ -14,7 +16,9 @@ export default async function ProductPage({ params }) {
 
   await connectDB();
 
-  const { slug } = await params;
+  const slug = String(
+  (await params)?.slug || ""
+);
 
   if (!slug) {
     return (
