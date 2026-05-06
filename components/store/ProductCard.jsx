@@ -98,7 +98,7 @@ export default function ProductCard({ product }) {
               fill
               sizes="(max-width:768px) 50vw, 25vw"
               className="object-cover group-hover:scale-105 transition duration-500"
-              loading="lazy"
+              
             />
           </div>
               </Link>

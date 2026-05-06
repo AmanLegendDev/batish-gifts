@@ -9,7 +9,8 @@ Menu,
 X,
 ShoppingCart,
 ClipboardList,
-Search
+Search,
+Gift
 } from "lucide-react";
 
 import SearchOverlay from "@/components/store/SearchOverlay";
@@ -135,7 +136,7 @@ href="/custom-order"
 onClick={()=>setOpen(false)}
 className="flex items-center gap-3 hover:text-[var(--primary)]"
 >
-<ClipboardList size={18}/>
+<Gift size={18}/>
 Custom Order
 </Link>
 </div>

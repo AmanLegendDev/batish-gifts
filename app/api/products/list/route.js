@@ -26,6 +26,10 @@ export async function GET(req){
     .populate("category")
     .sort({ createdAt: -1 });
 
-  return Response.json(products);
+  return Response.json(products, {
+  headers: {
+    "Cache-Control": "no-store"
+  }
+});
 
 }

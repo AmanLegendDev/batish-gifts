@@ -9,7 +9,8 @@ const productCache = {};
 const preloaded = new Set();
 export default function ProductSection({ categoryId }) {
 
-  const [products, setProducts] = useState([]);
+ const [products, setProducts] = useState([]);
+const [loading, setLoading] = useState(true);
  
 
   const { cart } = useCartStore();
@@ -60,28 +61,48 @@ useEffect(() => {
 
   const category = categoryId || "all";
 
-  // ✅ cache hit
-if (productCache[category]) {
-  setProducts(productCache[category]);
-  return;
-}
+  let active = true;
 
-  let cancelled = false;
+  setLoading(true);
 
-  fetch(`/api/products/list?category=${category}`)
+  // ✅ INSTANT CACHE
+  if (productCache[category]) {
+
+    setProducts(productCache[category]);
+
+    setLoading(false);
+
+    return;
+  }
+
+  // ✅ CLEAR OLD PRODUCTS
+  setProducts([]);
+
+  fetch(`/api/products/list?category=${category}`, {
+    cache: "no-store"
+  })
     .then(res => res.json())
     .then(data => {
 
-      if (cancelled) return;
+      if (!active) return;
 
       productCache[category] = data;
 
       setProducts(data);
 
+      setLoading(false);
+
+    })
+    .catch(() => {
+
+      if (!active) return;
+
+      setLoading(false);
+
     });
 
   return () => {
-    cancelled = true;
+    active = false;
   };
 
 }, [categoryId]);
@@ -119,7 +140,7 @@ useEffect(() => {
   const totalItems = cart.reduce((a, i) => a + i.qty, 0);
   const totalPrice = cart.reduce((a, i) => a + i.sellingPrice * i.qty, 0);
 
-  if (!products.length) {
+  if (loading) {
   return (
     <section className="px-4 py-10">
       <div className="grid grid-cols-2 gap-3">
