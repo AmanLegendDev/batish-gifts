@@ -68,7 +68,7 @@ LOADING
 */
 if(!order){
 return(
-<section className="min-h-screen flex items-center justify-center bg-white text-gray-500">
+<section className="min-h-screen flex items-center justify-center bg-[#fffaf5] text-gray-500">
 Loading your order...
 </section>
 );
@@ -79,7 +79,7 @@ NORMAL SUCCESS
 */
 return(
 
-<section className="min-h-screen bg-white flex flex-col items-center justify-center px-6 text-center">
+<section className="min-h-screen bg-[#fffaf5] flex flex-col items-center justify-center px-6 text-center">
 
 
 {/* ICON */}
@@ -114,7 +114,7 @@ Your order has been received. We’ll contact you shortly for confirmation.
 
 {/* SUMMARY CARD */}
 
-<div className="mt-6 bg-gray-50 rounded-2xl p-5 w-full max-w-sm text-left space-y-2 shadow-sm">
+<div className="mt-6 bg-white rounded-[28px] border border-white p-5 w-full max-w-sm text-left space-y-3 shadow-xl">
 
 <p><span className="text-gray-400 text-sm">Name:</span><br/>{order.customerName}</p>
 

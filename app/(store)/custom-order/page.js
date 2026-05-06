@@ -75,7 +75,7 @@ Phone: ${form.phone}
 Address: ${form.address}`;
 
     window.open(
-      `https://wa.me/918219174058?text=${encodeURIComponent(msg)}`,
+      `https://wa.me/919459365278?text=${encodeURIComponent(msg)}`,
       "_blank"
     );
   }
@@ -86,11 +86,11 @@ Address: ${form.address}`;
 
 return(
 
-<section className="bg-white min-h-screen pb-24">
+<section className="bg-[#fffaf5] min-h-screen pb-24">
 
 <Navbar/>
 
-<div className="max-w-xl mx-auto px-5 pt-10">
+<div className="max-w-xl mx-auto px-5 pt-8">
 
 {/* HEADER */}
 <h1 className="text-2xl font-semibold text-gray-900">
@@ -140,9 +140,14 @@ className="input-style"
 onChange={handleChange}
 />
 
-<p className="text-xs text-gray-400">
-Price will be confirmed by owner after request
-</p>
+<div className="bg-[var(--primary)]/5 border border-[var(--primary)]/10 rounded-2xl p-3">
+
+  <p className="text-xs text-gray-600 leading-relaxed">
+    🎁 Since this is a custom request, pricing and availability
+    will be confirmed personally by our team after review.
+  </p>
+
+</div>
 
 
 {/* 🔥 BUTTONS */}

@@ -119,15 +119,30 @@ useEffect(() => {
   const totalItems = cart.reduce((a, i) => a + i.qty, 0);
   const totalPrice = cart.reduce((a, i) => a + i.sellingPrice * i.qty, 0);
 
+  if (!products.length) {
+  return (
+    <section className="px-4 py-10">
+      <div className="grid grid-cols-2 gap-3">
+        {[...Array(6)].map((_,i)=>(
+          <div
+            key={i}
+            className="h-64 rounded-3xl bg-white animate-pulse"
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 
   return (
-    <section id="products" className="px-4 py-6 bg-white min-h-[500px]">
+    <section id="products" className="px-4 py-6 bg-[#fffaf5] min-h-[500px]">
       
 
       <div
       
        
-        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        className="grid grid-cols-2 md:grid-cols-4 gap-3"
       >
 
         {products.map(product => (

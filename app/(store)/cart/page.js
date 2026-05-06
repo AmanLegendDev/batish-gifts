@@ -45,7 +45,7 @@ if(cart.length===0){
 
 return(
 
-<section className="min-h-screen bg-white">
+<section className="min-h-screen bg-[#fffaf5]">
 
 <Navbar/>
 
@@ -112,7 +112,7 @@ Your Cart
 key={item._id}
 initial={{opacity:0,y:10}}
 animate={{opacity:1,y:0}}
-className="flex gap-4 items-center bg-white border border-gray-100 rounded-2xl p-3 shadow-sm"
+className="flex gap-4 items-center bg-white/90 backdrop-blur border border-white rounded-[24px] p-3 shadow-md"
 >
 
 
@@ -194,7 +194,7 @@ className="text-red-500"
 <motion.div
 initial={{y:100,opacity:0}}
 animate={{y:0,opacity:1}}
-className="fixed bottom-0 left-0 w-full bg-white border-t px-4 py-4 flex items-center shadow"
+className="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-xl border-t border-white px-4 py-4 flex items-center shadow-2xl"
 >
 
 <div className="flex-1">

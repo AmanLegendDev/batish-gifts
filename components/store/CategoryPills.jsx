@@ -3,6 +3,7 @@
 import { useEffect, useState,useRef } from "react";
 import { motion } from "framer-motion";
 
+
 import Image from "next/image";
 
 
@@ -66,7 +67,7 @@ const handleClick = (id) => {
 
   return(
 
-    <div className="px-4 py-3 sticky top-[60px] z-40 bg-white border-b border-gray-100">
+    <div className="px-4 py-3 sticky top-[68px] z-40 bg-[#fffaf5]/95 backdrop-blur-md border-b border-gray-100">
 
       <div
   ref={scrollRef}
@@ -122,8 +123,8 @@ function Pill({id,label,image,active,onClick}){
       px-3 py-2 rounded-full text-sm font-medium transition
 
       ${active
-        ? "bg-[var(--primary)] text-white shadow-md"
-        : "bg-gray-100 text-gray-700"
+        ? "bg-[var(--primary)] text-white shadow-[0_8px_20px_rgba(0,0,0,0.08)]"
+        : "bg-white text-gray-700 border border-gray-100"
       }
 
       `}

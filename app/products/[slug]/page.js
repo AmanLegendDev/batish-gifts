@@ -1,11 +1,14 @@
+export const dynamic = "force-dynamic";
 import { connectDB } from "@/lib/db";
 import Product from "@/models/Product";
+
 import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+
 import Image from "next/image";
 import Link from "next/link";
 
 import AddToCartSection from "./AddToCartSection";
-import Footer from "@/components/layout/Footer";
 
 export default async function ProductPage({ params }) {
 
@@ -14,137 +17,216 @@ export default async function ProductPage({ params }) {
   const { slug } = await params;
 
   if (!slug) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#fffaf5]">
+        Invalid product
+      </div>
+    );
+  }
+
+  const productRaw = await Product.findOne({
+    slug,
+    isVisible: true
+  })
+    .populate("category")
+    .lean();
+
+  if (!productRaw) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#fffaf5]">
+        Product not found
+      </div>
+    );
+  }
+
+  // ✅ SAFE SERIALIZATION
+const product = {
+  _id: productRaw._id.toString(),
+  name: productRaw.name || "",
+  slug: productRaw.slug || "",
+  description: productRaw.description || "",
+  sellingPrice: productRaw.sellingPrice || 0,
+  image: productRaw.image || "/placeholder.png",
+  isVisible: productRaw.isVisible || false,
+
+  category: productRaw.category
+    ? {
+        _id: productRaw.category._id.toString(),
+        name: productRaw.category.name || ""
+      }
+    : null
+};
+
+  const relatedRaw = await Product.find({
+    category: productRaw.category?._id,
+    _id: { $ne: productRaw._id },
+    isVisible: true
+  })
+    .limit(4)
+    .lean();
+
+ const related = relatedRaw.map((item) => ({
+  _id: item._id.toString(),
+  name: item.name || "",
+  slug: item.slug || "",
+  image: item.image || "/placeholder.png",
+  sellingPrice: item.sellingPrice || 0
+}));
+
   return (
-    <div className="p-10 text-center">
-      Invalid product
-    </div>
-  );
-}
 
- const productRaw = await Product.findOne({ slug })
-  .populate("category")
-  .lean();
+    <section className="bg-[#fffaf5] min-h-screen pb-20">
 
-  
- if (!productRaw) {
-  return (
-    <div className="p-10 text-center">
-      Product not found
-    </div>
-  );
-}
- const product = JSON.parse(
-  JSON.stringify(productRaw)
-);
+      <Navbar />
 
-const relatedRaw = await Product.find({
-  category: productRaw.category._id,
-  _id: { $ne: productRaw._id },
-  isVisible: true
-}).limit(6).lean();
+      <div className="max-w-5xl mx-auto px-4 py-5">
 
-const related = JSON.parse(
-  JSON.stringify(relatedRaw)
-);
-
-  return (
-    <section className="bg-white min-h-screen pb-20">
-
-      <Navbar/>
-
-      <div className="max-w-5xl mx-auto px-4 py-6">
-
-        {/* 🔙 BACK BUTTON */}
+        {/* BACK */}
         <Link
           href="/category/all"
-          className="inline-block mb-4 text-sm text-gray-600 hover:text-[var(--primary)]"
+          className="inline-flex items-center gap-2 mb-5 text-sm text-gray-600 hover:text-[var(--primary)] transition"
         >
           ← Back
         </Link>
 
 
-        {/* IMAGE */}
-        <div className="relative w-full h-[300px] md:h-[400px] rounded-2xl overflow-hidden">
- <Image
-  id="main-product-image"
-  src={product.image || "/placeholder.png"}
-  fill
-  sizes="100vw"
-  alt={product.name}
-  className="object-cover"
-/>
-        </div>
+        {/* PRODUCT CARD */}
+        <div className="bg-white rounded-[30px] overflow-hidden shadow-sm border border-gray-100">
+
+          {/* IMAGE */}
+          <div className="relative w-full h-[320px] md:h-[500px] overflow-hidden">
+
+            <Image
+              id="main-product-image"
+              src={product.image || "/placeholder.png"}
+              fill
+              priority
+              alt={product.name}
+              sizes="100vw"
+              className="object-cover"
+            />
+
+            {/* OVERLAY */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+
+          </div>
 
 
-        {/* DETAILS */}
-        <div className="mt-6 space-y-3">
+          {/* DETAILS */}
+          <div className="p-5 md:p-7">
 
-          <h1 className="text-xl md:text-2xl font-semibold text-gray-900">
-            {product.name}
-          </h1>
-
-          <p className="text-[var(--primary)] text-lg font-bold">
-            ₹ {product.sellingPrice}
-          </p>
-
-          <p className="text-sm text-gray-500">
-            {product.description}
-          </p>
-
-        </div>
+            {/* CATEGORY */}
+            <div className="inline-flex px-3 py-1 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] text-xs font-medium mb-4">
+              {product.category?.name || "Gift"}
+            </div>
 
 
-        {/* ADD TO CART */}
-        <AddToCartSection product={product} />
+            {/* TITLE */}
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
+              {product.name}
+            </h1>
 
 
-        {/* RELATED */}
-        <div className="mt-10">
+            {/* PRICE */}
+            <p className="mt-3 text-2xl font-bold text-[var(--primary)]">
+              ₹ {product.sellingPrice}
+            </p>
 
-          <h2 className="text-lg font-semibold mb-4">
-            Related Gifts 🎁
-          </h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {/* DESCRIPTION */}
+            <p className="mt-4 text-sm leading-relaxed text-gray-600">
+              {product.description}
+            </p>
 
-            {related.map(item => (
-              <Link
-                key={item._id}
-                href={`/products/${item.slug}`}
-                className="group bg-white border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition"
-              >
 
-                <div className="relative w-full h-36">
-                  <Image
- src={item.image || "/placeholder.png"}
-  fill
-  sizes="(max-width:768px) 50vw, 33vw"
-  alt={item.name}
-                    className="object-cover group-hover:scale-110 transition duration-500"
-                  />
-                </div>
-
-                <div className="p-3">
-                  <p className="text-sm font-medium line-clamp-2">
-                    {item.name}
-                  </p>
-
-                  <p className="text-[var(--primary)] font-semibold text-sm mt-1">
-                    ₹ {item.sellingPrice}
-                  </p>
-                </div>
-
-              </Link>
-              
-            ))}
-            
+            {/* ADD TO CART */}
+            <AddToCartSection product={product} />
 
           </div>
 
         </div>
 
+
+        {/* RELATED */}
+        {related.length > 0 && (
+
+          <div className="mt-12">
+
+            <div className="flex items-center justify-between mb-5">
+
+              <h2 className="text-xl font-semibold text-gray-900">
+                Related Gifts 🎁
+              </h2>
+
+              <Link
+                href="/category/all"
+                className="text-sm text-[var(--primary)] font-medium"
+              >
+                View More →
+              </Link>
+
+            </div>
+
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+
+              {related.map((item) => (
+
+                <Link
+                  key={item._id}
+                  href={`/products/${item.slug}`}
+                  className="group bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition duration-300"
+                >
+
+                  {/* IMAGE */}
+                  <div className="relative h-40 overflow-hidden">
+
+                    <Image
+                      src={item.image || "/placeholder.png"}
+                      fill
+                      alt={item.name}
+                      sizes="(max-width:768px) 50vw, 25vw"
+                      className="object-cover group-hover:scale-105 transition duration-500"
+                    />
+
+                  </div>
+
+
+                  {/* CONTENT */}
+                  <div className="p-3">
+
+                    <p className="text-sm font-medium text-gray-800 line-clamp-2 min-h-[40px]">
+                      {item.name}
+                    </p>
+
+                    <div className="mt-2 flex items-center justify-between">
+
+                      <p className="text-[var(--primary)] font-bold text-sm">
+                        ₹ {item.sellingPrice}
+                      </p>
+
+                      <div className="text-[10px] px-2 py-1 rounded-full bg-[var(--primary)]/10 text-[var(--primary)]">
+                        Gift
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </Link>
+
+              ))}
+
+            </div>
+
+          </div>
+
+        )}
+
       </div>
-      <Footer/>
+
+      <Footer />
+
     </section>
   );
 }

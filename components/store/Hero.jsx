@@ -6,149 +6,175 @@ import Link from "next/link";
 
 export default function Hero() {
 
-return (
+  return (
 
-<section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden px-5">
+    <section className="relative overflow-hidden bg-[#fffaf5] px-4 py-6 min-h-[88vh] flex items-center">
 
+    {/* PREMIUM BG IMAGE */}
+<div className="absolute inset-0 opacity-[0.16]">
 
-{/* BACKGROUND */}
-
-<div className="absolute inset-0 bg-gradient-to-b from-[#f8fafc] via-white to-white" />
-
-
-{/* FLOATING IMAGES (VISIBLE NOW) */}
-
-{/* LEFT TOP */}
-<motion.div
-initial={{opacity:0, y:-20}}
-animate={{opacity:1, y:0}}
-transition={{delay:0.2}}
-className="absolute top-16 left-4 w-20 rotate-[-8deg] shadow-lg rounded-xl overflow-hidden"
->
-<Image src="/hero/gift-1.jpg" width={100} height={100} alt="gift"/>
-</motion.div>
-
-{/* RIGHT TOP */}
-<motion.div
-initial={{opacity:0, y:-20}}
-animate={{opacity:1, y:0}}
-transition={{delay:0.3}}
-className="absolute top-24 right-6 w-24 rotate-[10deg] shadow-lg rounded-xl overflow-hidden"
->
-<Image src="/hero/gift-2.jpg" width={120} height={120} alt="gift"/>
-</motion.div>
-
-{/* LEFT BOTTOM */}
-<motion.div
-initial={{opacity:0, y:20}}
-animate={{opacity:1, y:0}}
-transition={{delay:0.4}}
-className="absolute bottom-20 left-6 w-24 rotate-[6deg] shadow-lg rounded-xl overflow-hidden"
->
-<Image src="/hero/gift-3.jpg" width={120} height={120} alt="gift"/>
-</motion.div>
-
-{/* RIGHT BOTTOM */}
-<motion.div
-initial={{opacity:0, y:20}}
-animate={{opacity:1, y:0}}
-transition={{delay:0.5}}
-className="absolute bottom-16 right-4 w-20 rotate-[-6deg] shadow-lg rounded-xl overflow-hidden"
->
-<Image src="/hero/gift-4.jpg" width={100} height={100} alt="gift"/>
-</motion.div>
-
-
-{/* MAIN CONTENT */}
-
-<div className="relative z-10 max-w-lg text-center space-y-6">
-
-
-{/* BADGE */}
-
-<motion.div
-initial={{opacity:0,y:10}}
-animate={{opacity:1,y:0}}
-className="inline-block text-xs px-4 py-1 rounded-full bg-[var(--primary-soft)] text-[var(--primary)]"
->
-Perfect Gifts 🎁
-</motion.div>
-
-
-{/* HEADLINE */}
-
-<motion.h1
-initial={{opacity:0,y:20}}
-animate={{opacity:1,y:0}}
-transition={{duration:.5}}
-className="text-3xl md:text-4xl font-semibold leading-tight text-gray-900"
->
-
-Find the Perfect Gift
-
-<span className="block text-[var(--primary)]">
-
-for Someone Special
-
-</span>
-
-</motion.h1>
-
-
-{/* SUBTEXT */}
-
-<motion.p
-initial={{opacity:0}}
-animate={{opacity:1}}
-transition={{delay:.2}}
-className="text-gray-500 text-sm"
->
-
-Toys • Combos • Cute Gifts • Stationery
-
-Order instantly on WhatsApp 💬
-
-</motion.p>
-
-
-{/* CTA */}
-
-<motion.div
-initial={{opacity:0,y:10}}
-animate={{opacity:1,y:0}}
-transition={{delay:.3}}
-className="flex gap-3 justify-center"
->
-
-<Link
-href="category/all"
-className="bg-[var(--primary)] text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow hover:scale-[1.04] transition"
->
-Explore
-</Link>
-
-
-
-</motion.div>
-
-
-{/* TRUST */}
-
-<motion.div
-initial={{opacity:0}}
-animate={{opacity:1}}
-transition={{delay:.4}}
-className="flex justify-center gap-4 text-xs text-gray-400"
->
-<span>✨ Unique</span>
-<span>⚡ Fast</span>
-<span>💝 Easy</span>
-</motion.div>
-
+  <Image
+    src="/hero/bg-texture.jpg"
+    alt="background"
+    fill
+    priority
+    className="object-cover"
+  />
 
 </div>
 
-</section>
 
-);
+      {/* BACKGROUND GLOW */}
+      <div className="absolute top-0 left-0 w-52 h-52 bg-[var(--primary)]/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+
+      <div className="absolute bottom-0 right-0 w-52 h-52 bg-pink-100 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
+
+
+      <div className="relative z-10 max-w-5xl mx-auto text-center w-full">
+
+        {/* BADGE */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="inline-flex items-center gap-2 bg-white border border-[var(--primary)]/10 shadow-sm rounded-full px-4 py-2 text-[11px] text-[var(--primary)] font-medium"
+        >
+          🎁 Shimla’s Trusted Gift Store
+        </motion.div>
+
+
+        {/* HEADING */}
+        <motion.h1
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mt-4 text-[34px] leading-[1.02] md:text-6xl font-bold text-gray-900"
+        >
+
+          Make Every
+
+          <span className="block text-[var(--primary)]">
+            Surprise Feel
+          </span>
+
+          Special ✨
+
+        </motion.h1>
+
+
+        {/* SUBTEXT */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="mt-3 text-gray-600 text-[13px] md:text-base leading-relaxed max-w-md mx-auto"
+        >
+
+          Toys • Hampers • Cute Gifts • Perfumes • Decor
+
+          <br />
+
+          Handpicked gifts for special moments 💝
+
+        </motion.p>
+
+
+        {/* BUTTONS */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mt-5 flex gap-2 justify-center flex-wrap"
+        >
+
+          <Link
+            href="/category/all"
+            className="bg-[var(--primary)] text-white px-5 py-2.5 rounded-2xl text-sm font-semibold shadow-lg hover:scale-[1.03] transition"
+          >
+            Explore Gifts
+          </Link>
+
+    <Link
+  href="/custom-order"
+  className="bg-white border border-gray-200 px-5 py-2.5 rounded-2xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
+>
+  Custom Gift ✨
+</Link>
+
+        </motion.div>
+
+
+        {/* MINI VISUAL STRIP */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="mt-5 flex justify-center"
+        >
+
+          <div className="flex items-center bg-white shadow-2xl rounded-[28px] p-2 gap-2 border border-gray-100">
+
+            {/* LEFT */}
+            <div className="relative w-14 h-14 rounded-2xl overflow-hidden">
+
+              <Image
+                src="/hero/card-1.jpg"
+                alt="gift"
+                fill
+                className="object-cover"
+              />
+
+            </div>
+
+
+            {/* CENTER */}
+            <div className="relative w-20 h-20 rounded-[22px] overflow-hidden shadow-lg border-4 border-white">
+
+              <Image
+                src="/hero/main.jpg"
+                alt="gift"
+                fill
+                priority
+                className="object-cover"
+              />
+
+            </div>
+
+
+            {/* RIGHT */}
+            <div className="relative w-14 h-14 rounded-2xl overflow-hidden">
+
+              <Image
+                src="/hero/card-2.jpg"
+                alt="gift"
+                fill
+                className="object-cover"
+              />
+
+            </div>
+
+          </div>
+
+        </motion.div>
+
+
+        {/* TRUST */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-5 flex flex-wrap justify-center gap-3 text-[11px] text-gray-500"
+        >
+
+          <span>✨ Unique Collection</span>
+          <span>🚀 Fast Response</span>
+          <span>💝 Trusted Store</span>
+
+        </motion.div>
+
+      </div>
+
+    </section>
+
+  );
+
 }

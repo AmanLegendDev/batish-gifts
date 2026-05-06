@@ -34,14 +34,14 @@ return (
 
 <>
 
-<nav className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-200">
+<nav className="sticky top-0 z-50 backdrop-blur-md bg-white/75 border-b border-white/40 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
 
-<div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+<div className="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between">
 
 {/* LOGO */}
 <Link href="/" className="flex items-center gap-3">
 
-<div className="relative w-10 h-10 rounded-xl overflow-hidden shadow-sm">
+<div className="relative w-10 h-10 rounded-xl overflow-hidden shadow-md border border-white">
 <Image
 src="/logo.jpg"
 fill
@@ -64,7 +64,7 @@ Aarav Gift Gallery
 {showSearch && (
   <button
     onClick={() => setSearchOpen(true)}
-    className="text-gray-700 hover:text-[var(--primary)] transition"
+    className="text-gray-600 hover:text-[var(--primary)] transition"
   >
     <Search size={20}/>
   </button>
@@ -74,7 +74,7 @@ Aarav Gift Gallery
 <Link href="/cart" className="relative">
 
 <motion.div whileTap={{scale:0.9}}>
-<ShoppingCart className="text-gray-700" size={20}/>
+<ShoppingCart className="text-gray-600" size={20}/>
 </motion.div>
 
 {totalItems>0 &&(
@@ -108,13 +108,13 @@ className="text-[var(--primary)]"
 initial={{opacity:0,y:-10}}
 animate={{opacity:1,y:0}}
 exit={{opacity:0,y:-10}}
-className="bg-white border-t border-gray-200"
+className="backdrop-blur-xl bg-white/90 border-t border-gray-200"
 >
 
 <div className="flex flex-col px-5 py-4 gap-4 text-gray-700">
 
 <Link
-href="/caregory"
+href="/category/all"
 onClick={()=>setOpen(false)}
 className="flex items-center gap-3 hover:text-[var(--primary)]"
 >

@@ -96,22 +96,24 @@ const placeOrder = async (type) => {
     msg += `\nName: ${form.customerName}`;
     msg += `\nAddress: ${form.address}`;
 
-    const url = `https://wa.me/918219174058?text=${encodeURIComponent(msg)}`;
+    const url = `https://wa.me/919459365278?text=${encodeURIComponent(msg)}`;
 
     window.open(url, "_blank");
   }
 
-  window.location.href="/order-success";
+  window.location.href=`/order-success?type=${type}`;
 };
 
 
 return(
 
-<section className="min-h-screen bg-white pb-28">
+<section className="min-h-screen bg-[#fffaf5] pb-28">
 
 <Navbar/>
 
 <div className="max-w-md mx-auto px-4 pt-6 space-y-6">
+  
+  <div className="bg-white rounded-[30px] shadow-sm border border-white p-5">
 
 
 {/* HEADER */}
@@ -163,7 +165,7 @@ onChange={handleChange}
 
 {/* SUMMARY */}
 
-<div className="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
+<div className="bg-[#fffaf5] border border-gray-100 rounded-2xl p-4 space-y-3 text-sm">
 
 {cart.map(item=>(
 <div key={item._id} className="flex justify-between">
@@ -224,7 +226,7 @@ WhatsApp Order
 
 </div>
 
-
+</div>
 </div>
 
 </section>

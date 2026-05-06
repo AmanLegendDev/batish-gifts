@@ -49,7 +49,7 @@ useEffect(() => {
 }, []);
 
   return(
-    <section className="bg-white min-h-screen">
+    <section className="bg-[#fffaf5] min-h-screen">
 
       <Navbar/>
 
@@ -66,10 +66,10 @@ useEffect(() => {
   </div>
 
   {/* OVERLAY */}
-  <div className="absolute inset-0 bg-black/55" />
+  <div className="absolute inset-0 bg-black/45" />
 
   {/* CONTENT */}
-  <div className="relative z-10 px-5 py-9 text-center text-white">
+  <div className="relative z-10 px-5 py-7 text-center text-white">
 
     <h1 className="text-2xl font-semibold tracking-wide">
       Gifts That Make Moments Special 🎁

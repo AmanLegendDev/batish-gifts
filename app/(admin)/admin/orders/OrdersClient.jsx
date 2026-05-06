@@ -4,16 +4,20 @@ import { useEffect,useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion,AnimatePresence } from "framer-motion";
 import { CheckCircle } from "lucide-react";
+import { useRef } from "react";
 
 export default function OrdersPage(){
-
+const toastTimer = useRef(null);
 const params = useSearchParams();
 const initialTab = params.get("tab") || "new";
 
 const [tab,setTab]=useState(initialTab);
 const [orders,setOrders]=useState([]);
 const [popup,setPopup]=useState(null);
+const [tabPopup,setTabPopup]=useState(null);
 const [loading,setLoading]=useState(false);
+const [toast,setToast]=useState(null);
+const [fetching,setFetching]=useState(true);
 
 
 /*
@@ -21,15 +25,28 @@ FETCH ORDERS
 */
 
 const fetchOrders=async()=>{
+
+setFetching(true);
+
 const res=await fetch(`/api/admin/orders/${tab}`);
 const data=await res.json();
+
 setOrders(data);
+
+setFetching(false);
+
 };
 
 useEffect(()=>{
+
+
+
 fetchOrders();
+
 const i=setInterval(fetchOrders,4000);
+
 return()=>clearInterval(i);
+
 },[tab]);
 
 
@@ -51,14 +68,30 @@ setOrders(prev => prev.filter(o => o._id !== id));
 
 setPopup(null);
 
-setTimeout(()=>{
-if(type==="confirm") setTab("confirmed");
-if(type==="deliver") setTab("delivered");
-if(type==="cancel") setTab("cancelled");
+if(type==="confirm"){
+  setToast("Order moved to Confirmed");
+}
+
+if(type==="deliver"){
+  setToast("Order marked as Delivered");
+}
+
+if(type==="cancel"){
+  setToast("Order Cancelled");
+}
+
+clearTimeout(toastTimer.current);
+
+toastTimer.current = setTimeout(()=>{
+  setToast(null);
+},2000);
 setLoading(false);
-},300);
 
 };
+
+useEffect(() => {
+  return () => clearTimeout(toastTimer.current);
+}, []);
 
 
 return(
@@ -71,18 +104,55 @@ Orders
 
 
 {/* TABS */}
-<div className="flex gap-2">
+<div className="w-full overflow-x-auto no-scrollbar">
 
-<Tab title="New" active={tab==="new"} onClick={()=>setTab("new")} />
-<Tab title="Confirmed" active={tab==="confirmed"} onClick={()=>setTab("confirmed")} />
-<Tab title="Delivered" active={tab==="delivered"} onClick={()=>setTab("delivered")} />
-<Tab title="Cancelled" active={tab==="cancelled"} onClick={()=>setTab("cancelled")} />
+  <div className="flex gap-2 min-w-max pb-1">
 
+<Tab
+title="New"
+active={tab==="new"}
+onClick={()=>{
+if(tab!=="new"){
+setTabPopup("new");
+}
+}}
+/>
+
+<Tab
+title="Confirmed"
+active={tab==="confirmed"}
+onClick={()=>{
+if(tab!=="confirmed"){
+setTabPopup("confirmed");
+}
+}}
+/>
+
+<Tab
+title="Delivered"
+active={tab==="delivered"}
+onClick={()=>{
+if(tab!=="delivered"){
+setTabPopup("delivered");
+}
+}}
+/>
+
+<Tab
+title="Cancelled"
+active={tab==="cancelled"}
+onClick={()=>{
+if(tab!=="cancelled"){
+setTabPopup("cancelled");
+}
+}}
+/>
+</div>
 </div>
 
 
 {/* EMPTY */}
-{orders.length===0 && !loading &&(
+{orders.length===0 && !loading && !fetching &&(
 <div className="card p-6 text-center text-gray-400">
 No orders here
 </div>
@@ -98,7 +168,6 @@ No orders here
 
 <motion.div
 key={order._id}
-layout
 initial={{opacity:0,y:12}}
 animate={{opacity:1,y:0}}
 exit={{opacity:0,scale:0.9}}
@@ -122,6 +191,23 @@ tab==="cancelled" ? "border border-red-300 bg-red-50" : ""
 <p className="text-xs text-gray-500">
 {order.address}
 </p>
+<div className="flex items-center gap-1 mt-1">
+
+<span className="w-1.5 h-1.5 rounded-full bg-green-500"/>
+
+<p className="text-[11px] text-gray-400">
+{
+new Date(order.createdAt).toLocaleString("en-IN",{
+day:"numeric",
+month:"short",
+hour:"numeric",
+minute:"2-digit",
+hour12:true
+})
+}
+</p>
+
+</div>
 </div>
 
 <span className="text-[10px] px-2 py-1 rounded-full bg-gray-100">
@@ -148,7 +234,7 @@ tab==="cancelled" ? "border border-red-300 bg-red-50" : ""
 
 
 {/* ACTIONS */}
-<div className="flex gap-2">
+<div className="flex gap-2 flex-wrap">
 
 {/* NEW */}
 {tab==="new" &&(
@@ -166,6 +252,10 @@ className="bg-red-100 text-red-600 text-sm px-3 py-1 rounded-lg"
 >
 Cancel
 </button>
+
+
+
+
 </>
 )}
 
@@ -187,6 +277,30 @@ className="bg-red-100 text-red-600 text-sm px-3 py-1 rounded-lg"
 Cancel
 </button>
 </>
+)}
+
+
+
+{/* CUSTOM ORDER EDIT */}
+{(
+(order.orderType === "custom_cod" ||
+order.orderType === "custom_whatsapp")
+&&
+tab !== "cancelled"
+&&
+order.totalAmount === 0
+) && (
+
+<button
+onClick={()=>{
+window.location.href =
+`/admin/orders/edit/${order._id}`;
+}}
+className="bg-blue-100 text-blue-600 text-sm px-3 py-1 rounded-lg"
+>
+Edit Price
+</button>
+
 )}
 
 </div>
@@ -239,6 +353,78 @@ Yes
 
 <button
 onClick={()=>setPopup(null)}
+className="flex-1 bg-gray-200 rounded-lg"
+>
+No
+</button>
+
+</div>
+
+</motion.div>
+
+</motion.div>
+
+)}
+
+</AnimatePresence>
+
+<AnimatePresence>
+
+{toast &&(
+
+<motion.div
+initial={{opacity:0,y:30}}
+animate={{opacity:1,y:0}}
+exit={{opacity:0,y:30}}
+className="fixed bottom-5 left-1/2 -translate-x-1/2 bg-[var(--primary)] text-white px-4 py-2 rounded-xl shadow-lg z-[100] text-sm"
+>
+
+{toast}
+
+</motion.div>
+
+)}
+
+</AnimatePresence>
+
+
+
+<AnimatePresence>
+
+{tabPopup &&(
+
+<motion.div
+initial={{opacity:0}}
+animate={{opacity:1}}
+exit={{opacity:0}}
+className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+>
+
+<motion.div
+initial={{scale:0.9}}
+animate={{scale:1}}
+exit={{scale:0.9}}
+className="bg-white p-5 rounded-xl space-y-4 w-[90%] max-w-sm shadow-lg"
+>
+
+<p className="text-center font-medium">
+Switch to {tabPopup.charAt(0).toUpperCase() + tabPopup.slice(1)} orders?
+</p>
+
+<div className="flex gap-3">
+
+<button
+onClick={()=>{
+setTab(tabPopup);
+setTabPopup(null);
+}}
+className="flex-1 btn-primary"
+>
+Yes
+</button>
+
+<button
+onClick={()=>setTabPopup(null)}
 className="flex-1 bg-gray-200 rounded-lg"
 >
 No
