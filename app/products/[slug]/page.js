@@ -7,11 +7,11 @@ import Link from "next/link";
 import AddToCartSection from "./AddToCartSection";
 import Footer from "@/components/layout/Footer";
 
-export default async function ProductPage({ params }) {
+export default async function ProductPage(props) {
 
   await connectDB();
 
-  const { slug } = params;
+  const { slug } = await props.params;
 
  const productRaw = await Product.findOne({ slug })
   .populate("category")
