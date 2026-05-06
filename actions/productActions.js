@@ -75,13 +75,13 @@ DELETE PRODUCT (SOFT DELETE)
 */
 
 export async function deleteProduct(id) {
+
   await connectDB();
 
-  await Product.findByIdAndUpdate(id, {
-    isVisible: false,
-  });
+  await Product.findByIdAndDelete(id);
 
   return { success: true };
+
 }
 
 /*
