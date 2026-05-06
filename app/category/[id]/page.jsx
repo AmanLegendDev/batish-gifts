@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect,useState  } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import CategoryPills from "@/components/store/CategoryPills";
@@ -9,9 +9,14 @@ import Footer from "@/components/layout/Footer";
 
 export default function CategoryPage(){
 
-  const { id } = useParams();
+ const paramsData = useParams();
+
+const initialCategory = paramsData?.id || "all";
+
+
   const params = useSearchParams();
   const productId = params.get("product");
+  const [activeCategory, setActiveCategory] = useState(initialCategory);
 
   useEffect(() => {
     if(productId){
@@ -29,7 +34,7 @@ export default function CategoryPage(){
   return(
     <section className="bg-white min-h-screen">
 
-      
+      <Navbar/>
 
       {/* HEADER */}
       <div className="relative overflow-hidden">
@@ -39,12 +44,17 @@ export default function CategoryPage(){
         <div className="absolute inset-0 bg-black/50"/>
         <div className="relative z-10 px-5 py-10 text-center text-white">
           <h1 className="text-2xl font-semibold">Find Your Perfect Gift 🎁</h1>
+          <h1>For your special onece</h1>
         </div>
       </div>
 
-      <CategoryPills active={id || "all"} />
+      <CategoryPills
+  active={activeCategory}
+  onChange={setActiveCategory}
+/>
 
-      <ProductSection categoryId={id || "all"} />
+      <ProductSection categoryId={activeCategory} />
+      <Footer/>
 
       
     </section>

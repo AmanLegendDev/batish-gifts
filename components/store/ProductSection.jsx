@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCartStore } from "@/store/cartStore";
 import Link from "next/link";
 import ProductCard from "@/components/store/ProductCard";
-
+const productCache = {};
 export default function ProductSection({ categoryId }) {
 
   const [products, setProducts] = useState([]);
-  const [cache, setCache] = useState({});
+ 
 
   const { cart } = useCartStore();
 
@@ -34,35 +34,35 @@ export default function ProductSection({ categoryId }) {
   /*
   🔥 FIXED FETCH (NO EMPTY FRAME)
   */
-  useEffect(() => {
+useEffect(() => {
 
-    const category = categoryId || "all";
+  const category = categoryId || "all";
 
-    // ✅ cache hit → instantly show WITHOUT clearing
-    if(cache[category]){
-      setProducts(prev => {
-        // already same? no re-render
-        if(prev === cache[category]) return prev;
-        return cache[category];
-      });
-      return;
-    }
+  // ✅ cache hit
+if (productCache[category]) {
+  setProducts(productCache[category]);
+  return;
+}
 
-    // ❌ IMPORTANT: yahan products clear nahi karna
-    fetch(`/api/products/list?category=${category}`)
-      .then(res => res.json())
-      .then(data => {
+  let cancelled = false;
 
-        setCache(prev => ({
-          ...prev,
-          [category]: data
-        }));
+  fetch(`/api/products/list?category=${category}`)
+    .then(res => res.json())
+    .then(data => {
 
-        setProducts(data);
+      if (cancelled) return;
 
-      });
+      productCache[category] = data;
 
-  }, [categoryId]);
+      setProducts(data);
+
+    });
+
+  return () => {
+    cancelled = true;
+  };
+
+}, [categoryId]);
 
   /*
   CART
@@ -76,7 +76,7 @@ export default function ProductSection({ categoryId }) {
       
 
       <motion.div
-        key="grid" // 🔥 REMOVE categoryId dependency
+      
         initial={{ opacity: 0.95 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.15 }}

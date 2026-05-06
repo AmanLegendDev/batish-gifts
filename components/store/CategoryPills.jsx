@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+
 
 export default function CategoryPills({ active ,onChange}){
-const router = useRouter()
+
+
 
   const [categories,setCategories]=useState([]);
   
@@ -28,17 +29,25 @@ useEffect(() => {
     .then(setCategories);
   },[]);
 
-
 const handleClick = (id) => {
-  if(id === active) return;
-  
-  router.replace(`/category/${id}`, { scroll: false });
-    setTimeout(() => {
+
+  if (id === active) return;
+
+  onChange?.(id);
+
+  window.history.replaceState(
+    null,
+    "",
+    `/category/${id}`
+  );
+
+  requestAnimationFrame(() => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth" // chahe toh "auto" bhi kar sakta hai
+      behavior: "smooth"
     });
-  }, 50);
+  });
+
 };
 
 
