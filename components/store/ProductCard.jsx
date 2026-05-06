@@ -82,9 +82,10 @@ export default function ProductCard({ product }) {
     >
 
       {/* IMAGE */}
-      <Link href={`/products/${product.slug}`}>
+      
 
         <div className="relative w-full aspect-square overflow-hidden group">
+          <Link href={`/products/${product.slug}`}>
 
           <div
             ref={imgRef}
@@ -99,8 +100,8 @@ export default function ProductCard({ product }) {
               className="object-cover group-hover:scale-105 transition duration-500"
               loading="lazy"
             />
-
           </div>
+              </Link>
 
           {/* SOFT OVERLAY */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
@@ -114,7 +115,7 @@ export default function ProductCard({ product }) {
 
         </div>
 
-      </Link>
+      
       
 
 

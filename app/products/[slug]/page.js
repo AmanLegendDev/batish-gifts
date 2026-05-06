@@ -7,11 +7,19 @@ import Link from "next/link";
 import AddToCartSection from "./AddToCartSection";
 import Footer from "@/components/layout/Footer";
 
-export default async function ProductPage(props) {
+export default async function ProductPage({ params }) {
 
   await connectDB();
 
-  const { slug } = await props.params;
+  const { slug } = await params;
+
+  if (!slug) {
+  return (
+    <div className="p-10 text-center">
+      Invalid product
+    </div>
+  );
+}
 
  const productRaw = await Product.findOne({ slug })
   .populate("category")
@@ -25,7 +33,9 @@ export default async function ProductPage(props) {
     </div>
   );
 }
-  const product = JSON.parse(JSON.stringify(productRaw));
+ const product = JSON.parse(
+  JSON.stringify(productRaw)
+);
 
 const relatedRaw = await Product.find({
   category: productRaw.category._id,
@@ -33,7 +43,9 @@ const relatedRaw = await Product.find({
   isVisible: true
 }).limit(6).lean();
 
-const related = JSON.parse(JSON.stringify(relatedRaw));
+const related = JSON.parse(
+  JSON.stringify(relatedRaw)
+);
 
   return (
     <section className="bg-white min-h-screen pb-20">
@@ -53,13 +65,14 @@ const related = JSON.parse(JSON.stringify(relatedRaw));
 
         {/* IMAGE */}
         <div className="relative w-full h-[300px] md:h-[400px] rounded-2xl overflow-hidden">
-          <Image
-            id="main-product-image"
-            src={product.image}
-            fill
-            alt={product.name}
-            className="object-cover"
-          />
+ <Image
+  id="main-product-image"
+  src={product.image || "/placeholder.png"}
+  fill
+  sizes="100vw"
+  alt={product.name}
+  className="object-cover"
+/>
         </div>
 
 
@@ -103,9 +116,10 @@ const related = JSON.parse(JSON.stringify(relatedRaw));
 
                 <div className="relative w-full h-36">
                   <Image
-                    src={item.image}
-                    fill
-                    alt={item.name}
+ src={item.image || "/placeholder.png"}
+  fill
+  sizes="(max-width:768px) 50vw, 33vw"
+  alt={item.name}
                     className="object-cover group-hover:scale-110 transition duration-500"
                   />
                 </div>
