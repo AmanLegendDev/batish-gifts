@@ -11,17 +11,21 @@ export default async function ProductPage({ params }) {
 
   await connectDB();
 
-  const { slug } = await params;
+  const { slug } = params;
 
  const productRaw = await Product.findOne({ slug })
   .populate("category")
   .lean();
 
-const product = JSON.parse(JSON.stringify(productRaw));
-
-  if (!product) {
-    return <div className="p-10 text-center">Product not found</div>;
-  }
+  
+ if (!productRaw) {
+  return (
+    <div className="p-10 text-center">
+      Product not found
+    </div>
+  );
+}
+  const product = JSON.parse(JSON.stringify(productRaw));
 
 const relatedRaw = await Product.find({
   category: productRaw.category._id,
@@ -78,7 +82,7 @@ const related = JSON.parse(JSON.stringify(relatedRaw));
 
 
         {/* ADD TO CART */}
-        <AddToCartSection product={JSON.parse(JSON.stringify(product))} />
+        <AddToCartSection product={product} />
 
 
         {/* RELATED */}
