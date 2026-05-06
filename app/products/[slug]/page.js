@@ -28,12 +28,10 @@ export default async function ProductPage({ params }) {
     );
   }
 
-  const productRaw = await Product.findOne({
-    slug,
-    isVisible: true
-  })
-    .populate("category")
-    .lean();
+const productRaw = await Product.findOne({
+  slug,
+  isVisible: true
+}).lean();
 
   if (!productRaw) {
     return (
@@ -53,16 +51,11 @@ const product = {
   image: productRaw.image || "/placeholder.png",
   isVisible: productRaw.isVisible || false,
 
-  category: productRaw.category
-    ? {
-        _id: productRaw.category._id.toString(),
-        name: productRaw.category.name || ""
-      }
-    : null
+category: null
 };
 
   const relatedRaw = await Product.find({
-    category: productRaw.category?._id,
+    category: productRaw.category,
     _id: { $ne: productRaw._id },
     isVisible: true
   })
@@ -121,7 +114,7 @@ const product = {
 
             {/* CATEGORY */}
             <div className="inline-flex px-3 py-1 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] text-xs font-medium mb-4">
-              {product.category?.name || "Gift"}
+              Gift Collection
             </div>
 
 
