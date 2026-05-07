@@ -6,7 +6,7 @@ import { useCartStore } from "@/store/cartStore";
 import Link from "next/link";
 import ProductCard from "@/components/store/ProductCard";
 const productCache = {};
-const preloaded = new Set();
+
 export default function ProductSection({ categoryId }) {
 
  const [products, setProducts] = useState([]);
@@ -76,7 +76,7 @@ useEffect(() => {
   }
 
   // ✅ CLEAR OLD PRODUCTS
-  setProducts([]);
+  
 
   fetch(`/api/products/list?category=${category}`, {
     cache: "no-store"
@@ -108,31 +108,7 @@ useEffect(() => {
 }, [categoryId]);
 
 
-useEffect(() => {
 
-  if (preloaded.has("done")) return;
-
-  preloaded.add("done");
-
-  fetch("/api/categories/dropdown")
-    .then(res => res.json())
-    .then(categories => {
-
-      categories.forEach(cat => {
-
-        fetch(`/api/products/list?category=${cat._id}`)
-          .then(res => res.json())
-          .then(data => {
-
-            productCache[cat._id] = data;
-
-          });
-
-      });
-
-    });
-
-}, []);
 
   /*
   CART
@@ -155,7 +131,13 @@ useEffect(() => {
   );
 }
 
-
+if (!loading && products.length === 0) {
+  return (
+    <section className="px-4 py-16 text-center text-gray-500">
+      Products unavailable right now.
+    </section>
+  );
+}
   return (
     <section id="products" className="px-4 py-6 bg-[#fffaf5] min-h-[500px]">
       

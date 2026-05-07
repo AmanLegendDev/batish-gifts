@@ -111,6 +111,10 @@ Your order has been received. We’ll contact you shortly for confirmation.
 💵 Cash on Delivery — Pay when it arrives
 </div>
 
+<div className="mt-3 text-xs bg-yellow-50 border border-yellow-100 text-yellow-700 px-4 py-3 rounded-2xl max-w-sm text-center">
+✨ Prepaid orders may get special discounts or free gifts from the owner.
+</div>
+
 
 {/* SUMMARY CARD */}
 
@@ -122,6 +126,45 @@ Your order has been received. We’ll contact you shortly for confirmation.
 
 <p><span className="text-gray-400 text-sm">Address:</span><br/>{order.address}</p>
 
+
+<div className="pt-1">
+
+<p className="text-sm font-semibold text-gray-800 mb-3">
+Ordered Items
+</p>
+
+<div className="space-y-2">
+
+{order.items?.map((item,index)=>(
+
+<div
+  key={index}
+  className="flex items-center justify-between bg-[#fffaf5] rounded-2xl px-3 py-2"
+>
+
+  <div>
+
+    <p className="text-sm font-medium text-gray-800">
+      {item.title}
+    </p>
+
+    <p className="text-xs text-gray-500">
+      Qty: {item.qty}
+    </p>
+
+  </div>
+
+  <p className="text-sm font-semibold text-[var(--primary)]">
+    ₹ {item.price * item.qty}
+  </p>
+
+</div>
+
+))}
+
+</div>
+
+</div>
 <hr/>
 
 <p className="flex justify-between font-medium">
