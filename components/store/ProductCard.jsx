@@ -97,7 +97,7 @@ export default function ProductCard({ product }) {
               alt={product.name}
               fill
               sizes="(max-width:768px) 50vw, 25vw"
-              className="object-cover group-hover:scale-105 transition duration-500"
+              className="object-cover  transition duration-500"
               
             />
           </div>
@@ -108,7 +108,7 @@ export default function ProductCard({ product }) {
 
 <Link
     href={`/products/${product.slug}`}
-    className="absolute bottom-2 right-2 z-10 bg-white/90 backdrop-blur-md text-[10px] font-medium text-gray-700 px-2.5 py-1 rounded-full shadow-sm hover:bg-white transition"
+    className="absolute bottom-1 right-1 z-10 bg-white/90 backdrop-blur-md text-[10px] font-medium text-gray-700 px-2.5 py-1 rounded-full shadow-sm hover:bg-white transition"
   >
     View →
   </Link>

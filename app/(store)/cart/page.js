@@ -112,7 +112,7 @@ Your Cart
 key={item._id}
 initial={{opacity:0,y:10}}
 animate={{opacity:1,y:0}}
-className="flex gap-4 items-center bg-white/90 backdrop-blur border border-white rounded-[24px] p-3 shadow-md"
+className="flex gap-4 items-center bg-white/90 backdrop-blur border border-white rounded-[40px] p-3 shadow-md"
 >
 
 

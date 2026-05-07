@@ -103,6 +103,18 @@ category: null
               className="object-cover"
             />
 
+            {/* LOGO WATERMARK */}
+{/* LOGO */}
+<div className="absolute bottom-2 right-2 z-20 ">
+  <Image
+    src="/logo.jpg"
+    alt="logo"
+    width={28}
+    height={28}
+    className="object-contain rounded-full"
+  />
+</div>
+
             {/* OVERLAY */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
 
@@ -185,6 +197,9 @@ category: null
                       sizes="(max-width:768px) 50vw, 25vw"
                       className="object-cover group-hover:scale-105 transition duration-500"
                     />
+
+                    
+
 
                   </div>
 
