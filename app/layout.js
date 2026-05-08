@@ -18,12 +18,12 @@ const poppins = Poppins({
 export const metadata = {
 
   title: {
-    default: "Aarav Gift Gallery",
+    default: "Aarav Gift Gallery | Gift Shop in Shimla",
     template: "%s | Aarav Gift Gallery"
   },
 
   description:
-    "Premium gifts, hampers, surprise boxes, perfumes & custom gifting in Shimla. Order unique gifts easily with Aarav Gift Gallery.",
+"Best gift shop in Shimla for birthday gifts, custom gifts, hampers, perfumes, handmade gifts, toys and surprise boxes. Aarav Gift Gallery Panthaghati.",
 
   keywords: [
     "gift shop shimla",
@@ -46,14 +46,21 @@ export const metadata = {
 
   creator: "Aman Digital Solution",
 
-  metadataBase: new URL(
-    "https://aaravgiftgallery.vercel.app"
-  ),
+  verification: {
+  google: "abc123xyz"
+},
+
+
+ metadataBase: new URL(
+  "https://www.aaravgiftgallery.com"
+),
 
   robots: {
   index: true,
   follow: true
 },
+
+
 
   openGraph: {
 
@@ -62,7 +69,7 @@ export const metadata = {
     description:
       "Unique gifts, hampers & surprise boxes crafted for special moments 💝",
 
-    url: "https://aaravgiftgallery.vercel.app",
+    url: "https://www.aaravgiftgallery.com",
 
     siteName: "Aarav Gift Gallery",
 
@@ -87,15 +94,58 @@ export const metadata = {
     images: ["/og.jpg"]
   },
 
-icons: {
-  icon: "/favicon.png",
-  shortcut: "/favicon.png",
-  apple: "/favicon.png"
-}
+
 
 };
 
 export default function RootLayout({ children }) {
+
+  const localBusinessSchema = {
+  "@context": "https://schema.org",
+
+  "@type": "GiftShop",
+
+  name: "Aarav Gift Gallery",
+
+  image:
+    "https://www.aaravgiftgallery.com/og.jpg",
+
+  url:
+    "https://www.aaravgiftgallery.com",
+
+  telephone:
+    "+91 9459365278",
+
+  address: {
+
+    "@type": "PostalAddress",
+
+    addressLocality: "Shimla",
+
+    addressRegion: "Himachal Pradesh",
+
+    postalCode: "171009",
+
+    addressCountry: "IN"
+
+  },
+
+  areaServed: [
+    "Shimla",
+    "Panthaghati",
+    "Sanjauli",
+    "Dhalli"
+  ],
+
+  priceRange: "₹₹",
+
+  description:
+    "Gift shop in Shimla offering birthday gifts, custom gifts, hampers, perfumes, toys, handmade gifts and surprise boxes.",
+
+  sameAs: [
+    
+  ]
+};
 
   return (
 
@@ -104,6 +154,13 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.variable} ${poppins.variable} min-h-screen bg-[var(--background)] text-[var(--foreground)]`}
       >
+
+        <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify(localBusinessSchema)
+  }}
+/>
         
 
         {children}

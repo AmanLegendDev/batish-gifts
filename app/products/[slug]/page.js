@@ -12,6 +12,119 @@ import Link from "next/link";
 
 import AddToCartSection from "./AddToCartSection";
 
+
+
+export async function generateMetadata({
+  params
+}) {
+
+  await connectDB();
+
+  const slug = String(
+    (await params)?.slug || ""
+  );
+
+  const product = await Product.findOne({
+    slug,
+    isVisible: true
+  })
+    .populate("category")
+    .lean();
+
+  if (!product) {
+
+    return {
+      title: "Product Not Found",
+    };
+
+  }
+
+  const productName =
+    product.name || "Gift Product";
+
+  const categoryName =
+    product.category?.name || "Gift";
+
+  const description =
+    product.description?.slice(0, 160) ||
+    `Buy ${productName} from Aarav Gift Gallery Shimla. Premium ${categoryName.toLowerCase()} gifts available with easy ordering.`;
+
+  const productUrl =
+    `https://www.aaravgiftgallery.com/products/${product.slug}`;
+
+  return {
+
+   title:
+`${productName} | Gift Shop Shimla`,
+
+    description,
+
+    keywords: [
+      productName,
+      `${categoryName} shimla`,
+      "gift shop shimla",
+      "custom gifts shimla",
+      "birthday gifts shimla",
+      "gift hampers shimla",
+      "aarav gift gallery"
+    ],
+
+    alternates: {
+      canonical: productUrl
+    },
+
+    openGraph: {
+
+      title:
+        `${productName} | Aarav Gift Gallery`,
+
+      description,
+
+      url: productUrl,
+
+      siteName:
+        "Aarav Gift Gallery",
+
+      images: [
+        {
+          url:
+            product.image ||
+            "/og.jpg",
+
+          width: 1200,
+          height: 630,
+
+          alt: productName
+        }
+      ],
+
+      locale: "en_IN",
+
+      type: "website"
+    },
+
+    twitter: {
+
+      card: "summary_large_image",
+
+      title:
+        `${productName} | Aarav Gift Gallery`,
+
+      description,
+
+      images: [
+        product.image ||
+        "/og.jpg"
+      ]
+    }
+
+  };
+
+}
+
+
+
+
 export default async function ProductPage({ params }) {
 
   await connectDB();
@@ -70,7 +183,53 @@ category: null
   sellingPrice: item.sellingPrice || 0
 }));
 
+
+
+
+const productSchema = {
+  "@context": "https://schema.org",
+
+  "@type": "Product",
+
+  name: product.name,
+
+  image: [product.image],
+
+  description: product.description,
+
+  brand: {
+    "@type": "Brand",
+    name: "Aarav Gift Gallery"
+  },
+
+  offers: {
+
+    "@type": "Offer",
+
+    priceCurrency: "INR",
+
+    price: product.sellingPrice,
+
+    availability:
+      "https://schema.org/InStock",
+
+    url:
+      `https://www.aaravgiftgallery.com/products/${product.slug}`
+
+  }
+
+};
+
+
+
   return (
+
+    <><script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify(productSchema)
+  }}
+/>
 
     <section className="bg-[#fffaf5] min-h-screen pb-20">
 
@@ -105,7 +264,7 @@ category: null
 
             {/* LOGO WATERMARK */}
 {/* LOGO */}
-<div className="absolute bottom-2 right-2 z-20 ">
+<div className="absolute bottom-2 right-2 z-20  ">
   <Image
     src="/logo.jpg"
     alt="logo"
@@ -240,5 +399,6 @@ category: null
       <Footer />
 
     </section>
+    </>
   );
 }
