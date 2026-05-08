@@ -33,12 +33,7 @@ export default async function FeaturedProducts() {
 </p>
           </div>
 
-          <Link
-            href="/category/all"
-            className="text-sm text-[var(--primary)] font-medium"
-          >
-            View All →
-          </Link>
+          
 
         </div>
 

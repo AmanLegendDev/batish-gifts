@@ -1,97 +1,77 @@
-"use client";
-
-import { useEffect,useState  } from "react";
-import { useParams, useSearchParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
-import CategoryPills from "@/components/store/CategoryPills";
-import ProductSection from "@/components/store/ProductSection";
 import Footer from "@/components/layout/Footer";
 
-export default function CategoryPage(){
+import CategoryPageClient from "./CategoryPageClient";
 
- const paramsData = useParams();
+import { connectDB } from "@/lib/db";
+import Category from "@/models/Category";
 
-const initialCategory = paramsData?.id || "all";
+export async function generateMetadata({
+  params
+}) {
 
+  await connectDB();
 
-  const params = useSearchParams();
-  const productId = params.get("product");
-  const [activeCategory, setActiveCategory] = useState(initialCategory);
+  const categoryId =
+    (await params)?.id;
 
-useEffect(() => {
+  if (categoryId === "all") {
 
-  const searchData =
-    sessionStorage.getItem("searchProduct");
+    return {
 
-  if (!searchData) return;
+      title:
+        "All Gifts | Gift Shop Shimla",
 
-  const { categoryId, productId } =
-    JSON.parse(searchData);
+      description:
+        "Explore birthday gifts, perfumes, toys, handmade gifts and hampers from Aarav Gift Gallery Shimla."
 
-  setActiveCategory(categoryId);
+    };
 
-  const timer = setTimeout(() => {
+  }
 
-    window.dispatchEvent(
-      new CustomEvent("scrollToProduct", {
-        detail: productId
-      })
-    );
+  const category =
+    await Category.findById(categoryId)
+      .lean();
 
-    sessionStorage.removeItem(
-      "searchProduct"
-    );
+  if (!category) {
 
-  }, 350);
+    return {
+      title:
+        "Gift Category | Aarav Gift Gallery"
+    };
 
-  return () => clearTimeout(timer);
+  }
 
-}, []);
+  const categoryName =
+    category.name;
 
-  return(
-    <section className="bg-[#fffaf5] min-h-screen">
+  return {
 
-      <Navbar/>
+    title:
+      `${categoryName} in Shimla | Aarav Gift Gallery`,
 
-      {/* HEADER */}
-<div className="relative overflow-hidden">
+    description:
+      `Buy ${categoryName.toLowerCase()} in Shimla from Aarav Gift Gallery. Premium gifting products with easy ordering and fast support.`,
 
-  {/* BG */}
-  <div className="absolute inset-0">
-    <img
-      src="/category/banner.jpg"
-      className="w-full h-full object-cover"
-      alt="Gift Banner"
-    />
-  </div>
+    keywords: [
+      `${categoryName} shimla`,
+      `${categoryName} gift shop`,
+      "gift shop shimla",
+      "birthday gifts shimla",
+      "custom gifts shimla"
+    ],
 
-  {/* OVERLAY */}
-  <div className="absolute inset-0 bg-black/45" />
+    alternates: {
+      canonical:
+        `https://www.aaravgiftgallery.com/category/${categoryId}`
+    }
 
-  {/* CONTENT */}
-  <div className="relative z-10 px-5 py-7 text-center text-white">
+  };
 
-    <h1 className="text-2xl font-semibold tracking-wide">
-      Gifts That Make Moments Special 🎁
-    </h1>
+}
 
-    <p className="mt-2 text-sm text-white/85">
-      Find the perfect surprise for your loved ones ✨
-    </p>
+export default function Page() {
 
-  </div>
+  return <CategoryPageClient />;
 
-</div>
-
-      <CategoryPills
-  active={activeCategory}
-  onChange={setActiveCategory}
-/>
-
-      <ProductSection categoryId={activeCategory} />
-      <Footer/>
-
-      
-    </section>
-  );
 }
