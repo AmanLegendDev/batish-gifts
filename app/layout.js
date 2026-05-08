@@ -47,7 +47,7 @@ export const metadata = {
   creator: "Aman Digital Solution",
 
   verification: {
-  google: "abc123xyz"
+  google: "5gYda82MANvDdRu9ccuD9s8H1RuZDs290h4BZdgWq0A"
 },
 
 
