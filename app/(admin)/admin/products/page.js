@@ -68,154 +68,322 @@ fetchData();
 
 };
 
-return(
+return (
 
-<div className="space-y-5 w-full max-w-full overflow-x-hidden">
+<div className="min-h-screen bg-[#fffaf5] px-4 py-6 pb-24">
+
+<div className="max-w-5xl mx-auto space-y-6">
+
 
 {/* HEADER */}
-<div className="flex items-center justify-between shrink-0">
 
-<div>
-<h1 className="text-lg font-semibold">Products</h1>
-<p className="text-xs text-gray-500">Manage your items</p>
+<div className="flex items-center justify-between gap-4">
+
+<div className="space-y-1">
+
+<div className="inline-flex items-center gap-2 rounded-full bg-orange-100 px-4 py-1 text-xs font-semibold text-orange-600">
+
+Products Dashboard
+
+</div>
+
+<h1 className="text-3xl font-bold tracking-tight text-slate-900">
+
+Manage Products
+
+</h1>
+
+<p className="text-sm text-slate-500">
+
+Manage your marketplace inventory and visibility.
+
+</p>
+
 </div>
 
 <Link
 href="/admin/products/create"
-className=" shrink-0 flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium bg-[var(--primary)] text-white"
+className="shrink-0 h-11 px-5 rounded-2xl bg-orange-500 hover:bg-orange-600 transition-all text-white text-sm font-semibold flex items-center gap-2 shadow-lg shadow-orange-200"
 >
-<Plus size={14}/>
-Add
+
+<Plus size={16} />
+
+Add Product
+
 </Link>
 
 </div>
 
 
-{/* CATEGORY */}
-<div className="w-full overflow-x-auto no-scrollbar">
+{/* CATEGORY FILTERS */}
 
-<div className="flex gap-2 min-w-max pb-1">
+<div className="overflow-x-auto no-scrollbar">
 
-  <button
-    onClick={()=>setSelectedCat("")}
-    className={`shrink-0 px-3 py-1 rounded-full text-xs whitespace-nowrap transition ${
-      selectedCat===""
-        ? "bg-[var(--primary)] text-white"
-        : "bg-gray-100"
-    }`}
-  >
-    All
-  </button>
+<div className="flex gap-3 min-w-max pb-1">
 
-  {categories.map(cat=>(
-    <button
-      key={cat._id}
-      onClick={()=>setSelectedCat(cat._id)}
-      className={`shrink-0 px-3 py-1 rounded-full text-xs whitespace-nowrap transition ${
-        selectedCat===cat._id
-          ? "bg-[var(--primary)] text-white"
-          : "bg-gray-100"
-      }`}
-    >
-      {cat.name}
-    </button>
-  ))}
+<button
+onClick={()=>setSelectedCat("")}
+className={`px-4 h-10 rounded-2xl text-sm font-medium whitespace-nowrap transition-all ${
+selectedCat === ""
+? "bg-orange-500 text-white shadow-md shadow-orange-200"
+: "bg-white border border-slate-200 text-slate-600"
+}`}
+>
+All Products
+</button>
 
-</div>
+{categories.map((cat)=>(
 
-</div>
-
-
-{/* LIST */}
-<div className="space-y-3 w-full overflow-hidden">
-
-{filteredProducts.map(product=>(
-
-<div
-key={product._id}
-className={`border rounded-xl p-3 flex items-center gap-2 min-w-0 transition ${
-  product.isVisible
-    ? "bg-white"
-    : "bg-red-50 opacity-60"
+<button
+key={cat._id}
+onClick={()=>setSelectedCat(cat._id)}
+className={`px-4 h-10 rounded-2xl text-sm font-medium whitespace-nowrap transition-all ${
+selectedCat === cat._id
+? "bg-orange-500 text-white shadow-md shadow-orange-200"
+: "bg-white border border-slate-200 text-slate-600"
 }`}
 >
 
+{cat.name}
+
+</button>
+
+))}
+
+</div>
+
+</div>
+
+
+{/* PRODUCTS */}
+
+<div className="grid grid-cols-1 gap-4">
+
+{filteredProducts.map((product)=>(
+
+<div
+key={product._id}
+className={`rounded-[28px] border overflow-hidden transition-all ${
+product.isVisible
+? "border-orange-100 bg-white shadow-[0_10px_30px_rgba(0,0,0,0.04)]"
+: "border-red-100 bg-red-50/60 opacity-80"
+}`}
+>
+
+<div className="p-4 flex gap-4">
+
+
 {/* IMAGE */}
+
+<div className="relative shrink-0">
+
 <img
 src={product.image || "/placeholder.png"}
-className="w-12 h-12 rounded-lg object-cover shrink-0"
+alt={product.name}
+className="w-24 h-24 rounded-2xl object-cover border border-orange-100"
 />
 
-{/* INFO */}
-<div className="flex-1 min-w-0">
+{product.badgeText && (
 
-<div className="flex items-center gap-2">
+<div className="absolute top-2 left-2 bg-orange-500 text-white text-[10px] font-semibold px-2 py-1 rounded-full shadow">
 
-  <p className="text-sm font-medium truncate">
-    {product.name}
-  </p>
-
-  {!product.isVisible && (
-    <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-600">
-      Hidden
-    </span>
-  )}
+{product.badgeText}
 
 </div>
 
-<p className="text-xs text-gray-500 truncate">
+)}
+
+</div>
+
+
+{/* CONTENT */}
+
+<div className="flex-1 min-w-0 space-y-3">
+
+
+{/* TOP */}
+
+<div className="flex items-start justify-between gap-4">
+
+<div className="min-w-0 space-y-1">
+
+<div className="flex items-center gap-2 flex-wrap">
+
+<h2 className="text-base font-semibold text-slate-900 truncate">
+
+{product.name}
+
+</h2>
+
+{!product.isVisible && (
+
+<span className="px-2 py-1 rounded-full text-[10px] font-semibold bg-red-100 text-red-600">
+
+Hidden
+
+</span>
+
+)}
+
+{product.isFeatured && (
+
+<span className="px-2 py-1 rounded-full text-[10px] font-semibold bg-yellow-100 text-yellow-700">
+
+Featured
+
+</span>
+
+)}
+
+</div>
+
+<p className="text-sm text-slate-500">
+
 {product.category?.name}
-</p>
 
-<p className="text-sm font-semibold text-[var(--primary)]">
-₹ {product.sellingPrice}
 </p>
 
 </div>
 
 
-{/* ACTIONS RIGHT FIX */}
-<div className="flex items-center gap-2 shrink-0">
+{/* PRICE */}
 
-<Link href={`/admin/products/edit/${product._id}`}>
-<Pencil size={14}/>
+<div className="text-right shrink-0">
+
+<p className="text-xl font-bold text-orange-500">
+
+₹ {product.sellingPrice}
+
+</p>
+
+</div>
+
+</div>
+
+
+{/* DESCRIPTION */}
+
+{product.description && (
+
+<p className="text-sm text-slate-500 line-clamp-2">
+
+{product.description}
+
+</p>
+
+)}
+
+
+{/* COMMERCE INFO */}
+
+<div className="flex flex-wrap items-center gap-2">
+
+{product.offerText && (
+
+<div className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+
+{product.offerText}
+
+</div>
+
+)}
+
+{product.deliveryInfo && (
+
+<div className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-medium">
+
+{product.deliveryInfo}
+
+</div>
+
+)}
+
+</div>
+
+
+{/* ACTIONS */}
+
+<div className="flex items-center gap-2 pt-1 flex-wrap">
+
+<Link
+href={`/admin/products/edit/${product._id}`}
+className="h-10 px-4 rounded-xl border border-slate-200 flex items-center gap-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-all"
+>
+
+<Pencil size={15} />
+
+Edit
+
 </Link>
 
-<button onClick={()=>setPopup({id:product._id})}>
-<Trash2 size={14}/>
+<button
+onClick={()=>setPopup({id:product._id})}
+className="h-10 px-4 rounded-xl border border-red-200 text-red-600 flex items-center gap-2 text-sm font-medium hover:bg-red-50 transition-all"
+>
+
+<Trash2 size={15} />
+
+Delete
+
 </button>
 
 <button
 onClick={()=>
-  setActionPopup({
-    id: product._id,
-    field: "isVisible",
-    value: !product.isVisible,
-    text: product.isVisible
-      ? "Hide this product?"
-      : "Show this product?"
-  })
+setActionPopup({
+id: product._id,
+field: "isVisible",
+value: !product.isVisible,
+text: product.isVisible
+? "Hide this product?"
+: "Show this product?"
+})
 }
-className={product.isVisible ? "text-green-600":"text-gray-400"}
+className={`h-10 px-4 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
+product.isVisible
+? "bg-green-100 text-green-700"
+: "bg-slate-100 text-slate-500"
+}`}
 >
-{product.isVisible ? <Eye size={14}/> : <EyeOff size={14}/>}
+
+{product.isVisible
+? <Eye size={15}/>
+: <EyeOff size={15}/>
+}
+
+{product.isVisible ? "Visible" : "Hidden"}
+
 </button>
 
 <button
 onClick={()=>
-  setActionPopup({
-    id: product._id,
-    field: "isFeatured",
-    value: !product.isFeatured,
-    text: product.isFeatured
-      ? "Remove from featured?"
-      : "Add to featured?"
-  })
+setActionPopup({
+id: product._id,
+field: "isFeatured",
+value: !product.isFeatured,
+text: product.isFeatured
+? "Remove from featured?"
+: "Add to featured?"
+})
 }
-className={product.isFeatured ? "text-yellow-500":"text-gray-400"}
+className={`h-10 px-4 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
+product.isFeatured
+? "bg-yellow-100 text-yellow-700"
+: "bg-slate-100 text-slate-500"
+}`}
 >
-{product.isFeatured ? <Star size={14}/> : <StarOff size={14}/>}
+
+{product.isFeatured
+? <Star size={15}/>
+: <StarOff size={15}/>
+}
+
+{product.isFeatured ? "Featured" : "Feature"}
+
 </button>
+
+</div>
+
+</div>
 
 </div>
 
@@ -226,28 +394,42 @@ className={product.isFeatured ? "text-yellow-500":"text-gray-400"}
 </div>
 
 
-{/* POPUP */}
-{popup &&(
-<div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
+{/* DELETE POPUP */}
 
-<div className="bg-white p-5 rounded-xl space-y-4 w-full max-w-sm">
+{popup && (
 
-<p className="text-center text-sm">
-Delete this product?
+<div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center px-4">
+
+<div className="w-full max-w-sm rounded-[28px] bg-white p-6 space-y-5 shadow-2xl">
+
+<div className="space-y-2 text-center">
+
+<h2 className="text-lg font-semibold text-slate-900">
+
+Delete Product
+
+</h2>
+
+<p className="text-sm text-slate-500">
+
+This action cannot be undone.
+
 </p>
 
-<div className="flex gap-2">
+</div>
+
+<div className="flex gap-3">
 
 <button
 onClick={confirmDelete}
-className="flex-1 bg-red-500 text-white py-2 rounded-lg text-sm"
+className="flex-1 h-11 rounded-2xl bg-red-500 hover:bg-red-600 transition-all text-white font-semibold"
 >
 Delete
 </button>
 
 <button
 onClick={()=>setPopup(null)}
-className="flex-1 bg-gray-200 py-2 rounded-lg text-sm"
+className="flex-1 h-11 rounded-2xl bg-slate-100 hover:bg-slate-200 transition-all text-slate-700 font-semibold"
 >
 Cancel
 </button>
@@ -257,38 +439,49 @@ Cancel
 </div>
 
 </div>
+
 )}
-{actionPopup &&(
-<div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
 
-  <div className="bg-white p-5 rounded-xl space-y-4 w-full max-w-sm">
 
-    <p className="text-center text-sm font-medium">
-      {actionPopup.text}
-    </p>
+{/* ACTION POPUP */}
 
-    <div className="flex gap-2">
+{actionPopup && (
 
-      <button
-        onClick={toggleField}
-        className="flex-1 bg-[var(--primary)] text-white py-2 rounded-lg text-sm"
-      >
-        Yes
-      </button>
+<div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center px-4">
 
-      <button
-        onClick={()=>setActionPopup(null)}
-        className="flex-1 bg-gray-200 py-2 rounded-lg text-sm"
-      >
-        Cancel
-      </button>
+<div className="w-full max-w-sm rounded-[28px] bg-white p-6 space-y-5 shadow-2xl">
 
-    </div>
+<p className="text-center text-base font-semibold text-slate-800">
 
-  </div>
+{actionPopup.text}
+
+</p>
+
+<div className="flex gap-3">
+
+<button
+onClick={toggleField}
+className="flex-1 h-11 rounded-2xl bg-orange-500 hover:bg-orange-600 transition-all text-white font-semibold"
+>
+Yes
+</button>
+
+<button
+onClick={()=>setActionPopup(null)}
+className="flex-1 h-11 rounded-2xl bg-slate-100 hover:bg-slate-200 transition-all text-slate-700 font-semibold"
+>
+Cancel
+</button>
 
 </div>
+
+</div>
+
+</div>
+
 )}
+
+</div>
 
 </div>
 

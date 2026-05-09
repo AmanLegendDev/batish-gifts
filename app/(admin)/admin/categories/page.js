@@ -122,62 +122,162 @@ fetchCategories();
 
 return(
 
-<div className="space-y-6">
+<div className="min-h-screen bg-[#fffaf5] px-4 py-6 pb-24">
+
+<div className="max-w-5xl mx-auto space-y-6">
+
 
 {/* HEADER */}
-<div>
-<h1 className="text-xl md:text-2xl text-[var(--primary)] font-semibold">
+
+<div className="space-y-2">
+
+<div className="inline-flex items-center gap-2 rounded-full bg-orange-100 px-4 py-1 text-xs font-semibold text-orange-600">
+
+BASTA GIFTS ADMIN
+
+</div>
+
+<h1 className="text-3xl font-bold tracking-tight text-slate-900">
+
 Categories Manager
+
 </h1>
-<p className="text-gray-500 text-sm">
-Homepage slider categories
+
+<p className="text-sm text-slate-500">
+
+Manage storefront shopping categories.
+
 </p>
+
 </div>
 
 
 {/* CREATE */}
-<div className="card p-4 space-y-4">
+
+<div className="rounded-[28px] border border-orange-100 bg-white p-5 shadow-[0_10px_40px_rgba(0,0,0,0.05)] space-y-5">
+
+<div className="space-y-1">
+
+<h2 className="text-lg font-semibold text-slate-900">
+
+Create Category
+
+</h2>
+
+<p className="text-sm text-slate-500">
+
+Add categories for homepage shopping sections.
+
+</p>
+
+</div>
+
+
+{/* INPUT */}
 
 <input
 value={name}
 onChange={(e)=>setName(e.target.value)}
 placeholder="Category name"
-className="input-style"
+className="w-full h-12 rounded-2xl border border-slate-200 px-4 text-sm outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100 transition-all"
 />
 
-<label className="upload-box">
-<Upload size={18}/>
-Upload Image
-<input type="file" hidden onChange={uploadImage}/>
+
+{/* UPLOAD */}
+
+<label className="border-2 border-dashed border-orange-200 rounded-3xl bg-orange-50/40 p-8 flex flex-col items-center justify-center gap-3 text-center cursor-pointer hover:bg-orange-50 transition-all">
+
+<div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-sm">
+
+<Upload
+size={22}
+className="text-orange-500"
+/>
+
+</div>
+
+<div>
+
+<p className="font-medium text-slate-700">
+
+Upload Category Image
+
+</p>
+
+<p className="text-sm text-slate-500">
+
+PNG, JPG or WEBP
+
+</p>
+
+</div>
+
+<input
+type="file"
+hidden
+onChange={uploadImage}
+/>
+
 </label>
 
-{uploading && <p className="text-sm text-gray-400">Uploading...</p>}
 
-{image &&(
-<div className="relative w-24">
-<img src={image} className="rounded-lg"/>
+{/* LOADING */}
+
+{uploading && (
+
+<p className="text-sm font-medium text-orange-500">
+
+Uploading image...
+
+</p>
+
+)}
+
+
+{/* PREVIEW */}
+
+{image && (
+
+<div className="relative w-28">
+
+<img
+src={image}
+className="w-28 h-28 rounded-2xl object-cover border border-orange-100"
+/>
+
 <button
 onClick={()=>setImage("")}
-className="absolute -top-2 -right-2 bg-red-500 p-1 rounded-full"
+className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg"
 >
+
 <X size={14}/>
+
 </button>
+
 </div>
+
 )}
+
+
+{/* BUTTON */}
 
 <button
 onClick={createCategory}
-className="bg-[var(--primary)] text-white py-2 rounded-xl font-semibold flex items-center justify-center gap-2"
+className="w-full h-12 rounded-2xl bg-orange-500 hover:bg-orange-600 transition-all text-white font-semibold shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
 >
-<Plus size={16}/>
+
+<Plus size={18}/>
+
 Create Category
+
 </button>
 
 </div>
 
 
-{/* LIST */}
-<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+{/* CATEGORY LIST */}
+
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
 {categories.map((cat,index)=>(
 
@@ -186,30 +286,68 @@ key={cat._id}
 initial={{opacity:0,y:10}}
 animate={{opacity:1,y:0}}
 transition={{delay:index*0.05}}
-className="card flex items-center justify-between p-3"
+className="rounded-[28px] border border-orange-100 bg-white p-4 shadow-[0_10px_30px_rgba(0,0,0,0.04)]"
 >
 
-<div className="flex items-center gap-2 min-w-0">
+<div className="flex items-center justify-between gap-3">
 
-{cat.image &&(
-<img src={cat.image} className="w-10 h-10 rounded-full object-cover"/>
+<div className="flex items-center gap-3 min-w-0">
+
+{cat.image ? (
+
+<img
+src={cat.image}
+className="w-14 h-14 rounded-2xl object-cover border border-orange-100 shrink-0"
+/>
+
+) : (
+
+<div className="w-14 h-14 rounded-2xl bg-orange-100 shrink-0"/>
+
 )}
 
-<span className="truncate text-sm">
+<div className="min-w-0">
+
+<p className="font-semibold text-slate-900 truncate">
+
 {cat.name}
-</span>
+
+</p>
+
+<p className="text-xs text-slate-500">
+
+Shopping Category
+
+</p>
 
 </div>
 
-<div className="flex gap-2">
+</div>
 
-<button onClick={()=>startEdit(cat)} className="text-[var(--primary)]">
-<Edit size={18}/>
+
+{/* ACTIONS */}
+
+<div className="flex items-center gap-2 shrink-0">
+
+<button
+onClick={()=>startEdit(cat)}
+className="w-9 h-9 rounded-xl border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-slate-50 transition-all"
+>
+
+<Edit size={16}/>
+
 </button>
 
-<button onClick={()=>deleteCategory(cat._id)} className="text-red-500">
-<Trash2 size={18}/>
+<button
+onClick={()=>deleteCategory(cat._id)}
+className="w-9 h-9 rounded-xl border border-red-200 flex items-center justify-center text-red-500 hover:bg-red-50 transition-all"
+>
+
+<Trash2 size={16}/>
+
 </button>
+
+</div>
 
 </div>
 
@@ -221,27 +359,53 @@ className="card flex items-center justify-between p-3"
 
 
 {/* DELETE POPUP */}
+
 <AnimatePresence>
+
 {popup && popup.type==="delete" &&(
 
 <motion.div
-className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 px-4"
+className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50 px-4"
 >
 
-<div className="card p-5 space-y-4 w-full max-w-sm">
+<div className="w-full max-w-sm rounded-[28px] bg-white p-6 space-y-5 shadow-2xl">
 
-<h2 className="text-base font-semibold">
-Delete category permanently?
+<div className="space-y-2 text-center">
+
+<h2 className="text-lg font-semibold text-slate-900">
+
+Delete Category
+
 </h2>
 
+<p className="text-sm text-slate-500">
+
+This category will be removed permanently.
+
+</p>
+
+</div>
+
 <div className="flex gap-3">
-<button onClick={confirmDelete} className="flex-1 bg-red-500 text-white py-2 rounded-lg">
+
+<button
+onClick={confirmDelete}
+className="flex-1 h-11 rounded-2xl bg-red-500 hover:bg-red-600 transition-all text-white font-semibold"
+>
+
 Delete
+
 </button>
 
-<button onClick={()=>setPopup(null)} className="flex-1 bg-gray-200 py-2 rounded-lg">
+<button
+onClick={()=>setPopup(null)}
+className="flex-1 h-11 rounded-2xl bg-slate-100 hover:bg-slate-200 transition-all text-slate-700 font-semibold"
+>
+
 Cancel
+
 </button>
+
 </div>
 
 </div>
@@ -249,57 +413,147 @@ Cancel
 </motion.div>
 
 )}
+
 </AnimatePresence>
 
 
 {/* EDIT POPUP */}
+
 <AnimatePresence>
+
 {editing &&(
 
 <motion.div
-className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 px-4"
+className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50 px-4"
 >
 
-<div className="card p-5 space-y-4 w-full max-w-sm">
+<div className="w-full max-w-md rounded-[28px] bg-white p-6 space-y-5 shadow-2xl">
 
-<h2 className="text-lg font-semibold text-[var(--primary)]">
+<div className="space-y-1">
+
+<h2 className="text-2xl font-bold text-slate-900">
+
 Edit Category
+
 </h2>
+
+<p className="text-sm text-slate-500">
+
+Update storefront category details.
+
+</p>
+
+</div>
+
+
+{/* INPUT */}
 
 <input
 value={editName}
 onChange={(e)=>setEditName(e.target.value)}
-className="input-style"
+placeholder="Category name"
+className="w-full h-12 rounded-2xl border border-slate-200 px-4 text-sm outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100 transition-all"
 />
 
-<label className="upload-box">
-<Upload size={18}/>
-Change Image
-<input type="file" hidden onChange={uploadEditImage}/>
+
+{/* UPLOAD */}
+
+<label className="border-2 border-dashed border-orange-200 rounded-3xl bg-orange-50/40 p-8 flex flex-col items-center justify-center gap-3 text-center cursor-pointer hover:bg-orange-50 transition-all">
+
+<div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-sm">
+
+<Upload
+size={22}
+className="text-orange-500"
+/>
+
+</div>
+
+<div>
+
+<p className="font-medium text-slate-700">
+
+Change Category Image
+
+</p>
+
+<p className="text-sm text-slate-500">
+
+Upload updated category image
+
+</p>
+
+</div>
+
+<input
+type="file"
+hidden
+onChange={uploadEditImage}
+/>
+
 </label>
 
-{editUploading && <p className="text-sm text-gray-400">Uploading...</p>}
 
-{editImage &&(
-<div className="relative w-24">
-<img src={editImage} className="rounded-lg"/>
-<button
-onClick={()=>setEditImage("")}
-className="absolute -top-2 -right-2 bg-red-500 p-1 rounded-full"
->
-<X size={14}/>
-</button>
-</div>
+{/* LOADING */}
+
+{editUploading && (
+
+<p className="text-sm font-medium text-orange-500">
+
+Uploading image...
+
+</p>
+
 )}
 
-<div className="flex gap-3">
-<button onClick={updateCategory} className="flex-1 bg-[var(--primary)] text-white py-2 rounded-lg">
-Update
+
+{/* PREVIEW */}
+
+{editImage && (
+
+<div className="relative w-28">
+
+<img
+src={editImage}
+className="w-28 h-28 rounded-2xl object-cover border border-orange-100"
+/>
+
+<button
+onClick={()=>setEditImage("")}
+className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg"
+>
+
+<X size={14}/>
+
 </button>
 
-<button onClick={()=>setEditing(null)} className="flex-1 bg-gray-200 py-2 rounded-lg">
-Cancel
+</div>
+
+)}
+
+
+{/* BUTTONS */}
+
+<div className="flex flex-col sm:flex-row gap-3">
+
+<button
+onClick={updateCategory}
+className="flex-1 h-12 rounded-2xl bg-orange-500 hover:bg-orange-600 transition-all text-white font-semibold"
+>
+
+Update
+
 </button>
+
+<button
+onClick={()=>setEditing(null)}
+className="flex-1 h-12 rounded-2xl bg-slate-100 hover:bg-slate-200 transition-all text-slate-700 font-semibold"
+>
+
+Cancel
+
+</button>
+
 </div>
 
 </div>
@@ -307,7 +561,10 @@ Cancel
 </motion.div>
 
 )}
+
 </AnimatePresence>
+
+</div>
 
 </div>
 

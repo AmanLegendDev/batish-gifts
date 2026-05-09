@@ -46,6 +46,49 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    /*
+    NEW OPTIONAL COMMERCE FIELDS
+    */
+
+    badgeText: {
+      type: String,
+      default: "",
+    },
+
+    offerText: {
+      type: String,
+      default: "",
+    },
+
+    stockStatus: {
+      type: String,
+      enum: ["in_stock", "low_stock", "out_of_stock"],
+      default: "in_stock",
+    },
+
+    deliveryInfo: {
+      type: String,
+      default: "",
+    },
+
+    sizes: [
+      {
+        type: String,
+      },
+    ],
+
+    weights: [
+      {
+        type: String,
+      },
+    ],
+
+    shortHighlights: [
+      {
+        type: String,
+      },
+    ],
   },
   { timestamps: true }
 );
