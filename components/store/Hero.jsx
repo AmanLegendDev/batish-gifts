@@ -46,23 +46,6 @@ return(
 <section className="relative overflow-hidden bg-[#fffaf5]">
 
 
-{/* BG TEXTURE */}
-
-<div className="absolute inset-0 opacity-[0.04]">
-
-<Image
-src="/hero/bg-texture.jpg"
-alt="background"
-fill
-priority
-className="object-cover"
-/>
-
-</div>
-
-
-{/* GLOW */}
-
 <div className="absolute -top-24 -left-20 w-[240px] h-[240px] rounded-full bg-orange-200 blur-3xl opacity-40"/>
 
 <div className="absolute top-1/3 right-0 w-[220px] h-[220px] rounded-full bg-orange-100 blur-3xl opacity-50"/>
@@ -71,71 +54,8 @@ className="object-cover"
 <div className="relative z-10 max-w-7xl mx-auto px-4 pt-4 pb-7 md:pt-6">
 
 
-{/* TOP BADGE */}
-
-<motion.div
-initial={{opacity:0,y:8}}
-animate={{opacity:1,y:0}}
-className="flex justify-center"
->
-
-<div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white px-4 py-2 shadow-sm">
-
-<div className="w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center">
-
-<Sparkles
-size={11}
-className="text-orange-500"
-/>
-
-</div>
-
-<p className="text-[11px] font-semibold text-slate-700">
-
-Shimla’s Trusted Gift Marketplace
-
-</p>
-
-</div>
-
-</motion.div>
 
 
-{/* HERO TEXT */}
-
-<div className="mt-5 text-center">
-
-<motion.h1
-initial={{opacity:0,y:10}}
-animate={{opacity:1,y:0}}
-transition={{delay:0.1}}
-className="text-[34px] leading-[0.92] tracking-[-0.06em] font-black text-slate-900 sm:text-[48px] md:text-[70px]"
->
-
-Shop Trending
-
-<span className="block text-orange-500">
-
-Gifts & Surprises
-
-</span>
-
-For Every Moment ✨
-
-</motion.h1>
-
-<motion.p
-initial={{opacity:0}}
-animate={{opacity:1}}
-transition={{delay:0.15}}
-className="mx-auto mt-3 max-w-[640px] text-[13px] sm:text-[15px] md:text-lg leading-relaxed text-slate-600"
->
-
-Discover premium gifts, toys, shawls, accessories and lifestyle products curated for birthdays, celebrations and everyday happiness.
-
-</motion.p>
-
-</div>
 
 
 {/* SEARCH */}
